@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { marketScores } from "../data/marketScores";
-
-const cities = Object.keys(marketScores);
+import { cities } from "../data/cities";
 
 export default function AutocompleteInput({ value, onChange, placeholder }) {
   const [open, setOpen] = useState(false);
