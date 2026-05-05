@@ -3,6 +3,7 @@ import "./styles.css";
 import { marketScores } from "./data/marketScores";
 import { calculateLoadScore } from "./logic/calculateLoadScore";
 import AutocompleteInput from "./components/AutocompleteInput";
+import FeedbackForm from "./components/FeedbackForm";
 
 const defaultForm = {
   origin: "Dallas, TX",
@@ -244,6 +245,8 @@ export default function App() {
           </div>
         </div>
       </section>
+
+      <FeedbackForm />
     </main>
   );
 }

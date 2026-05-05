@@ -1,0 +1,129 @@
+import { useState } from "react";
+
+const defaultFb = {
+  name: "",
+  email: "",
+  role: "Driver",
+  wouldUse: "",
+  missing: "",
+  payFor: "",
+};
+
+export default function FeedbackForm() {
+  const [fb, setFb] = useState(defaultFb);
+
+  function update(field, value) {
+    setFb((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const lines = [
+      `Name: ${fb.name || "(not provided)"}`,
+      `Email: ${fb.email || "(not provided)"}`,
+      `Role: ${fb.role}`,
+      `Would you use LoadScore? ${fb.wouldUse || "(no answer)"}`,
+      "",
+      "What is missing or confusing?",
+      fb.missing || "(no answer)",
+      "",
+      "What would make this worth paying for?",
+      fb.payFor || "(no answer)",
+    ];
+    const mailto =
+      `mailto:rgm88@loadscore.app` +
+      `?subject=${encodeURIComponent("LoadScore MVP Feedback")}` +
+      `&body=${encodeURIComponent(lines.join("\n"))}`;
+    window.location.href = mailto;
+  }
+
+  return (
+    <section className="feedback-section">
+      <h2>Share Your Feedback</h2>
+      <p className="feedback-intro">
+        Help shape what LoadScore becomes. Takes under a minute.
+      </p>
+
+      <form className="card feedback-card" onSubmit={handleSubmit}>
+        <div className="two-col">
+          <label>
+            Name <span className="optional">(optional)</span>
+            <input
+              value={fb.name}
+              onChange={(e) => update("name", e.target.value)}
+              placeholder="Your name"
+            />
+          </label>
+          <label>
+            Email <span className="optional">(optional)</span>
+            <input
+              type="email"
+              value={fb.email}
+              onChange={(e) => update("email", e.target.value)}
+              placeholder="you@example.com"
+            />
+          </label>
+        </div>
+
+        <label>
+          Your Role
+          <select
+            value={fb.role}
+            onChange={(e) => update("role", e.target.value)}
+          >
+            <option>Driver</option>
+            <option>Owner-Operator</option>
+            <option>Dispatcher</option>
+            <option>Fleet Owner</option>
+            <option>Other</option>
+          </select>
+        </label>
+
+        <div className="fb-question">
+          <p className="fb-label">Would you use LoadScore?</p>
+          <div className="btn-group">
+            {["Yes", "Maybe", "No"].map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                className={`btn-option${fb.wouldUse === opt ? " selected" : ""}`}
+                onClick={() => update("wouldUse", opt)}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <label>
+          What is missing or confusing?
+          <textarea
+            value={fb.missing}
+            onChange={(e) => update("missing", e.target.value)}
+            placeholder="Anything unclear, broken, or just not there yet?"
+            rows={3}
+          />
+        </label>
+
+        <label>
+          What would make this worth paying for?
+          <textarea
+            value={fb.payFor}
+            onChange={(e) => update("payFor", e.target.value)}
+            placeholder="Features, data, integrations..."
+            rows={3}
+          />
+        </label>
+
+        <div className="feedback-footer">
+          <p className="mailto-note">
+            Submitting opens your email app so you can review before sending.
+          </p>
+          <button type="submit" className="submit-btn">
+            Submit Feedback
+          </button>
+        </div>
+      </form>
+    </section>
+  );
+}

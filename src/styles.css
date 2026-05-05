@@ -199,6 +199,131 @@ input:focus {
   color: #5b6b7d;
 }
 
+select,
+textarea {
+  width: 100%;
+  margin-top: 7px;
+  padding: 13px 14px;
+  border: 1px solid #d8e0ea;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #152033;
+  background: white;
+  appearance: none;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235b6b7d' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+select:focus,
+textarea:focus {
+  border-color: #ff8c1a;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 140, 26, 0.13);
+}
+
+textarea {
+  resize: vertical;
+}
+
+.feedback-section {
+  max-width: 1100px;
+  margin: 24px auto 0;
+}
+
+.feedback-intro {
+  color: #5b6b7d;
+  margin: 4px 0 18px;
+}
+
+.feedback-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.optional {
+  font-weight: 400;
+  color: #8a9bb0;
+}
+
+.fb-question {
+  margin-bottom: 16px;
+}
+
+.fb-label {
+  margin: 0 0 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-option {
+  flex: 1;
+  padding: 11px 0;
+  border: 1px solid #d8e0ea;
+  border-radius: 14px;
+  background: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #405166;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.btn-option:hover {
+  border-color: #ff8c1a;
+  color: #ff8c1a;
+}
+
+.btn-option.selected {
+  background: #ff8c1a;
+  border-color: #ff8c1a;
+  color: white;
+}
+
+.feedback-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.mailto-note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #8a9bb0;
+}
+
+.submit-btn {
+  padding: 13px 28px;
+  background: #ff8c1a;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+}
+
+.submit-btn:hover {
+  background: #e07a10;
+}
+
 .autocomplete-wrapper {
   position: relative;
 }
