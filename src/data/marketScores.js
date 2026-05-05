@@ -1,0 +1,17 @@
+export const marketScores = {
+  "Dallas, TX": 85,
+  "Atlanta, GA": 88,
+  "Chicago, IL": 82,
+  "Los Angeles, CA": 70,
+  "Phoenix, AZ": 65,
+  "Denver, CO": 40,
+  "Salt Lake City, UT": 38,
+  "Miami, FL": 35,
+  "New York, NY": 45,
+  "Houston, TX": 78,
+  "Memphis, TN": 80,
+  "Indianapolis, IN": 76,
+  "Columbus, OH": 74,
+  "Kansas City, MO": 72,
+  "Charlotte, NC": 70,
+};
