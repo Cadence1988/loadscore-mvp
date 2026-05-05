@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import "./styles.css";
 import { marketScores } from "./data/marketScores";
 import { calculateLoadScore } from "./logic/calculateLoadScore";
+import AutocompleteInput from "./components/AutocompleteInput";
 
 const defaultForm = {
   origin: "Dallas, TX",
@@ -67,18 +68,18 @@ export default function App() {
 
           <label>
             Origin
-            <input
+            <AutocompleteInput
               value={form.origin}
-              onChange={(e) => updateField("origin", e.target.value)}
+              onChange={(val) => updateField("origin", val)}
               placeholder="Dallas, TX"
             />
           </label>
 
           <label>
             Destination
-            <input
+            <AutocompleteInput
               value={form.destination}
-              onChange={(e) => updateField("destination", e.target.value)}
+              onChange={(val) => updateField("destination", val)}
               placeholder="Atlanta, GA"
             />
           </label>
