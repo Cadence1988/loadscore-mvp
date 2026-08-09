@@ -1,16 +1,38 @@
-# React + Vite
+# LoadScore MVP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+LoadScore is a React/Vite decision-support calculator for drivers,
+owner-operators, dispatchers, and small fleets. It estimates the true value of a
+load after deadhead, fuel, fixed operating costs, profit, and destination reload
+strength.
 
-Currently, two official plugins are available:
+## Implemented phases
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Phase 1: Manual load calculator and feedback form
+- Phase 2: Expanded city autocomplete and separate curated reload estimates
+- Phase 3: Score explanations with positives, warnings, and recommendation logic
+- Phase 4: Save, compare, and rank up to five candidate loads
+- Phase 5: Minimum acceptable rate and broker negotiation guidance
 
-## React Compiler
+Reload estimates are static starter data, not live freight-market data. A city
+without a curated estimate receives a neutral reload score of `50`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Local development
 
-## Expanding the ESLint configuration
+```bash
+npm install
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Verification
+
+```bash
+npm run lint
+npm run build
+```
+
+The minimum-rate calculation uses the higher of:
+
+1. Total miles × the user's target all-in RPM
+2. Estimated operating cost + the user's minimum desired trip profit
+
+The result rounds up to the next $25 to provide a practical negotiation number.

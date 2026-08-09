@@ -1,9 +1,14 @@
 import { useMemo, useState } from "react";
 import "./styles.css";
-import { marketScores } from "./data/marketScores";
+import {
+  DEFAULT_RELOAD_SCORE,
+  getCuratedMarketScore,
+} from "./data/marketScores";
 import { calculateLoadScore } from "./logic/calculateLoadScore";
 import AutocompleteInput from "./components/AutocompleteInput";
+import ComparisonBoard from "./components/ComparisonBoard";
 import FeedbackForm from "./components/FeedbackForm";
+import MinimumRateGuide from "./components/MinimumRateGuide";
 
 const defaultForm = {
   origin: "Dallas, TX",
@@ -15,6 +20,11 @@ const defaultForm = {
   fuelPrice: 4.0,
   fixedCostPerMile: 0.65,
   manualReloadScore: ""
+};
+
+const defaultTargets = {
+  targetAllInRpm: 2.25,
+  targetProfit: 500,
 };
 
 function money(value) {
@@ -31,13 +41,22 @@ function decimal(value) {
 
 export default function App() {
   const [form, setForm] = useState(defaultForm);
+  const [targets, setTargets] = useState(defaultTargets);
+  const [comparisonLoads, setComparisonLoads] = useState([]);
 
-  const detectedReloadScore = marketScores[form.destination] ?? null;
+  const detectedReloadScore = getCuratedMarketScore(form.destination);
 
   const reloadScore =
     form.manualReloadScore !== ""
       ? Number(form.manualReloadScore)
-      : detectedReloadScore ?? 50;
+      : detectedReloadScore ?? DEFAULT_RELOAD_SCORE;
+
+  const reloadScoreSource =
+    form.manualReloadScore !== ""
+      ? "Manual score"
+      : detectedReloadScore !== null
+        ? "Curated starter estimate"
+        : "Neutral default for an unscored market";
 
   const result = useMemo(() => {
     return calculateLoadScore({
@@ -48,6 +67,24 @@ export default function App() {
 
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function updateTarget(field, value) {
+    setTargets((previous) => ({ ...previous, [field]: value }));
+  }
+
+  function saveCurrentLoad() {
+    setComparisonLoads((previous) => {
+      if (previous.length >= 5) return previous;
+      return [
+        ...previous,
+        {
+          ...form,
+          id: crypto.randomUUID(),
+          result,
+        },
+      ];
+    });
   }
 
   return (
@@ -64,7 +101,7 @@ export default function App() {
       </section>
 
       <section className="app-grid">
-        <form className="card form-card">
+        <form className="card form-card" onSubmit={(event) => event.preventDefault()}>
           <h2>Load Details</h2>
 
           <label>
@@ -170,8 +207,20 @@ export default function App() {
 
           <p className="helper">
             Reload Score estimates how strong the destination is for finding the
-            next load. This MVP uses starter market data.
+            next load. This MVP uses curated starter estimates—not live market
+            data. Cities without an estimate default to {DEFAULT_RELOAD_SCORE}.
           </p>
+
+          <button
+            className="compare-save-button"
+            type="button"
+            onClick={saveCurrentLoad}
+            disabled={comparisonLoads.length >= 5}
+          >
+            {comparisonLoads.length >= 5
+              ? "Comparison list is full"
+              : `Save to Compare (${comparisonLoads.length}/5)`}
+          </button>
         </form>
 
         <section className="card result-card">
@@ -185,11 +234,10 @@ export default function App() {
             </span>
           </div>
 
-          <p className="result-summary">
-            {result.reasons.length
-              ? result.reasons.join(" ")
-              : "Enter load details to calculate score."}
-          </p>
+          <div className="result-summary">
+            <strong>Recommendation</strong>
+            <p>{result.explanation.recommendation}</p>
+          </div>
 
           <div className="metrics">
             <div>
@@ -223,10 +271,63 @@ export default function App() {
             <div>
               <span>Reload Score</span>
               <strong>{result.reloadScore}/100</strong>
+              <small>{reloadScoreSource}</small>
             </div>
           </div>
+
+          <section className="score-explanation" aria-labelledby="score-explanation-title">
+            <div className="explanation-heading">
+              <div>
+                <p className="eyebrow">Score explanation</p>
+                <h3 id="score-explanation-title">Why this load scored {result.score}</h3>
+              </div>
+              <span className="starting-score">Starts at 50</span>
+            </div>
+
+            <div className="factor-columns">
+              <FactorList
+                title="Positives"
+                emptyText="No score bonuses yet."
+                factors={result.explanation.positives}
+                tone="positive"
+              />
+              <FactorList
+                title="Warnings"
+                emptyText="No score penalties found."
+                factors={result.explanation.warnings}
+                tone="warning"
+              />
+            </div>
+
+            {result.explanation.neutral.length > 0 && (
+              <details className="neutral-details">
+                <summary>Other factors ({result.explanation.neutral.length})</summary>
+                <ul>
+                  {result.explanation.neutral.map((factor) => (
+                    <li key={factor.title}>{factor.detail}</li>
+                  ))}
+                </ul>
+              </details>
+            )}
+          </section>
+
+          <MinimumRateGuide
+            form={form}
+            targets={targets}
+            onTargetChange={updateTarget}
+          />
         </section>
       </section>
+
+      <ComparisonBoard
+        loads={comparisonLoads}
+        onRemove={(id) =>
+          setComparisonLoads((previous) =>
+            previous.filter((load) => load.id !== id),
+          )
+        }
+        onClear={() => setComparisonLoads([])}
+      />
 
       <section className="value-section">
         <h2>Built for faster load decisions.</h2>
@@ -248,5 +349,30 @@ export default function App() {
 
       <FeedbackForm />
     </main>
+  );
+}
+
+function FactorList({ title, emptyText, factors, tone }) {
+  return (
+    <div className={`factor-group ${tone}`}>
+      <h4>{title}</h4>
+      {factors.length === 0 ? (
+        <p className="empty-factor">{emptyText}</p>
+      ) : (
+        <ul>
+          {factors.map((factor) => (
+            <li key={factor.title}>
+              <div>
+                <strong>{factor.title}</strong>
+                <span>{factor.detail}</span>
+              </div>
+              <b className="impact">
+                {factor.impact > 0 ? "+" : ""}{factor.impact}
+              </b>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
