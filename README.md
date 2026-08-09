@@ -12,6 +12,11 @@ strength.
 - Phase 3: Score explanations with positives, warnings, and recommendation logic
 - Phase 4: Save, compare, and rank up to five candidate loads
 - Phase 5: Minimum acceptable rate and broker negotiation guidance
+- Phase 6: Chrome extension manual calculator popup
+- Phase 7: Explicit highlighted-text parsing for visible load offers
+- Phase 8: Local saved driver profiles and preferences
+- Phase 9: Paid-beta feature gates and launch checklist
+- Phase 10: Top-seven ranking, local score alerts, persistence, and PWA foundation
 
 Reload estimates are static starter data, not live freight-market data. A city
 without a curated estimate receives a neutral reload score of `50`.

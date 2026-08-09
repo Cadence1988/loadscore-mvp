@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./styles.css";
 import {
   DEFAULT_RELOAD_SCORE,
@@ -7,6 +7,7 @@ import {
 import { calculateLoadScore } from "./logic/calculateLoadScore";
 import AutocompleteInput from "./components/AutocompleteInput";
 import ComparisonBoard from "./components/ComparisonBoard";
+import DriverProfiles from "./components/DriverProfiles";
 import FeedbackForm from "./components/FeedbackForm";
 import MinimumRateGuide from "./components/MinimumRateGuide";
 
@@ -25,7 +26,17 @@ const defaultForm = {
 const defaultTargets = {
   targetAllInRpm: 2.25,
   targetProfit: 500,
+  minimumLoadScore: 70,
 };
+
+function loadStored(key, fallback) {
+  try {
+    const stored = localStorage.getItem(key);
+    return stored ? JSON.parse(stored) : fallback;
+  } catch {
+    return fallback;
+  }
+}
 
 function money(value) {
   return value.toLocaleString(undefined, {
@@ -41,8 +52,27 @@ function decimal(value) {
 
 export default function App() {
   const [form, setForm] = useState(defaultForm);
-  const [targets, setTargets] = useState(defaultTargets);
-  const [comparisonLoads, setComparisonLoads] = useState([]);
+  const [targets, setTargets] = useState(() =>
+    loadStored("loadscore-targets", defaultTargets),
+  );
+  const [comparisonLoads, setComparisonLoads] = useState(() =>
+    loadStored("loadscore-comparisons", []),
+  );
+  const [profiles, setProfiles] = useState(() =>
+    loadStored("loadscore-profiles", []),
+  );
+
+  useEffect(() => {
+    localStorage.setItem("loadscore-targets", JSON.stringify(targets));
+  }, [targets]);
+
+  useEffect(() => {
+    localStorage.setItem("loadscore-comparisons", JSON.stringify(comparisonLoads));
+  }, [comparisonLoads]);
+
+  useEffect(() => {
+    localStorage.setItem("loadscore-profiles", JSON.stringify(profiles));
+  }, [profiles]);
 
   const detectedReloadScore = getCuratedMarketScore(form.destination);
 
@@ -75,7 +105,7 @@ export default function App() {
 
   function saveCurrentLoad() {
     setComparisonLoads((previous) => {
-      if (previous.length >= 5) return previous;
+      if (previous.length >= 7) return previous;
       return [
         ...previous,
         {
@@ -215,11 +245,11 @@ export default function App() {
             className="compare-save-button"
             type="button"
             onClick={saveCurrentLoad}
-            disabled={comparisonLoads.length >= 5}
+            disabled={comparisonLoads.length >= 7}
           >
-            {comparisonLoads.length >= 5
+            {comparisonLoads.length >= 7
               ? "Comparison list is full"
-              : `Save to Compare (${comparisonLoads.length}/5)`}
+              : `Save to Compare (${comparisonLoads.length}/7)`}
           </button>
         </form>
 
@@ -321,12 +351,38 @@ export default function App() {
 
       <ComparisonBoard
         loads={comparisonLoads}
+        alertThreshold={Number(targets.minimumLoadScore) || 70}
         onRemove={(id) =>
           setComparisonLoads((previous) =>
             previous.filter((load) => load.id !== id),
           )
         }
         onClear={() => setComparisonLoads([])}
+      />
+
+      <DriverProfiles
+        profiles={profiles}
+        form={form}
+        targets={targets}
+        onTargetChange={updateTarget}
+        onSave={(profile) => setProfiles((previous) => [...previous, profile])}
+        onDelete={(id) =>
+          setProfiles((previous) => previous.filter((profile) => profile.id !== id))
+        }
+        onApply={(profile) => {
+          setForm((previous) => ({
+            ...previous,
+            mpg: profile.mpg,
+            fuelPrice: profile.fuelPrice,
+            fixedCostPerMile: profile.fixedCostPerMile,
+          }));
+          setTargets((previous) => ({
+            ...previous,
+            targetAllInRpm: profile.targetAllInRpm,
+            targetProfit: profile.targetProfit,
+            minimumLoadScore: profile.minimumLoadScore ?? 70,
+          }));
+        }}
       />
 
       <section className="value-section">

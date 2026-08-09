@@ -6,7 +6,7 @@ function money(value) {
   });
 }
 
-export default function ComparisonBoard({ loads, onRemove, onClear }) {
+export default function ComparisonBoard({ loads, onRemove, onClear, alertThreshold }) {
   const rankedLoads = [...loads].sort(
     (a, b) =>
       b.result.score - a.result.score ||
@@ -21,7 +21,7 @@ export default function ComparisonBoard({ loads, onRemove, onClear }) {
           <p className="eyebrow">Phase 4</p>
           <h2 id="comparison-title">Compare Loads</h2>
           <p>
-            Save up to five offers. Loads rank by score, estimated profit, then
+            Save up to seven offers. Loads rank by score, estimated profit, then
             all-in RPM.
           </p>
         </div>
@@ -65,6 +65,9 @@ export default function ComparisonBoard({ loads, onRemove, onClear }) {
                   <td>
                     <strong>{load.result.score}</strong>
                     <span>{load.result.label}</span>
+                    {load.result.score >= alertThreshold && (
+                      <small className="alert-hit">Matches alert</small>
+                    )}
                   </td>
                   <td>${load.result.allInRpm.toFixed(2)}</td>
                   <td>{money(load.result.estimatedProfit)}</td>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LoadScore</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <p class="eyebrow">LoadScore Extension</p>
+          <h1>Score this load</h1>
+        </div>
+        <span class="version">Beta</span>
+      </header>
+
+      <button id="parse-selection" class="selection-button" type="button">
+        Use highlighted load text
+      </button>
+      <p id="parse-status" class="status" aria-live="polite">
+        Highlight a visible load offer on the page, then click the button.
+      </p>
+
+      <form id="load-form">
+        <div class="two-col">
+          <label>Origin<input id="origin" placeholder="Dallas, TX" /></label>
+          <label>Destination<input id="destination" placeholder="Atlanta, GA" /></label>
+        </div>
+        <div class="three-col">
+          <label>Rate ($)<input id="loadRate" type="number" min="0" value="1800" /></label>
+          <label>Loaded mi<input id="loadedMiles" type="number" min="0" value="780" /></label>
+          <label>Deadhead<input id="deadheadMiles" type="number" min="0" value="35" /></label>
+        </div>
+        <details>
+          <summary>Truck costs and market</summary>
+          <div class="three-col details-grid">
+            <label>MPG<input id="mpg" type="number" min="0.1" step="0.1" value="6.5" /></label>
+            <label>Fuel/gal<input id="fuelPrice" type="number" min="0" step="0.01" value="4" /></label>
+            <label>Fixed/mi<input id="fixedCostPerMile" type="number" min="0" step="0.01" value="0.65" /></label>
+          </div>
+          <label>Reload score<input id="reloadScore" type="number" min="0" max="100" value="50" /></label>
+          <div class="two-col">
+            <label>Target all-in RPM<input id="targetAllInRpm" type="number" min="0" step="0.05" value="2.25" /></label>
+            <label>Minimum trip profit<input id="targetProfit" type="number" min="0" step="50" value="500" /></label>
+          </div>
+        </details>
+      </form>
+
+      <section class="result" aria-live="polite">
+        <div class="score-row">
+          <div><span>LoadScore</span><strong id="score">—</strong></div>
+          <b id="label" class="badge">Enter details</b>
+        </div>
+        <p id="recommendation">Add the load details to see the recommendation.</p>
+        <div class="metrics">
+          <div><span>All-In RPM</span><strong id="all-in-rpm">$0.00</strong></div>
+          <div><span>Est. Profit</span><strong id="profit">$0</strong></div>
+          <div><span>Total Miles</span><strong id="total-miles">0</strong></div>
+          <div><span>Reload</span><strong id="reload-result">50/100</strong></div>
+        </div>
+
+        <section class="negotiator" aria-labelledby="negotiator-title">
+          <div class="negotiator-heading">
+            <div>
+              <span>Broker negotiator</span>
+              <strong id="negotiator-title">Minimum rate: $0</strong>
+            </div>
+            <b id="ask-more">Enter details</b>
+          </div>
+          <p id="negotiation-message">Your saved truck costs and targets determine the minimum rate.</p>
+          <button id="copy-negotiation" type="button">Copy broker message</button>
+        </section>
+      </section>
+
+      <footer class="save-actions">
+        <button id="save-load" class="primary-save" type="button">Save this load</button>
+        <button id="save-defaults" type="button">Save truck settings</button>
+        <span id="save-status" aria-live="polite"></span>
+      </footer>
+
+      <section class="saved-section" aria-labelledby="saved-title">
+        <div class="saved-heading">
+          <div>
+            <p class="eyebrow">Saved on this device</p>
+            <h2 id="saved-title">Saved Loads</h2>
+          </div>
+          <span id="saved-count">0/7</span>
+        </div>
+        <div id="saved-loads" class="saved-loads">
+          <p class="saved-empty">No saved loads yet.</p>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
