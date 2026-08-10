@@ -45,6 +45,13 @@
             <label>Target all-in RPM<input id="targetAllInRpm" type="number" min="0" step="0.05" value="2.25" /></label>
             <label>Minimum trip profit<input id="targetProfit" type="number" min="0" step="50" value="500" /></label>
           </div>
+          <div class="three-col">
+            <label>Min score<input id="minimumLoadScore" type="number" min="0" max="100" value="70" /></label>
+            <label>Max deadhead<input id="maximumDeadhead" type="number" min="0" step="10" value="100" /></label>
+            <label>Min reload<input id="minimumReloadScore" type="number" min="0" max="100" value="50" /></label>
+          </div>
+          <label>Preferred destinations <span class="optional">Optional; separate with ;</span><input id="preferredDestinations" placeholder="Atlanta, GA; Southeast" /></label>
+          <label>Avoided destinations <span class="optional">Optional; separate with ;</span><input id="avoidedDestinations" placeholder="Miami, FL; Denver, CO" /></label>
         </details>
       </form>
 
@@ -60,6 +67,14 @@
           <div><span>Total Miles</span><strong id="total-miles">0</strong></div>
           <div><span>Reload</span><strong id="reload-result">50/100</strong></div>
         </div>
+
+        <section class="local-alert" aria-labelledby="local-alert-title">
+          <div class="local-alert-heading">
+            <span>Local alert rules</span>
+            <b id="alert-match-status">Missing data</b>
+          </div>
+          <p id="local-alert-title">This evaluates only the load you entered or selected.</p>
+        </section>
 
         <section class="negotiator" aria-labelledby="negotiator-title">
           <div class="negotiator-heading">

@@ -69,3 +69,20 @@ Next server-backed milestones:
 4. Opt-in push alerts
 5. Approved market-data integrations with clear source timestamps
 6. Mobile/PWA field testing before considering native apps
+
+## Phase 10A: User-controlled alert prototype
+
+Implemented after the initial Phase 10 foundation:
+
+- Reusable alert-rule evaluator for the web app and extension
+- Match, almost-match, no-match, and missing-data statuses
+- Minimum score, RPM, profit, reload, and maximum-deadhead rules
+- Optional preferred and avoided destination rules
+- Immediate evaluation of manually entered loads
+- Status and explanations on saved top-seven loads
+- Extension status and explanation for manual or highlighted-text loads
+- Chrome action badge count for matching saved local loads
+
+Browser notifications remain deferred. See
+[`phase-10a-alert-prototype.md`](phase-10a-alert-prototype.md) for the exact
+behavior, tolerances, safety boundaries, and remaining work.

@@ -5,7 +5,9 @@ import {
   getCuratedMarketScore,
 } from "./data/marketScores";
 import { calculateLoadScore } from "./logic/calculateLoadScore";
+import { evaluateAlertMatch } from "./logic/evaluateAlertMatch";
 import AutocompleteInput from "./components/AutocompleteInput";
+import AlertPreferences from "./components/AlertPreferences";
 import ComparisonBoard from "./components/ComparisonBoard";
 import DriverProfiles from "./components/DriverProfiles";
 import FeedbackForm from "./components/FeedbackForm";
@@ -27,6 +29,10 @@ const defaultTargets = {
   targetAllInRpm: 2.25,
   targetProfit: 500,
   minimumLoadScore: 70,
+  maximumDeadhead: 100,
+  minimumReloadScore: 50,
+  preferredDestinations: "",
+  avoidedDestinations: "",
 };
 
 function loadStored(key, fallback) {
@@ -52,9 +58,10 @@ function decimal(value) {
 
 export default function App() {
   const [form, setForm] = useState(defaultForm);
-  const [targets, setTargets] = useState(() =>
-    loadStored("loadscore-targets", defaultTargets),
-  );
+  const [targets, setTargets] = useState(() => ({
+    ...defaultTargets,
+    ...loadStored("loadscore-targets", {}),
+  }));
   const [comparisonLoads, setComparisonLoads] = useState(() =>
     loadStored("loadscore-comparisons", []),
   );
@@ -95,6 +102,24 @@ export default function App() {
     });
   }, [form, reloadScore]);
 
+  const currentAlertMatch = useMemo(
+    () =>
+      evaluateAlertMatch(
+        {
+          ...form,
+          result,
+          reloadScoreSource:
+            form.manualReloadScore !== ""
+              ? "manual"
+              : detectedReloadScore !== null
+                ? "curated"
+                : "default",
+        },
+        targets,
+      ),
+    [detectedReloadScore, form, result, targets],
+  );
+
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -112,6 +137,12 @@ export default function App() {
           ...form,
           id: crypto.randomUUID(),
           result,
+          reloadScoreSource:
+            form.manualReloadScore !== ""
+              ? "manual"
+              : detectedReloadScore !== null
+                ? "curated"
+                : "default",
         },
       ];
     });
@@ -305,6 +336,8 @@ export default function App() {
             </div>
           </div>
 
+          <AlertMatchSummary alertMatch={currentAlertMatch} />
+
           <section className="score-explanation" aria-labelledby="score-explanation-title">
             <div className="explanation-heading">
               <div>
@@ -349,9 +382,11 @@ export default function App() {
         </section>
       </section>
 
+      <AlertPreferences targets={targets} onChange={updateTarget} />
+
       <ComparisonBoard
         loads={comparisonLoads}
-        alertThreshold={Number(targets.minimumLoadScore) || 70}
+        alertProfile={targets}
         onRemove={(id) =>
           setComparisonLoads((previous) =>
             previous.filter((load) => load.id !== id),
@@ -364,7 +399,6 @@ export default function App() {
         profiles={profiles}
         form={form}
         targets={targets}
-        onTargetChange={updateTarget}
         onSave={(profile) => setProfiles((previous) => [...previous, profile])}
         onDelete={(id) =>
           setProfiles((previous) => previous.filter((profile) => profile.id !== id))
@@ -381,6 +415,10 @@ export default function App() {
             targetAllInRpm: profile.targetAllInRpm,
             targetProfit: profile.targetProfit,
             minimumLoadScore: profile.minimumLoadScore ?? 70,
+            maximumDeadhead: profile.maximumDeadhead ?? 100,
+            minimumReloadScore: profile.minimumReloadScore ?? 50,
+            preferredDestinations: profile.preferredDestinations ?? "",
+            avoidedDestinations: profile.avoidedDestinations ?? "",
           }));
         }}
       />
@@ -430,5 +468,46 @@ function FactorList({ title, emptyText, factors, tone }) {
         </ul>
       )}
     </div>
+  );
+}
+
+const alertStatusLabels = {
+  match: "Matches your alert rules",
+  near_match: "Almost matches",
+  no_match: "Does not match",
+  missing_data: "Missing data",
+};
+
+function AlertMatchSummary({ alertMatch }) {
+  return (
+    <section className={`current-alert-match ${alertMatch.status}`} aria-live="polite">
+      <div className="current-alert-heading">
+        <div>
+          <p className="eyebrow">Local alert check</p>
+          <h3>{alertStatusLabels[alertMatch.status]}</h3>
+        </div>
+        <span className={`alert-status ${alertMatch.status}`}>
+          {alertStatusLabels[alertMatch.status]}
+        </span>
+      </div>
+      <p>{alertMatch.explanation}</p>
+      {(alertMatch.failedRules.length > 0 || alertMatch.warnings.length > 0) && (
+        <details>
+          <summary>Review alert details</summary>
+          <ul>
+            {alertMatch.failedRules.map((rule) => (
+              <li key={rule.key}>{rule.message}</li>
+            ))}
+            {alertMatch.warnings.map((warning) => (
+              <li key={warning}>{warning}</li>
+            ))}
+          </ul>
+        </details>
+      )}
+      <small>
+        This checks only the load you entered. It does not monitor load boards or
+        guarantee financial results.
+      </small>
+    </section>
   );
 }

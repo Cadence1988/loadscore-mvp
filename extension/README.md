@@ -19,6 +19,25 @@ minimum desired trip profit to calculate a minimum acceptable rate and create a
 copyable message. More advanced broker-specific strategies remain a possible
 paid feature.
 
+## Local alert rules
+
+The extension evaluates manual, parsed, and saved local loads against:
+
+- Minimum LoadScore
+- Minimum all-in RPM
+- Minimum estimated profit
+- Maximum deadhead
+- Minimum reload score
+- Optional preferred and avoided destinations
+
+Saved loads show Matches alert, Almost matches, Does not match, or Missing data.
+The toolbar badge counts matching saved local loads only. The badge refreshes
+when the popup is opened or its local data changes; it is not a live-load monitor.
+
+Browser notifications are intentionally deferred until an explicit opt-in flow,
+repeat prevention, notification assets, and Chrome Web Store permission
+disclosures are ready.
+
 ## Privacy and platform safety
 
 - No page is scraped automatically.

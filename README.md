@@ -17,6 +17,7 @@ strength.
 - Phase 8: Local saved driver profiles and preferences
 - Phase 9: Paid-beta feature gates and launch checklist
 - Phase 10: Top-seven ranking, local score alerts, persistence, and PWA foundation
+- Phase 10A: Transparent local alert rules, match explanations, and extension badge
 
 Reload estimates are static starter data, not live freight-market data. A city
 without a curated estimate receives a neutral reload score of `50`.

@@ -4,13 +4,29 @@ import {
   calculateMinimumRate,
   parseHighlightedLoad,
 } from "./loadScore.js";
+import { evaluateAlertMatch } from "./evaluateAlertMatch.js";
 
 const fieldIds = [
   "origin", "destination", "loadRate", "loadedMiles", "deadheadMiles",
   "mpg", "fuelPrice", "fixedCostPerMile", "reloadScore",
   "targetAllInRpm", "targetProfit",
+  "minimumLoadScore", "maximumDeadhead", "minimumReloadScore",
+  "preferredDestinations", "avoidedDestinations",
 ];
-const numericFields = new Set(fieldIds.slice(2));
+const numericFields = new Set([
+  "loadRate", "loadedMiles", "deadheadMiles", "mpg", "fuelPrice",
+  "fixedCostPerMile", "reloadScore", "targetAllInRpm", "targetProfit",
+  "minimumLoadScore", "maximumDeadhead", "minimumReloadScore",
+]);
+const loadFieldIds = [
+  "origin", "destination", "loadRate", "loadedMiles", "deadheadMiles", "reloadScore",
+];
+const alertLabels = {
+  match: "Matches alert",
+  near_match: "Almost matches",
+  no_match: "Does not match",
+  missing_data: "Missing data",
+};
 let savedLoads = [];
 let negotiationText = "";
 
@@ -20,10 +36,16 @@ function getForm() {
   );
 }
 
+function getLoadEntry() {
+  const form = getForm();
+  return Object.fromEntries(loadFieldIds.map((id) => [id, form[id]]));
+}
+
 function render() {
   const form = getForm();
   const result = calculateLoadScore(form);
   const rate = calculateMinimumRate(form);
+  const alertMatch = evaluateAlertMatch({ ...form, result }, form);
   document.getElementById("score").textContent = result.score;
   const badge = document.getElementById("label");
   badge.textContent = result.label;
@@ -33,6 +55,10 @@ function render() {
   document.getElementById("profit").textContent = result.estimatedProfit.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
   document.getElementById("total-miles").textContent = result.totalMiles.toFixed(0);
   document.getElementById("reload-result").textContent = `${result.reloadScore}/100`;
+  const alertStatus = document.getElementById("alert-match-status");
+  alertStatus.textContent = alertLabels[alertMatch.status];
+  alertStatus.className = alertMatch.status;
+  document.getElementById("local-alert-title").textContent = alertMatch.explanation;
   document.getElementById("negotiator-title").textContent = `Minimum rate: $${rate.minimumRate.toLocaleString()}`;
   const askMore = document.getElementById("ask-more");
   askMore.textContent = rate.meetsTarget
@@ -54,6 +80,15 @@ function setForm(values) {
   render();
 }
 
+function setLoadFields(values) {
+  loadFieldIds.forEach((id) => {
+    if (values[id] !== undefined && values[id] !== null) {
+      document.getElementById(id).value = values[id];
+    }
+  });
+  render();
+}
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -68,12 +103,20 @@ function renderSavedLoads() {
   document.getElementById("saved-count").textContent = `${savedLoads.length}/7`;
   if (savedLoads.length === 0) {
     container.innerHTML = '<p class="saved-empty">No saved loads yet.</p>';
+    void updateMatchedBadge();
     return;
   }
 
+  const alertProfile = getForm();
   container.innerHTML = savedLoads
     .map((load) => {
-      const result = calculateLoadScore(load);
+      const result = calculateLoadScore({
+        ...load,
+        mpg: alertProfile.mpg,
+        fuelPrice: alertProfile.fuelPrice,
+        fixedCostPerMile: alertProfile.fixedCostPerMile,
+      });
+      const alertMatch = evaluateAlertMatch({ ...load, result }, alertProfile);
       return `
         <article class="saved-load">
           <div class="saved-load-top">
@@ -83,6 +126,10 @@ function renderSavedLoads() {
             </div>
             <span class="saved-load-score">${result.score}</span>
           </div>
+          <div class="saved-alert">
+            <span class="saved-alert-status ${alertMatch.status}">${alertLabels[alertMatch.status]}</span>
+            <span class="saved-alert-explanation">${escapeHtml(alertMatch.explanation)}</span>
+          </div>
           <div class="saved-load-actions">
             <button type="button" data-action="load" data-id="${load.id}">Load</button>
             <button class="remove-saved" type="button" data-action="remove" data-id="${load.id}">Remove</button>
@@ -90,10 +137,27 @@ function renderSavedLoads() {
         </article>`;
     })
     .join("");
+  void updateMatchedBadge();
+}
+
+async function updateMatchedBadge() {
+  const alertProfile = getForm();
+  const matchedCount = savedLoads.filter((load) => {
+    const result = calculateLoadScore({
+      ...load,
+      mpg: alertProfile.mpg,
+      fuelPrice: alertProfile.fuelPrice,
+      fixedCostPerMile: alertProfile.fixedCostPerMile,
+    });
+    return evaluateAlertMatch({ ...load, result }, alertProfile).matches;
+  }).length;
+  await chrome.action.setBadgeBackgroundColor({ color: "#15803d" });
+  await chrome.action.setBadgeText({ text: matchedCount > 0 ? String(matchedCount) : "" });
 }
 
 document.getElementById("load-form").addEventListener("input", async () => {
   render();
+  renderSavedLoads();
   await chrome.storage.local.set({ loadScoreDraft: getForm() });
 });
 
@@ -116,6 +180,8 @@ document.getElementById("parse-selection").addEventListener("click", async () =>
       ? `Filled ${filled.length} field${filled.length === 1 ? "" : "s"}. Review the values before using the score.`
       : "Text was read, but no route, rate, or mileage pattern was recognized.";
     render();
+    renderSavedLoads();
+    await chrome.storage.local.set({ loadScoreDraft: getForm() });
   } catch {
     status.textContent = "This page does not allow selected-text access. Enter the load manually.";
   }
@@ -130,6 +196,11 @@ document.getElementById("save-defaults").addEventListener("click", async () => {
       fixedCostPerMile: form.fixedCostPerMile,
       targetAllInRpm: form.targetAllInRpm,
       targetProfit: form.targetProfit,
+      minimumLoadScore: form.minimumLoadScore,
+      maximumDeadhead: form.maximumDeadhead,
+      minimumReloadScore: form.minimumReloadScore,
+      preferredDestinations: form.preferredDestinations,
+      avoidedDestinations: form.avoidedDestinations,
     },
   });
   const { loadScoreDefaults } = await chrome.storage.local.get("loadScoreDefaults");
@@ -149,7 +220,7 @@ document.getElementById("save-load").addEventListener("click", async () => {
     return;
   }
   savedLoads = [
-    { ...getForm(), id: crypto.randomUUID(), savedAt: new Date().toISOString() },
+    { ...getLoadEntry(), id: crypto.randomUUID(), savedAt: new Date().toISOString() },
     ...savedLoads,
   ];
   await chrome.storage.local.set({ loadScoreSavedLoads: savedLoads });
@@ -162,7 +233,7 @@ document.getElementById("saved-loads").addEventListener("click", async (event) =
   if (!button) return;
   const load = savedLoads.find((item) => item.id === button.dataset.id);
   if (button.dataset.action === "load" && load) {
-    setForm(load);
+    setLoadFields(load);
     await chrome.storage.local.set({ loadScoreDraft: getForm() });
     document.getElementById("save-status").textContent = "Saved load loaded into calculator";
   } else if (button.dataset.action === "remove") {

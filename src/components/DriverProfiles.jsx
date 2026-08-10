@@ -4,7 +4,6 @@ export default function DriverProfiles({
   profiles,
   form,
   targets,
-  onTargetChange,
   onSave,
   onApply,
   onDelete,
@@ -23,6 +22,10 @@ export default function DriverProfiles({
       targetAllInRpm: targets.targetAllInRpm,
       targetProfit: targets.targetProfit,
       minimumLoadScore: targets.minimumLoadScore,
+      maximumDeadhead: targets.maximumDeadhead,
+      minimumReloadScore: targets.minimumReloadScore,
+      preferredDestinations: targets.preferredDestinations,
+      avoidedDestinations: targets.avoidedDestinations,
     });
     setProfileName("");
   }
@@ -54,18 +57,6 @@ export default function DriverProfiles({
         </div>
       </div>
 
-      <label className="alert-preference">
-        Load alert threshold
-        <input
-          type="number"
-          min="0"
-          max="100"
-          value={targets.minimumLoadScore}
-          onChange={(event) => onTargetChange("minimumLoadScore", event.target.value)}
-        />
-        <span>Saved comparison loads at or above this score are marked as matches.</span>
-      </label>
-
       {profiles.length === 0 ? (
         <div className="profile-empty">No profiles saved on this device yet.</div>
       ) : (
@@ -75,7 +66,7 @@ export default function DriverProfiles({
               <div>
                 <strong>{profile.name}</strong>
                 <span>
-                  {profile.mpg} MPG · ${profile.fixedCostPerMile}/mi · Target ${profile.targetAllInRpm}/mi
+                  {profile.mpg} MPG · ${profile.fixedCostPerMile}/mi · Target ${profile.targetAllInRpm}/mi · Max {profile.maximumDeadhead ?? 100} DH
                 </span>
               </div>
               <div className="profile-actions">

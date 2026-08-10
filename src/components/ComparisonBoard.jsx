@@ -1,3 +1,5 @@
+import { evaluateAlertMatch } from "../logic/evaluateAlertMatch";
+
 function money(value) {
   return value.toLocaleString(undefined, {
     style: "currency",
@@ -6,13 +8,25 @@ function money(value) {
   });
 }
 
-export default function ComparisonBoard({ loads, onRemove, onClear, alertThreshold }) {
+const statusLabels = {
+  match: "Matches alert",
+  near_match: "Almost matches",
+  no_match: "Does not match",
+  missing_data: "Missing data",
+};
+
+export default function ComparisonBoard({ loads, onRemove, onClear, alertProfile }) {
   const rankedLoads = [...loads].sort(
     (a, b) =>
       b.result.score - a.result.score ||
       b.result.estimatedProfit - a.result.estimatedProfit ||
       b.result.allInRpm - a.result.allInRpm,
   );
+  const evaluatedLoads = rankedLoads.map((load) => ({
+    ...load,
+    alertMatch: evaluateAlertMatch(load, alertProfile),
+  }));
+  const matchedCount = evaluatedLoads.filter((load) => load.alertMatch.matches).length;
 
   return (
     <section className="comparison-section" aria-labelledby="comparison-title">
@@ -22,14 +36,20 @@ export default function ComparisonBoard({ loads, onRemove, onClear, alertThresho
           <h2 id="comparison-title">Compare Loads</h2>
           <p>
             Save up to seven offers. Loads rank by score, estimated profit, then
-            all-in RPM.
+            all-in RPM. Alert rules add another decision layer without changing
+            that ranking.
           </p>
         </div>
-        {loads.length > 0 && (
-          <button className="text-button" type="button" onClick={onClear}>
-            Clear all
-          </button>
-        )}
+        <div className="comparison-actions">
+          {loads.length > 0 && (
+            <span className="match-count">{matchedCount} matched saved load{matchedCount === 1 ? "" : "s"}</span>
+          )}
+          {loads.length > 0 && (
+            <button className="text-button" type="button" onClick={onClear}>
+              Clear all
+            </button>
+          )}
+        </div>
       </div>
 
       {rankedLoads.length === 0 ? (
@@ -48,11 +68,12 @@ export default function ComparisonBoard({ loads, onRemove, onClear, alertThresho
                 <th>All-In RPM</th>
                 <th>Est. Profit</th>
                 <th>Reload</th>
+                <th>Alert Match</th>
                 <th aria-label="Remove load" />
               </tr>
             </thead>
             <tbody>
-              {rankedLoads.map((load, index) => (
+              {evaluatedLoads.map((load, index) => (
                 <tr key={load.id} className={index === 0 ? "winner" : ""}>
                   <td>
                     <span className="rank">#{index + 1}</span>
@@ -65,13 +86,19 @@ export default function ComparisonBoard({ loads, onRemove, onClear, alertThresho
                   <td>
                     <strong>{load.result.score}</strong>
                     <span>{load.result.label}</span>
-                    {load.result.score >= alertThreshold && (
-                      <small className="alert-hit">Matches alert</small>
-                    )}
                   </td>
                   <td>${load.result.allInRpm.toFixed(2)}</td>
                   <td>{money(load.result.estimatedProfit)}</td>
                   <td>{load.result.reloadScore}/100</td>
+                  <td className="alert-match-cell">
+                    <span className={`alert-status ${load.alertMatch.status}`}>
+                      {statusLabels[load.alertMatch.status]}
+                    </span>
+                    <small>{load.alertMatch.explanation}</small>
+                    {load.alertMatch.warnings.map((warning) => (
+                      <small className="alert-warning" key={warning}>{warning}</small>
+                    ))}
+                  </td>
                   <td>
                     <button
                       className="remove-button"
