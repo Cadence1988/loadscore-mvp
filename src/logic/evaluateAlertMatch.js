@@ -26,6 +26,7 @@ export function evaluateAlertMatch(load, profile = {}) {
   if (!String(load.destination || "").trim()) missingFields.push("destination");
   if (number(load.loadRate) <= 0) missingFields.push("offered rate");
   if (number(load.loadedMiles) <= 0) missingFields.push("loaded miles");
+  if (load.deadheadMiles === "" || load.deadheadMiles === null || load.deadheadMiles === undefined) missingFields.push("deadhead or explicit confirmation of 0 miles");
 
   if (missingFields.length > 0) {
     return {

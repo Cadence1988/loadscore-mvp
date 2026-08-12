@@ -36,7 +36,7 @@
         <div class="three-col">
           <label>Rate ($)<input id="loadRate" type="number" min="0" value="1800" /></label>
           <label>Loaded mi<input id="loadedMiles" type="number" min="0" value="780" /></label>
-          <label>Deadhead<input id="deadheadMiles" type="number" min="0" value="35" /></label>
+          <label>Deadhead<input id="deadheadMiles" type="number" min="0" value="35" /><button id="confirm-zero-deadhead" class="inline-action" type="button">Confirm 0 mi</button></label>
         </div>
         <details>
           <summary>Truck costs and market</summary>
@@ -95,6 +95,7 @@
       </form>
 
       <section class="result" aria-live="polite">
+        <div id="trust-indicator" class="trust-indicator complete"><strong>Complete Evaluation</strong><span>Required load economics are present.</span></div>
         <div class="score-row">
           <div><span>LoadScore</span><strong id="score">—</strong></div>
           <b id="label" class="badge">Enter details</b>

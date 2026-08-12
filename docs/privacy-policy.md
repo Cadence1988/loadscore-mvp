@@ -4,6 +4,8 @@ Last updated: August 12, 2026
 
 LoadScore helps drivers evaluate freight opportunities. This policy describes the current web and Chrome extension beta.
 
+LoadScore labels evaluations with missing material information, including unknown deadhead, as provisional or needing review. This is a product-safety behavior and does not transmit the missing information.
+
 ## Local notifications
 
 If a user explicitly enables match notifications, LoadScore uses locally saved load details, local alert preferences, quiet hours, duplicate keys, and local notification history to decide whether to show a Chrome notification. Notifications are off by default. This does not enable load-board monitoring or scraping.

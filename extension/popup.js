@@ -15,6 +15,7 @@ import {
 import { buildExtensionShareText } from "./shareResult.js";
 import { isLoadExpired, normalizeLoadLifecycle, validateLoadTiming } from "./loadLifecycle.js";
 import { countActiveMatches, DEFAULT_NOTIFICATION_SETTINGS } from "./notificationEngine.js";
+import { assessEvaluationTrust } from "./evaluationTrust.js";
 
 const fieldIds = [
   "origin", "destination", "loadRate", "loadedMiles", "deadheadMiles",
@@ -57,7 +58,10 @@ function updateModeConfigurationFromForm() {
 
 function getForm() {
   return Object.fromEntries(
-    fieldIds.map((id) => [id, numericFields.has(id) ? Number(document.getElementById(id).value) : document.getElementById(id).value]),
+    fieldIds.map((id) => {
+      const value = document.getElementById(id).value;
+      return [id, id === "deadheadMiles" && value === "" ? null : numericFields.has(id) ? Number(value) : value];
+    }),
   );
 }
 
@@ -71,6 +75,10 @@ function render() {
   const result = calculateLoadScore(form);
   const rate = calculateMinimumRate(form);
   const alertMatch = activeModeEvaluation({ ...form, result }, operatingConfiguration);
+  const trust = assessEvaluationTrust(form);
+  const trustIndicator = document.getElementById("trust-indicator");
+  trustIndicator.className = `trust-indicator ${trust.status}`;
+  trustIndicator.innerHTML = `<strong>${trust.label}</strong><span>${trust.message}</span>`;
   document.getElementById("score").textContent = result.score;
   const badge = document.getElementById("label");
   badge.textContent = result.label;
@@ -81,7 +89,7 @@ function render() {
   document.getElementById("total-miles").textContent = result.totalMiles.toFixed(0);
   document.getElementById("reload-result").textContent = `${result.reloadScore}/100`;
   const alertStatus = document.getElementById("alert-match-status");
-  alertStatus.textContent = alertMatch.label;
+  alertStatus.textContent = trust.canMatch ? alertMatch.label : "No Mode Match — Provisional";
   alertStatus.className = alertMatch.status;
   document.getElementById("local-alert-title").textContent = alertMatch.explanation;
   document.getElementById("cross-mode-status").textContent = `Preferred: ${alertMatch.evaluations.preferred.matches ? "Yes" : "No"} · Flexible: ${alertMatch.evaluations.flexible.matches ? "Yes" : "No"} · Recovery: ${alertMatch.evaluations.recovery.matches ? "Yes" : "No"}`;
@@ -244,6 +252,13 @@ document.getElementById("load-form").addEventListener("input", async () => {
   await chrome.storage.local.set({ loadScoreDraft: getForm() });
 });
 
+document.getElementById("confirm-zero-deadhead").addEventListener("click", async () => {
+  document.getElementById("deadheadMiles").value = "0";
+  render(); renderSavedLoads();
+  await chrome.storage.local.set({ loadScoreDraft: getForm() });
+  await trackEvent("deadhead_confirmed_zero", { surface: "extension" });
+});
+
 document.getElementById("operating-mode").addEventListener("change", async (event) => {
   updateModeConfigurationFromForm();
   operatingConfiguration.activeMode = event.target.value;
@@ -294,6 +309,7 @@ document.getElementById("parse-selection").addEventListener("click", async () =>
       return;
     }
     const parsed = parseHighlightedLoad(selectedText);
+    if (!parsed.deadheadMiles) document.getElementById("deadheadMiles").value = "";
     const filled = Object.entries(parsed).filter(([, value]) => value !== "");
     filled.forEach(([id, value]) => { document.getElementById(id).value = value; });
     status.textContent = filled.length
@@ -378,6 +394,12 @@ document.getElementById("save-load").addEventListener("click", async () => {
     return;
   }
   const load = normalizeLoadLifecycle({ ...getLoadEntry(), id: crypto.randomUUID(), savedAt: new Date().toISOString() });
+  const trust = assessEvaluationTrust(load);
+  if (!trust.canRank) {
+    document.getElementById("save-status").textContent = "Add deadhead or confirm 0 miles before saving this load";
+    await trackEvent("missing_deadhead_prompted", { surface: "extension" });
+    return;
+  }
   const timing = validateLoadTiming(load);
   if (timing.errors.length > 0) {
     document.getElementById("save-status").textContent = timing.errors[0];

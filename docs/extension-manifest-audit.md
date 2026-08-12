@@ -2,7 +2,7 @@
 
 Audited: August 12, 2026
 
-Version 0.5.0 retains the same narrow permissions. Operating Modes and parser improvements require no new permissions. The notifications permission and minimal module service worker remain solely for explicit, driver-enabled alerts about qualifying loads already saved in LoadScore. No host permissions are requested, and there is no continuous load-board monitoring.
+Version 0.5.1 retains the same narrow permissions. Operating Modes, parser improvements, onboarding links, and provisional-evaluation safeguards require no new permissions. The notifications permission and minimal module service worker remain solely for explicit, driver-enabled alerts about qualifying loads already saved in LoadScore. No host permissions are requested, and there is no continuous load-board monitoring.
 
 - Manifest version: 3.
 - Build 1 version: 0.3.0.

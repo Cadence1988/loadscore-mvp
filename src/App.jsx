@@ -8,6 +8,7 @@ import { calculateLoadScore } from "./logic/calculateLoadScore";
 import AutocompleteInput from "./components/AutocompleteInput";
 import OperatingModes from "./components/OperatingModes";
 import BulkImport from "./components/BulkImport";
+import FirstRunOnboarding from "./components/FirstRunOnboarding";
 import ComparisonBoard from "./components/ComparisonBoard";
 import DriverProfiles from "./components/DriverProfiles";
 import FeedbackForm from "./components/FeedbackForm";
@@ -16,6 +17,7 @@ import RecommendationFeedback from "./components/RecommendationFeedback";
 import ShareResult from "./components/ShareResult";
 import AnalyticsPreference from "./components/AnalyticsPreference";
 import { activeModeEvaluation, migrateOperatingModes, profileForMode } from "./logic/operatingModes";
+import { assessEvaluationTrust } from "./logic/evaluationTrust";
 import {
   EQUIPMENT_TYPES,
   LOAD_STATUS_LABELS,
@@ -38,6 +40,7 @@ const defaultForm = {
   loadRate: 1800,
   loadedMiles: 780,
   deadheadMiles: 35,
+  deadheadConfirmed: true,
   mpg: 6.5,
   fuelPrice: 4.0,
   fixedCostPerMile: 0.65,
@@ -84,6 +87,7 @@ export default function App() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [showPeriodicFeedback, setShowPeriodicFeedback] = useState(false);
   const lastTrackedCalculation = useRef("");
+  const firstSuccessTracked = useRef(false);
   const [modeConfiguration, setModeConfiguration] = useState(() => migrateOperatingModes(
     { ...defaultTargets, ...loadStored("loadscore-targets", {}) },
     loadStored("loadscore-operating-modes", {}),
@@ -145,6 +149,7 @@ export default function App() {
   }, [form, reloadScore]);
 
   const lifecycleValidation = useMemo(() => validateLoadTiming(form), [form]);
+  const evaluationTrust = useMemo(() => assessEvaluationTrust(form), [form]);
 
   const currentAlertMatch = useMemo(
     () =>
@@ -189,7 +194,7 @@ export default function App() {
     const timer = window.setTimeout(() => {
       if (signature === lastTrackedCalculation.current) return;
       lastTrackedCalculation.current = signature;
-      if (isComplete) {
+      if (isComplete && evaluationTrust.status === "complete") {
         trackEvent("load_calculated", {
           surface: "web",
           score_band: scoreBand(result.score),
@@ -198,13 +203,20 @@ export default function App() {
           deadhead_entered: Number(form.deadheadMiles) > 0,
           alert_status: currentAlertMatch.status,
         });
+        if (!firstSuccessTracked.current) {
+          firstSuccessTracked.current = true;
+          trackEvent("first_successful_calculation", { surface: "web" });
+        }
+      } else if (evaluationTrust.status === "provisional") {
+        trackEvent("provisional_evaluation_shown", { surface: "web" });
+        trackEvent("missing_deadhead_prompted", { surface: "web" });
       }
       trackEvent(`alert_${currentAlertMatch.status}`, {
         surface: "web",
         score_band: scoreBand(result.score),
         alert_status: currentAlertMatch.status,
       });
-      if (isComplete) {
+      if (isComplete && evaluationTrust.status === "complete") {
         const calculationCount = incrementCalculationCount();
         if (shouldShowPeriodicFeedback(calculationCount)) {
           markPeriodicFeedbackShown(calculationCount);
@@ -220,14 +232,21 @@ export default function App() {
     hasInteracted,
     reloadScoreSourceKey,
     result.score,
+    evaluationTrust.status,
   ]);
 
   function updateField(field, value) {
     setHasInteracted(true);
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value, ...(field === "deadheadMiles" ? { deadheadConfirmed: value !== "" } : {}) }));
     if (field === "equipment" && value) {
       trackEvent("equipment_selected", { surface: "web", equipment: value });
     }
+  }
+
+  function useSampleLoad() {
+    setForm({ ...defaultForm, origin: "Dallas, TX", destination: "Atlanta, GA", loadRate: 2500, loadedMiles: 810, deadheadMiles: 35, deadheadConfirmed: true, equipment: "Dry Van", source: "synthetic_sample" });
+    setHasInteracted(true);
+    trackEvent("sample_load_used", { surface: "web" });
   }
 
   function updateTarget(field, value) {
@@ -247,7 +266,7 @@ export default function App() {
   }
 
   function saveCurrentLoad() {
-    if (comparisonLoads.length >= 7 || lifecycleValidation.errors.length > 0) return;
+    if (comparisonLoads.length >= 7 || lifecycleValidation.errors.length > 0 || !evaluationTrust.canRank) return;
     setHasInteracted(true);
     const nextLoad = normalizeLoadLifecycle({
       ...form,
@@ -296,9 +315,10 @@ export default function App() {
 
   return (
     <main className="page">
+      <FirstRunOnboarding onUseSample={useSampleLoad} />
       <section className="hero">
         <div>
-          <p className="eyebrow">LoadScore MVP</p>
+          <p className="eyebrow">LoadScore Beta</p>
           <h1>Know if a load is worth it in seconds.</h1>
           <p className="subhead">
             Calculate real profit, factor in deadhead, and check reload market
@@ -310,6 +330,7 @@ export default function App() {
       <section className="app-grid">
         <form className="card form-card" onSubmit={(event) => event.preventDefault()}>
           <h2>Load Details</h2>
+          <p className="required-key"><strong>Required for a complete evaluation:</strong> origin, destination, offered rate, loaded miles, and known deadhead. Timing, equipment, and references are optional context.</p>
 
           <label>
             Origin
@@ -357,6 +378,7 @@ export default function App() {
                 value={form.deadheadMiles}
                 onChange={(e) => updateField("deadheadMiles", e.target.value)}
               />
+              {form.deadheadMiles === "" && <button className="confirm-zero" type="button" onClick={() => { updateField("deadheadMiles", 0); trackEvent("deadhead_confirmed_zero", { surface: "web" }); }}>Confirm 0 miles</button>}
             </label>
 
             <label>
@@ -447,17 +469,20 @@ export default function App() {
             className="compare-save-button"
             type="button"
             onClick={saveCurrentLoad}
-            disabled={comparisonLoads.length >= 7 || lifecycleValidation.errors.length > 0}
+            disabled={comparisonLoads.length >= 7 || lifecycleValidation.errors.length > 0 || !evaluationTrust.canRank}
           >
             {comparisonLoads.length >= 7
               ? "Comparison list is full"
               : lifecycleValidation.errors.length > 0
                 ? "Fix timing errors before saving"
+              : !evaluationTrust.canRank
+                ? "Add or confirm deadhead before saving"
               : `Save to Compare (${comparisonLoads.length}/7)`}
           </button>
         </form>
 
         <section className="card result-card">
+          <div className={`trust-indicator ${evaluationTrust.status}`}><strong>{evaluationTrust.label}</strong><span>{evaluationTrust.message}</span></div>
           <div className="score-row">
             <div>
               <p className="eyebrow">LoadScore</p>
@@ -559,6 +584,7 @@ export default function App() {
             targets={targets}
             reloadScoreSource={reloadScoreSourceKey}
             modeLabel={currentAlertMatch.label}
+            evaluationTrust={evaluationTrust}
           />
 
           <RecommendationFeedback

@@ -1275,3 +1275,20 @@ textarea {
 .bulk-cards article { padding: 15px; border: 1px solid #d9e1ea; border-radius: 12px; }
 .bulk-cards article > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
 .bulk-cards span, .bulk-cards small { display: block; color: #607086; font-size: 12px; }
+.required-key { padding: 10px; border-radius: 9px; background: #eff6ff; color: #334155; font-size: 12px; line-height: 1.45; }
+.confirm-zero { margin-top: 5px; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 7px; background: white; color: #334155; font-size: 11px; cursor: pointer; }
+.trust-indicator { margin-bottom: 14px; padding: 11px 13px; border-radius: 11px; }
+.trust-indicator strong, .trust-indicator span { display: block; }
+.trust-indicator span { margin-top: 4px; font-size: 12px; line-height: 1.45; }
+.trust-indicator.complete { background: #ecfdf3; color: #166534; }
+.trust-indicator.provisional { background: #fffbeb; color: #92400e; }
+.trust-indicator.needs_review { background: #fff1f2; color: #9f1239; }
+.provisional-results { margin-top: 18px; padding: 14px; border: 1px solid #f59e0b; border-radius: 12px; background: #fffbeb; }
+.provisional-results article { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid #fde68a; }
+.onboarding { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: rgba(15,23,42,.7); }
+.onboarding-card { width: min(620px, 100%); max-height: 90vh; overflow: auto; padding: 24px; border-radius: 18px; background: white; box-shadow: 0 24px 80px rgba(0,0,0,.3); }
+.onboarding-card li { margin: 10px 0; color: #475569; }
+.onboarding-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.onboarding-actions button { padding: 10px 13px; border: 1px solid #cbd5e1; border-radius: 9px; background: #172033; color: white; cursor: pointer; }
+.onboarding-actions .text-button { background: white; color: #475569; }
+@media (max-width: 600px) { .onboarding { padding: 10px; } .onboarding-card { padding: 18px; } .provisional-results article { flex-direction: column; } }

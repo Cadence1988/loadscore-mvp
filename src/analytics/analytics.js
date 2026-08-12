@@ -63,6 +63,16 @@ export const supportedEvents = new Set([
   "import_rows_duplicate",
   "bulk_scoring_completed",
   "bulk_top7_viewed",
+  "onboarding_started",
+  "onboarding_completed",
+  "onboarding_skipped",
+  "sample_load_used",
+  "provisional_evaluation_shown",
+  "missing_deadhead_prompted",
+  "deadhead_confirmed_zero",
+  "deadhead_added",
+  "import_review_corrected",
+  "first_successful_calculation",
 ]);
 
 const allowedPropertyKeys = new Set([

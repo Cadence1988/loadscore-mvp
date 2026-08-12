@@ -7,12 +7,12 @@ async function copyText(text) {
   await navigator.clipboard.writeText(text);
 }
 
-export default function ShareResult({ form, result, targets, reloadScoreSource, modeLabel }) {
+export default function ShareResult({ form, result, targets, reloadScoreSource, modeLabel, evaluationTrust }) {
   const [status, setStatus] = useState("");
   const minimumRate = calculateMinimumRate({ ...form, ...targets }).minimumRate;
   const shareText = useMemo(
-    () => buildShareText({ form, result, reloadScoreSource, minimumRate, modeLabel }),
-    [form, minimumRate, modeLabel, reloadScoreSource, result],
+    () => buildShareText({ form, result, reloadScoreSource, minimumRate, modeLabel, evaluationTrust }),
+    [evaluationTrust, form, minimumRate, modeLabel, reloadScoreSource, result],
   );
 
   async function copyResult() {

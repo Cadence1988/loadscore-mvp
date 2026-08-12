@@ -64,6 +64,7 @@ export function normalizeLoad(raw = {}, source = "manual") {
   const normalized = {
     origin: String(raw.origin || "").trim(), destination: String(raw.destination || "").trim(),
     loadRate: cleanNumber(raw.loadRate), loadedMiles: cleanNumber(raw.loadedMiles), deadheadMiles: cleanNumber(raw.deadheadMiles),
+    deadheadConfirmed: raw.deadheadConfirmed === true || cleanNumber(raw.deadheadMiles) !== null,
     pickupDate: String(raw.pickupDate || "").trim(), pickupTime: String(raw.pickupTime || "").trim(),
     deliveryDate: String(raw.deliveryDate || "").trim(), deliveryTime: String(raw.deliveryTime || "").trim(),
     equipment: String(raw.equipment || "").trim(), weight: cleanNumber(raw.weight), stops: cleanNumber(raw.stops),
@@ -80,7 +81,7 @@ export function normalizeLoad(raw = {}, source = "manual") {
   const timing = validateLoadTiming(normalized);
   errors.push(...timing.errors);
   const warnings = [...timing.warnings];
-  if (normalized.deadheadMiles === null) warnings.push("Deadhead is unknown; it is not confirmed as zero.");
+  if (!normalized.deadheadConfirmed) warnings.push("Deadhead is unknown; add it or deliberately confirm 0 miles before final scoring.");
   return { load: normalized, confidence, errors, warnings, status: errors.length ? "missing_required" : warnings.length ? "review" : "ready" };
 }
 

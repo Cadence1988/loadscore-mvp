@@ -12,6 +12,7 @@ $requiredFiles = @(
   "evaluateAlertMatch.js", "analytics.js", "analyticsConfig.js", "shareResult.js",
   "loadLifecycle.js", "notificationEngine.js", "background.js",
   "operatingModes.js",
+  "evaluationTrust.js",
   "icons\icon-16.png", "icons\icon-32.png", "icons\icon-48.png", "icons\icon-128.png"
 )
 

@@ -5,6 +5,7 @@ import { calculateMinimumRate } from "../logic/calculateMinimumRate";
 import { getCuratedMarketScore, DEFAULT_RELOAD_SCORE } from "../data/marketScores";
 import { activeModeEvaluation, MODE_DEFINITIONS, MODE_ORDER, profileForMode } from "../logic/operatingModes";
 import { flagDuplicates, IMPORT_ROW_LIMIT, normalizeCsvRows, normalizeLoad, parseCsvDocument, parsePastedLoads, STANDARD_FIELDS, suggestColumnMapping } from "../logic/loadNormalizer";
+import { assessEvaluationTrust } from "../logic/evaluationTrust";
 
 const previewFields = ["origin", "destination", "loadRate", "loadedMiles", "deadheadMiles", "pickupDate", "pickupTime", "deliveryDate", "deliveryTime", "equipment", "weight", "stops", "brokerReference", "loadIdentifier", "expirationDate", "expirationTime"];
 const fieldLabels = { loadRate: "Rate", loadedMiles: "Loaded miles", deadheadMiles: "Deadhead", pickupDate: "Pickup date", pickupTime: "Pickup time", deliveryDate: "Delivery date", deliveryTime: "Delivery time", brokerReference: "Broker/reference", loadIdentifier: "Load ID", expirationDate: "Expires date", expirationTime: "Expires time" };
@@ -64,6 +65,8 @@ export default function BulkImport({ truckDefaults, modeConfiguration, onSaveTop
       ? { ...normalizeLoad({ ...row.load, [field]: value }, row.load.source), rowNumber: row.rowNumber }
       : row);
     setRows(flagDuplicates(next)); setScored([]);
+    trackEvent("import_review_corrected", { surface: "web", import_source: rows[index]?.load.source || tab });
+    if (field === "deadheadMiles" && value !== "") trackEvent(Number(value) === 0 ? "deadhead_confirmed_zero" : "deadhead_added", { surface: "web", import_source: rows[index]?.load.source || tab });
   }
 
   function scoreRows() {
@@ -71,20 +74,23 @@ export default function BulkImport({ truckDefaults, modeConfiguration, onSaveTop
     const evaluated = valid.map((row) => {
       const curated = getCuratedMarketScore(row.load.destination);
       const reloadScore = curated ?? DEFAULT_RELOAD_SCORE;
+      const trust = assessEvaluationTrust(row.load);
       const calculationInput = { ...truckDefaults, ...row.load, deadheadMiles: row.load.deadheadMiles ?? 0, reloadScore };
       const result = calculateLoadScore(calculationInput);
       const load = { ...row.load, deadheadMiles: row.load.deadheadMiles, reloadScoreSource: curated === null ? "default" : "curated", result };
-      const modeMatch = activeModeEvaluation(load, modeConfiguration);
+      const modeMatch = trust.canMatch ? activeModeEvaluation(load, modeConfiguration) : { label: "No Mode Match — Provisional", matches: false, evaluations: Object.fromEntries(MODE_ORDER.map((mode) => [mode, { matches: false }])) };
       const minimumRate = calculateMinimumRate({ ...calculationInput, ...profileForMode(modeConfiguration, modeConfiguration.activeMode) }).minimumRate;
-      return { ...load, id: crypto.randomUUID(), result, modeMatch, minimumRate, importWarnings: row.warnings };
-    }).sort((a, b) => b.result.score - a.result.score || b.result.estimatedProfit - a.result.estimatedProfit || b.result.allInRpm - a.result.allInRpm);
+      return { ...load, id: crypto.randomUUID(), result, modeMatch, minimumRate, trust, importWarnings: row.warnings };
+    }).sort((a, b) => Number(b.trust.canRank) - Number(a.trust.canRank) || b.result.score - a.result.score || b.result.estimatedProfit - a.result.estimatedProfit || b.result.allInRpm - a.result.allInRpm);
     setScored(evaluated); setFilter("all");
     trackEvent(tab === "csv" ? "csv_import_completed" : "paste_import_completed", { surface: "web", import_count: evaluated.length, import_source: tab === "csv" ? "csv" : "pasted_text" });
     trackEvent("bulk_scoring_completed", { surface: "web", import_count: evaluated.length, mode: modeConfiguration.activeMode });
     if (evaluated.length) trackEvent("bulk_top7_viewed", { surface: "web", import_count: Math.min(7, evaluated.length), mode: modeConfiguration.activeMode });
   }
 
-  const filtered = scored.filter((load) => filter === "all" || load.modeMatch.evaluations[filter]?.matches);
+  const completeScored = scored.filter((load) => load.trust.canRank);
+  const provisionalScored = scored.filter((load) => !load.trust.canRank);
+  const filtered = completeScored.filter((load) => filter === "all" || load.modeMatch.evaluations[filter]?.matches);
   const topSeven = filtered.slice(0, 7);
 
   return (
@@ -99,7 +105,7 @@ export default function BulkImport({ truckDefaults, modeConfiguration, onSaveTop
 
       {rows.length > 0 && <><div className="import-counts"><span>{rows.length} detected</span><span>{counts.ready} ready</span><span>{counts.review} review</span><span>{counts.missing} missing required</span><span>{counts.duplicate} duplicate</span></div><div className="import-preview">{rows.map((row, index) => <details className={`import-row ${row.status}`} key={`${row.rowNumber}-${index}`}><summary>Row {row.rowNumber}: {row.load.origin || "Missing origin"} → {row.load.destination || "Missing destination"} <b>{row.status.replaceAll("_", " ")}</b></summary><div className="preview-grid">{previewFields.map((field) => <label key={field}>{fieldLabels[field] || field}<input value={row.load[field] ?? ""} onChange={(event) => updateRow(index, field, event.target.value)} /><small className={row.confidence[field]?.status}>{row.confidence[field]?.label}</small></label>)}</div>{row.errors.map((error) => <p className="import-error" key={error}>{error}</p>)}{row.warnings.map((warning) => <p className="import-warning" key={warning}>{warning}</p>)}</details>)}</div><button className="bulk-score-button" type="button" onClick={scoreRows} disabled={rows.every((row) => row.duplicate || row.errors.length)}>Score reviewed opportunities</button></>}
 
-      {scored.length > 0 && <section className="bulk-results"><div className="section-heading-row"><div><p className="eyebrow">Ranked with unchanged LoadScore logic</p><h3>Top 7 Opportunities</h3></div><button type="button" onClick={() => onSaveTop(topSeven)}>Save visible Top 7 to Compare</button></div><div className="mode-filters"><button className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")} type="button">All ({scored.length})</button>{MODE_ORDER.map((mode) => <button className={filter === mode ? "active" : ""} onClick={() => setFilter(mode)} type="button" key={mode}>{MODE_DEFINITIONS[mode].name} ({scored.filter((load) => load.modeMatch.evaluations[mode].matches).length})</button>)}</div>{topSeven.length === 0 ? <p className="comparison-empty">No {MODE_DEFINITIONS[filter]?.name || ""} matches found. Choose another filter—the mode is never changed automatically.</p> : <div className="bulk-cards">{topSeven.map((load, index) => <article key={load.id}><b>#{index + 1} · {load.modeMatch.label}</b><h4>{load.origin} → {load.destination}</h4><div><span>Score <strong>{load.result.score}</strong></span><span>All-in RPM <strong>${load.result.allInRpm.toFixed(2)}</strong></span><span>Profit <strong>${Math.round(load.result.estimatedProfit).toLocaleString()}</strong></span><span>Deadhead <strong>{load.deadheadMiles === null ? "Unknown" : `${load.deadheadMiles} mi`}</strong></span><span>Reload <strong>{load.result.reloadScore}/100</strong></span><span>Minimum rate <strong>${load.minimumRate.toLocaleString()}</strong></span></div>{load.importWarnings.map((warning) => <small key={warning}>{warning}</small>)}</article>)}</div>}</section>}
+      {scored.length > 0 && <section className="bulk-results"><div className="section-heading-row"><div><p className="eyebrow">Only complete evaluations are ranked</p><h3>Top 7 Opportunities</h3></div><button type="button" onClick={() => onSaveTop(topSeven)} disabled={!topSeven.length}>Save visible Top 7 to Compare</button></div><div className="mode-filters"><button className={filter === "all" ? "active" : ""} onClick={() => setFilter("all")} type="button">All complete ({completeScored.length})</button>{MODE_ORDER.map((mode) => <button className={filter === mode ? "active" : ""} onClick={() => setFilter(mode)} type="button" key={mode}>{MODE_DEFINITIONS[mode].name} ({completeScored.filter((load) => load.modeMatch.evaluations[mode].matches).length})</button>)}</div>{topSeven.length === 0 ? <p className="comparison-empty">No complete {MODE_DEFINITIONS[filter]?.name || ""} matches found. Correct missing inputs or choose another filter—the mode is never changed automatically.</p> : <div className="bulk-cards">{topSeven.map((load, index) => <article key={load.id}><b>#{index + 1} · {load.modeMatch.label}</b><h4>{load.origin} → {load.destination}</h4><div><span>Score <strong>{load.result.score}</strong></span><span>All-in RPM <strong>${load.result.allInRpm.toFixed(2)}</strong></span><span>Profit <strong>${Math.round(load.result.estimatedProfit).toLocaleString()}</strong></span><span>Deadhead <strong>{load.deadheadMiles} mi</strong></span><span>Reload <strong>{load.result.reloadScore}/100</strong></span><span>Minimum rate <strong>${load.minimumRate.toLocaleString()}</strong></span></div>{load.importWarnings.map((warning) => <small key={warning}>{warning}</small>)}</article>)}</div>}{provisionalScored.length > 0 && <div className="provisional-results"><h4>Provisional — Deadhead Missing ({provisionalScored.length})</h4><p>These estimates are shown only for correction and are excluded from mode matches and Top 7 ranking.</p>{provisionalScored.map((load) => <article key={load.id}><strong>{load.origin} → {load.destination}</strong><span>{load.trust.message}</span></article>)}</div>}</section>}
     </section>
   );
 }

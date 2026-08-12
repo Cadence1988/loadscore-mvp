@@ -1,6 +1,6 @@
 # LoadScore Chrome Extension MVP
 
-Current beta package: version 0.5.0. It includes Operating Modes, expanded user-triggered highlighted-text parsing, optional lifecycle fields, and opt-in local match notifications. Full multi-load paste and CSV review are intentionally handled by the web app to keep the popup practical.
+Current beta package: version 0.5.1. It includes Operating Modes, expanded user-triggered highlighted-text parsing, explicit unknown-deadhead protection, optional lifecycle fields, and opt-in local match notifications. Full multi-load paste and CSV review are intentionally handled by the web app to keep the popup practical.
 
 ## Install locally
 

@@ -17,7 +17,7 @@ export function buildExtensionShareText({ form, result, rate, modeLabel }) {
     `Offer: ${money(form.loadRate)}`,
     `All-in RPM: $${Number(result.allInRpm || 0).toFixed(2)}`,
     `Estimated Profit: ${money(result.estimatedProfit)}`,
-    `Deadhead: ${Number(form.deadheadMiles || 0).toLocaleString()} mi`,
+    `Deadhead: ${form.deadheadMiles === null || form.deadheadMiles === "" ? "Unknown" : `${Number(form.deadheadMiles).toLocaleString()} mi`}`,
     `Reload: ${result.reloadScore}/100 — User-entered estimate`,
     "",
     "Why:",
