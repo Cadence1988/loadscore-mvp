@@ -13,6 +13,8 @@ import {
   trackEvent,
 } from "./analytics.js";
 import { buildExtensionShareText } from "./shareResult.js";
+import { isLoadExpired, normalizeLoadLifecycle, validateLoadTiming } from "./loadLifecycle.js";
+import { countActiveMatches, DEFAULT_NOTIFICATION_SETTINGS } from "./notificationEngine.js";
 
 const fieldIds = [
   "origin", "destination", "loadRate", "loadedMiles", "deadheadMiles",
@@ -20,6 +22,9 @@ const fieldIds = [
   "targetAllInRpm", "targetProfit",
   "minimumLoadScore", "maximumDeadhead", "minimumReloadScore",
   "preferredDestinations", "avoidedDestinations",
+  "pickupDate", "pickupTime", "deliveryDate", "deliveryTime",
+  "expectedEmptyDate", "expectedEmptyTime", "equipment", "brokerReference",
+  "source", "loadIdentifier", "expirationDate", "expirationTime", "status",
 ];
 const numericFields = new Set([
   "loadRate", "loadedMiles", "deadheadMiles", "mpg", "fuelPrice",
@@ -28,6 +33,9 @@ const numericFields = new Set([
 ]);
 const loadFieldIds = [
   "origin", "destination", "loadRate", "loadedMiles", "deadheadMiles", "reloadScore",
+  "pickupDate", "pickupTime", "deliveryDate", "deliveryTime",
+  "expectedEmptyDate", "expectedEmptyTime", "equipment", "brokerReference",
+  "source", "loadIdentifier", "expirationDate", "expirationTime", "status",
 ];
 const alertLabels = {
   match: "Matches alert",
@@ -71,6 +79,10 @@ function render() {
   alertStatus.textContent = alertLabels[alertMatch.status];
   alertStatus.className = alertMatch.status;
   document.getElementById("local-alert-title").textContent = alertMatch.explanation;
+  const timing = validateLoadTiming(form);
+  document.getElementById("timing-status").textContent = timing.errors[0]
+    || timing.warnings[0]
+    || (timing.expired ? "This load has expired and is excluded from active matches." : "");
   document.getElementById("negotiator-title").textContent = `Minimum rate: $${rate.minimumRate.toLocaleString()}`;
   const askMore = document.getElementById("ask-more");
   askMore.textContent = rate.meetsTarget
@@ -165,7 +177,8 @@ function renderSavedLoads() {
 
   const alertProfile = getForm();
   container.innerHTML = savedLoads
-    .map((load) => {
+    .map((originalLoad) => {
+      const load = normalizeLoadLifecycle(originalLoad);
       const result = calculateLoadScore({
         ...load,
         mpg: alertProfile.mpg,
@@ -186,6 +199,11 @@ function renderSavedLoads() {
             <span class="saved-alert-status ${alertMatch.status}">${alertLabels[alertMatch.status]}</span>
             <span class="saved-alert-explanation">${escapeHtml(alertMatch.explanation)}</span>
           </div>
+          <span class="lifecycle-meta">${escapeHtml(load.equipment || "Equipment not specified")} · ${escapeHtml(load.status.replaceAll("_", " "))}</span>
+          ${isLoadExpired(load) ? '<span class="expired-label">Expired · inactive</span>' : ""}
+          <label>Status<select data-action="status" data-id="${load.id}">
+            ${["available", "viewed", "interested", "requested", "pending_confirmation", "booked", "covered", "expired", "rejected"].map((status) => `<option value="${status}" ${load.status === status ? "selected" : ""}>${status.replaceAll("_", " ")}</option>`).join("")}
+          </select></label>
           <div class="saved-load-actions">
             <button type="button" data-action="load" data-id="${load.id}">Load</button>
             <button class="remove-saved" type="button" data-action="remove" data-id="${load.id}">Remove</button>
@@ -198,15 +216,15 @@ function renderSavedLoads() {
 
 async function updateMatchedBadge() {
   const alertProfile = getForm();
-  const matchedCount = savedLoads.filter((load) => {
+  const matchedCount = countActiveMatches(savedLoads, (load) => {
     const result = calculateLoadScore({
       ...load,
       mpg: alertProfile.mpg,
       fuelPrice: alertProfile.fuelPrice,
       fixedCostPerMile: alertProfile.fixedCostPerMile,
     });
-    return evaluateAlertMatch({ ...load, result }, alertProfile).matches;
-  }).length;
+    return evaluateAlertMatch({ ...load, result }, alertProfile);
+  });
   await chrome.action.setBadgeBackgroundColor({ color: "#15803d" });
   await chrome.action.setBadgeText({ text: matchedCount > 0 ? String(matchedCount) : "" });
 }
@@ -221,6 +239,23 @@ document.getElementById("load-form").addEventListener("input", async () => {
 document.getElementById("analytics-consent").addEventListener("change", async (event) => {
   await setCentralAnalyticsConsent(event.target.checked);
 });
+
+async function saveNotificationSettings() {
+  const settings = {
+    enabled: document.getElementById("notifications-enabled").checked,
+    quietStart: document.getElementById("quiet-start").value,
+    quietEnd: document.getElementById("quiet-end").value,
+  };
+  await chrome.storage.local.set({ loadScoreNotificationSettings: settings });
+  document.getElementById("notification-status").textContent = settings.enabled
+    ? "Notifications enabled for new qualifying saved loads."
+    : "Notifications are off.";
+  await trackEvent(settings.enabled ? "notifications_enabled" : "notifications_disabled", { surface: "extension" });
+}
+
+document.getElementById("notifications-enabled").addEventListener("change", saveNotificationSettings);
+document.getElementById("quiet-start").addEventListener("change", saveNotificationSettings);
+document.getElementById("quiet-end").addEventListener("change", saveNotificationSettings);
 
 document.getElementById("parse-selection").addEventListener("click", async () => {
   const status = document.getElementById("parse-status");
@@ -321,8 +356,14 @@ document.getElementById("save-load").addEventListener("click", async () => {
     document.getElementById("save-status").textContent = "Remove a saved load before adding another";
     return;
   }
+  const load = normalizeLoadLifecycle({ ...getLoadEntry(), id: crypto.randomUUID(), savedAt: new Date().toISOString() });
+  const timing = validateLoadTiming(load);
+  if (timing.errors.length > 0) {
+    document.getElementById("save-status").textContent = timing.errors[0];
+    return;
+  }
   savedLoads = [
-    { ...getLoadEntry(), id: crypto.randomUUID(), savedAt: new Date().toISOString() },
+    load,
     ...savedLoads,
   ];
   await chrome.storage.local.set({ loadScoreSavedLoads: savedLoads });
@@ -331,8 +372,36 @@ document.getElementById("save-load").addEventListener("click", async () => {
     surface: "extension",
     saved_load_count: savedLoads.length,
   });
+  if ([load.pickupDate, load.pickupTime, load.deliveryDate, load.deliveryTime, load.expirationDate, load.expirationTime].some(Boolean)) {
+    await trackEvent("load_timing_added", { surface: "extension", status: load.status });
+  }
+  if (load.equipment) await trackEvent("equipment_selected", { surface: "extension", equipment: load.equipment });
+  if (load.status === "expired") await trackEvent("load_expired", { surface: "extension", status: "expired" });
+  const form = getForm();
+  const result = calculateLoadScore(form);
+  const alertMatch = evaluateAlertMatch({ ...load, result }, form);
+  const notificationDecision = await chrome.runtime.sendMessage({ type: "evaluateNotification", load, result, alertMatch });
+  if (notificationDecision?.eligible) document.getElementById("save-status").textContent = "Load saved and match notification created";
+  renderSavedLoads();
+  await renderNotificationHistory();
+});
+
+document.getElementById("saved-loads").addEventListener("change", async (event) => {
+  const select = event.target.closest('select[data-action="status"]');
+  if (!select) return;
+  savedLoads = savedLoads.map((load) => load.id === select.dataset.id ? { ...load, status: select.value } : load);
+  await chrome.storage.local.set({ loadScoreSavedLoads: savedLoads });
+  await trackEvent("load_status_changed", { surface: "extension", status: select.value });
   renderSavedLoads();
 });
+
+async function renderNotificationHistory() {
+  const stored = await chrome.storage.local.get("loadScoreNotificationHistory");
+  const history = Array.isArray(stored.loadScoreNotificationHistory) ? stored.loadScoreNotificationHistory.slice(0, 10) : [];
+  document.getElementById("notification-history").innerHTML = history.length
+    ? history.map((item) => `<div class="notification-item"><strong>${escapeHtml(item.state || "created")}</strong><span>${escapeHtml(new Date(item.createdAt).toLocaleString())}</span></div>`).join("")
+    : '<p class="saved-empty">No notifications yet.</p>';
+}
 
 document.getElementById("saved-loads").addEventListener("click", async (event) => {
   const button = event.target.closest("button[data-action]");
@@ -357,11 +426,17 @@ const stored = await chrome.storage.local.get([
   "loadScoreDefaults",
   "loadScoreDraft",
   "loadScoreSavedLoads",
+  "loadScoreNotificationSettings",
 ]);
 savedLoads = Array.isArray(stored.loadScoreSavedLoads) ? stored.loadScoreSavedLoads : [];
+const notificationSettings = { ...DEFAULT_NOTIFICATION_SETTINGS, ...(stored.loadScoreNotificationSettings || {}) };
+document.getElementById("notifications-enabled").checked = notificationSettings.enabled;
+document.getElementById("quiet-start").value = notificationSettings.quietStart;
+document.getElementById("quiet-end").value = notificationSettings.quietEnd;
 document.getElementById("analytics-consent").checked = await getCentralAnalyticsConsent();
 setForm({ ...(stored.loadScoreDefaults || {}), ...(stored.loadScoreDraft || {}) });
 renderSavedLoads();
+await renderNotificationHistory();
 await initializeExtensionAnalytics();
 if (savedLoads.length > 0) {
   await trackEvent("comparison_viewed", {

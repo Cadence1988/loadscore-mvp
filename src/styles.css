@@ -1238,3 +1238,10 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+.lifecycle-details { margin: 16px 0; padding: 14px; border: 1px solid #d8e0ea; border-radius: 12px; background: #f8fafc; }
+.lifecycle-details summary { cursor: pointer; font-weight: 800; color: #24364d; }
+.lifecycle-details summary span { margin-left: 6px; color: #6b7b8e; font-size: 12px; font-weight: 600; }
+.lifecycle-details select, .load-status-select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: white; color: #172033; }
+.lifecycle-error, .lifecycle-expired { color: #b42318; font-weight: 700; }
+.lifecycle-warning { color: #9a6700; }
+.load-status-select { min-width: 145px; padding: 7px; font-size: 12px; }

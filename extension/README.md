@@ -1,5 +1,7 @@
 # LoadScore Chrome Extension MVP
 
+Current beta package: version 0.4.0. It includes optional lifecycle fields and opt-in local match notifications for loads saved by the driver. Reload the unpacked extension after updating because version 0.4.0 adds the narrow Chrome `notifications` permission.
+
 ## Install locally
 
 1. Open Chrome and visit `chrome://extensions`.

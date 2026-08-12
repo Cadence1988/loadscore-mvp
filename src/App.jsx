@@ -16,6 +16,13 @@ import RecommendationFeedback from "./components/RecommendationFeedback";
 import ShareResult from "./components/ShareResult";
 import AnalyticsPreference from "./components/AnalyticsPreference";
 import {
+  EQUIPMENT_TYPES,
+  LOAD_STATUS_LABELS,
+  LOAD_STATUSES,
+  normalizeLoadLifecycle,
+  validateLoadTiming,
+} from "./logic/loadLifecycle";
+import {
   incrementCalculationCount,
   initializeAnalytics,
   markPeriodicFeedbackShown,
@@ -33,7 +40,11 @@ const defaultForm = {
   mpg: 6.5,
   fuelPrice: 4.0,
   fixedCostPerMile: 0.65,
-  manualReloadScore: ""
+  manualReloadScore: "",
+  pickupDate: "", pickupTime: "", deliveryDate: "", deliveryTime: "",
+  expectedEmptyDate: "", expectedEmptyTime: "", equipment: "",
+  brokerReference: "", source: "", loadIdentifier: "",
+  expirationDate: "", expirationTime: "", status: "available",
 };
 
 const defaultTargets = {
@@ -127,6 +138,8 @@ export default function App() {
     });
   }, [form, reloadScore]);
 
+  const lifecycleValidation = useMemo(() => validateLoadTiming(form), [form]);
+
   const currentAlertMatch = useMemo(
     () =>
       evaluateAlertMatch(
@@ -206,6 +219,9 @@ export default function App() {
   function updateField(field, value) {
     setHasInteracted(true);
     setForm((prev) => ({ ...prev, [field]: value }));
+    if (field === "equipment" && value) {
+      trackEvent("equipment_selected", { surface: "web", equipment: value });
+    }
   }
 
   function updateTarget(field, value) {
@@ -213,14 +229,14 @@ export default function App() {
   }
 
   function saveCurrentLoad() {
-    if (comparisonLoads.length >= 7) return;
+    if (comparisonLoads.length >= 7 || lifecycleValidation.errors.length > 0) return;
     setHasInteracted(true);
-    const nextLoad = {
+    const nextLoad = normalizeLoadLifecycle({
       ...form,
       id: crypto.randomUUID(),
       result,
       reloadScoreSource: reloadScoreSourceKey,
-    };
+    });
     setComparisonLoads((previous) => [...previous, nextLoad]);
     trackEvent("load_saved", {
       surface: "web",
@@ -228,6 +244,15 @@ export default function App() {
       saved_load_count: comparisonLoads.length + 1,
       alert_status: currentAlertMatch.status,
     });
+    if ([form.pickupDate, form.pickupTime, form.deliveryDate, form.deliveryTime, form.expirationDate, form.expirationTime].some(Boolean)) {
+      trackEvent("load_timing_added", { surface: "web", status: nextLoad.status });
+    }
+    if (nextLoad.status === "expired") trackEvent("load_expired", { surface: "web", status: "expired" });
+  }
+
+  function updateComparisonStatus(id, status) {
+    setComparisonLoads((previous) => previous.map((load) => load.id === id ? { ...load, status } : load));
+    trackEvent("load_status_changed", { surface: "web", status });
   }
 
   function removeComparisonLoad(id) {
@@ -367,14 +392,41 @@ export default function App() {
             data. Cities without an estimate default to {DEFAULT_RELOAD_SCORE}.
           </p>
 
+          <details className="lifecycle-details">
+            <summary>Timing, equipment, and load status <span>Optional</span></summary>
+            <p className="helper">Add only what you know. LoadScore will not guess missing dates or times.</p>
+            <div className="two-col">
+              <label>Pickup date<input type="date" value={form.pickupDate} onChange={(e) => updateField("pickupDate", e.target.value)} /></label>
+              <label>Pickup time<input type="time" value={form.pickupTime} onChange={(e) => updateField("pickupTime", e.target.value)} /></label>
+              <label>Delivery date<input type="date" value={form.deliveryDate} onChange={(e) => updateField("deliveryDate", e.target.value)} /></label>
+              <label>Delivery time<input type="time" value={form.deliveryTime} onChange={(e) => updateField("deliveryTime", e.target.value)} /></label>
+              <label>Expected empty date<input type="date" value={form.expectedEmptyDate} onChange={(e) => updateField("expectedEmptyDate", e.target.value)} /></label>
+              <label>Expected empty time<input type="time" value={form.expectedEmptyTime} onChange={(e) => updateField("expectedEmptyTime", e.target.value)} /></label>
+              <label>Expires date<input type="date" value={form.expirationDate} onChange={(e) => updateField("expirationDate", e.target.value)} /></label>
+              <label>Expires time<input type="time" value={form.expirationTime} onChange={(e) => updateField("expirationTime", e.target.value)} /></label>
+            </div>
+            <div className="two-col">
+              <label>Equipment<select value={form.equipment} onChange={(e) => updateField("equipment", e.target.value)}>{EQUIPMENT_TYPES.map((item) => <option value={item} key={item || "blank"}>{item || "Not specified"}</option>)}</select></label>
+              <label>Status<select value={form.status} onChange={(e) => updateField("status", e.target.value)}>{LOAD_STATUSES.map((status) => <option value={status} key={status}>{LOAD_STATUS_LABELS[status]}</option>)}</select></label>
+              <label>Source<input value={form.source} onChange={(e) => updateField("source", e.target.value)} placeholder="Manual, email, approved integration" /></label>
+              <label>Load ID<input value={form.loadIdentifier} onChange={(e) => updateField("loadIdentifier", e.target.value)} /></label>
+            </div>
+            <label>Broker/reference note<input value={form.brokerReference} onChange={(e) => updateField("brokerReference", e.target.value)} placeholder="Stored locally; excluded from analytics" /></label>
+            {lifecycleValidation.expired && <p className="lifecycle-expired">This load is expired and will not count as an active match.</p>}
+            {lifecycleValidation.errors.map((message) => <p className="lifecycle-error" key={message}>{message}</p>)}
+            {lifecycleValidation.warnings.map((message) => <p className="lifecycle-warning" key={message}>{message}</p>)}
+          </details>
+
           <button
             className="compare-save-button"
             type="button"
             onClick={saveCurrentLoad}
-            disabled={comparisonLoads.length >= 7}
+            disabled={comparisonLoads.length >= 7 || lifecycleValidation.errors.length > 0}
           >
             {comparisonLoads.length >= 7
               ? "Comparison list is full"
+              : lifecycleValidation.errors.length > 0
+                ? "Fix timing errors before saving"
               : `Save to Compare (${comparisonLoads.length}/7)`}
           </button>
         </form>
@@ -497,6 +549,7 @@ export default function App() {
         alertProfile={targets}
         onRemove={removeComparisonLoad}
         onClear={clearComparisonLoads}
+        onStatusChange={updateComparisonStatus}
       />
 
       <DriverProfiles

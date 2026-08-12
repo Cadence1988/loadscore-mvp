@@ -21,11 +21,15 @@ Use the popup to review:
 - a minimum acceptable rate based on your RPM and profit targets;
 - broker negotiation guidance;
 - saved loads and local alert-rule matches;
+- optional pickup, delivery, expected-empty, equipment, expiration, and load-status details;
+- optional Chrome notifications for new qualifying loads you save in LoadScore, with quiet hours and duplicate suppression;
 - a concise LoadScore result you can copy and share.
 
 You can enter a load manually or explicitly highlight visible load-offer text and ask LoadScore to fill recognized fields. Highlighted text is read only after you click the parsing control. Always review parsed values before relying on the score.
 
 LoadScore does not monitor DAT, Truckstop, or other load boards automatically. It does not scrape authenticated sites, book freight, contact brokers, guarantee profit, or provide live market intelligence. Scores and financial outputs are estimates based on the information and costs you provide.
+
+Notifications are off by default and evaluate only loads you manually save or provide to LoadScore. They are not a continuous load-board alert feed.
 
 ## Single-purpose statement
 

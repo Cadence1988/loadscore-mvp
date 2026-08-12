@@ -2,6 +2,8 @@
 
 Audited: August 12, 2026
 
+Version 0.4.0 adds only the Chrome `notifications` permission and a minimal module service worker. This is used solely for explicit, driver-enabled alerts about qualifying loads already saved in LoadScore. No host permissions are requested, and there is no continuous load-board monitoring.
+
 - Manifest version: 3.
 - Build 1 version: 0.3.0.
 - Action opens `popup.html`; icons declared at 16/32/48/128.

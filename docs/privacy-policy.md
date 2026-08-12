@@ -4,6 +4,10 @@ Last updated: August 12, 2026
 
 LoadScore helps drivers evaluate freight opportunities. This policy describes the current web and Chrome extension beta.
 
+## Local notifications
+
+If a user explicitly enables match notifications, LoadScore uses locally saved load details, local alert preferences, quiet hours, duplicate keys, and local notification history to decide whether to show a Chrome notification. Notifications are off by default. This does not enable load-board monitoring or scraping.
+
 ## Information stored locally
 
 LoadScore may store truck-cost settings, alert preferences, drafts, saved loads, profiles, local feedback, notification settings/history, a random anonymous analytics identifier, and a bounded local product-event history in the browser or extension storage. Web and extension storage are currently separate.

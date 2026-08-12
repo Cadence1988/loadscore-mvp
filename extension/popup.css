@@ -380,3 +380,10 @@ footer .primary-save {
 }
 
 .saved-load-actions .remove-saved { background: #fff1f2; color: #be123c; }
+.saved-load select, details select { width: 100%; padding: 7px; border: 1px solid #ced8e4; border-radius: 8px; background: white; font-size: 10px; }
+.lifecycle-meta { margin-top: 7px !important; color: #405166 !important; }
+.expired-label { display: inline-block !important; width: max-content; padding: 3px 6px; border-radius: 999px; background: #fff1f2; color: #be123c !important; font-weight: 900; }
+.notification-history { display: grid; gap: 6px; margin-top: 8px; }
+.notification-item { padding: 8px 10px; border: 1px solid #d8e0ea; border-radius: 9px; background: white; font-size: 10px; }
+.notification-item strong, .notification-item span { display: block; }
+.notification-item span { margin-top: 3px; color: #65758a; }

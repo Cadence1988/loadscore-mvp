@@ -13,12 +13,17 @@ const supportedEvents = new Set([
   "highlight_parser_partial", "highlight_parser_failed", "alert_match",
   "alert_near_match", "alert_no_match", "alert_missing_data",
   "loadscore_result_copied", "loadscore_result_shared",
+  "notifications_enabled", "notifications_disabled", "notification_created",
+  "notification_opened", "notification_dismissed",
+  "notification_suppressed_duplicate", "notification_suppressed_quiet_hours",
+  "load_expired", "load_status_changed", "load_timing_added", "equipment_selected",
 ]);
 
 const allowedKeys = new Set([
   "surface", "usage_type", "repeat_day", "score_band", "reload_market_known",
   "reload_score_source", "deadhead_entered", "alert_status", "saved_load_count",
   "parser_result", "share_method", "minimum_rate_band", "target_met",
+  "status", "equipment", "notification_reason", "suppression_reason",
 ]);
 
 function sanitize(properties = {}) {

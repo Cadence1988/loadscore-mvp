@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { evaluateAlertMatch } from "../logic/evaluateAlertMatch";
 import { trackEvent } from "../analytics/analytics";
+import { isActiveLoad, LOAD_STATUS_LABELS, LOAD_STATUSES, normalizeLoadLifecycle } from "../logic/loadLifecycle";
 
 function money(value) {
   return value.toLocaleString(undefined, {
@@ -17,7 +18,7 @@ const statusLabels = {
   missing_data: "Missing data",
 };
 
-export default function ComparisonBoard({ loads, onRemove, onClear, alertProfile }) {
+export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChange, alertProfile }) {
   const lastViewedCount = useRef(0);
   const rankedLoads = [...loads].sort(
     (a, b) =>
@@ -25,11 +26,11 @@ export default function ComparisonBoard({ loads, onRemove, onClear, alertProfile
       b.result.estimatedProfit - a.result.estimatedProfit ||
       b.result.allInRpm - a.result.allInRpm,
   );
-  const evaluatedLoads = rankedLoads.map((load) => ({
-    ...load,
-    alertMatch: evaluateAlertMatch(load, alertProfile),
-  }));
-  const matchedCount = evaluatedLoads.filter((load) => load.alertMatch.matches).length;
+  const evaluatedLoads = rankedLoads.map((original) => {
+    const load = normalizeLoadLifecycle(original);
+    return { ...load, alertMatch: evaluateAlertMatch(load, alertProfile) };
+  });
+  const matchedCount = evaluatedLoads.filter((load) => load.alertMatch.matches && isActiveLoad(load)).length;
 
   useEffect(() => {
     if (loads.length > 0 && loads.length !== lastViewedCount.current) {
@@ -82,6 +83,7 @@ export default function ComparisonBoard({ loads, onRemove, onClear, alertProfile
                 <th>Est. Profit</th>
                 <th>Reload</th>
                 <th>Alert Match</th>
+                <th>Status</th>
                 <th aria-label="Remove load" />
               </tr>
             </thead>
@@ -111,6 +113,12 @@ export default function ComparisonBoard({ loads, onRemove, onClear, alertProfile
                     {load.alertMatch.warnings.map((warning) => (
                       <small className="alert-warning" key={warning}>{warning}</small>
                     ))}
+                  </td>
+                  <td>
+                    <select className="load-status-select" value={load.status} onChange={(event) => onStatusChange(load.id, event.target.value)}>
+                      {LOAD_STATUSES.map((status) => <option value={status} key={status}>{LOAD_STATUS_LABELS[status]}</option>)}
+                    </select>
+                    {!isActiveLoad(load) && <small>Excluded from active matches</small>}
                   </td>
                   <td>
                     <button

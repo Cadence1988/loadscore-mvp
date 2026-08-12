@@ -34,6 +34,17 @@ export const supportedEvents = new Set([
   "periodic_product_feedback_submitted",
   "loadscore_result_copied",
   "loadscore_result_shared",
+  "notifications_enabled",
+  "notifications_disabled",
+  "notification_created",
+  "notification_opened",
+  "notification_dismissed",
+  "notification_suppressed_duplicate",
+  "notification_suppressed_quiet_hours",
+  "load_expired",
+  "load_status_changed",
+  "load_timing_added",
+  "equipment_selected",
 ]);
 
 const allowedPropertyKeys = new Set([
@@ -54,6 +65,10 @@ const allowedPropertyKeys = new Set([
   "trigger",
   "minimum_rate_band",
   "target_met",
+  "status",
+  "equipment",
+  "notification_reason",
+  "suppression_reason",
 ]);
 
 function safeStorage() {

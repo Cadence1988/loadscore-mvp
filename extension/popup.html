@@ -55,6 +55,38 @@
           <label class="privacy-toggle"><input id="analytics-consent" type="checkbox" /> Allow optional privacy-safe product analytics</label>
           <p class="privacy-note">Raw highlighted text, lanes, broker contacts, and credentials are excluded. Central analytics stays inactive until configured.</p>
         </details>
+        <details>
+          <summary>Timing, equipment, and status</summary>
+          <p class="privacy-note">Optional. Add only what you know; missing dates or times are never guessed.</p>
+          <div class="two-col">
+            <label>Pickup date<input id="pickupDate" type="date" /></label>
+            <label>Pickup time<input id="pickupTime" type="time" /></label>
+            <label>Delivery date<input id="deliveryDate" type="date" /></label>
+            <label>Delivery time<input id="deliveryTime" type="time" /></label>
+            <label>Expected empty date<input id="expectedEmptyDate" type="date" /></label>
+            <label>Expected empty time<input id="expectedEmptyTime" type="time" /></label>
+            <label>Expires date<input id="expirationDate" type="date" /></label>
+            <label>Expires time<input id="expirationTime" type="time" /></label>
+          </div>
+          <div class="two-col">
+            <label>Equipment<select id="equipment"><option value="">Not specified</option><option>Dry Van</option><option>Reefer</option><option>Flatbed</option><option>Step Deck</option><option>Power Only</option><option>Box Truck</option><option>Other</option></select></label>
+            <label>Status<select id="status"><option value="available">Available</option><option value="viewed">Viewed</option><option value="interested">Interested</option><option value="requested">Requested</option><option value="pending_confirmation">Pending confirmation</option><option value="booked">Booked</option><option value="covered">Covered</option><option value="expired">Expired</option><option value="rejected">Rejected</option></select></label>
+            <label>Source<input id="source" placeholder="Manual or approved source" /></label>
+            <label>Load ID<input id="loadIdentifier" /></label>
+          </div>
+          <label>Broker/reference note<input id="brokerReference" placeholder="Local only; excluded from analytics" /></label>
+          <p id="timing-status" class="status" aria-live="polite"></p>
+        </details>
+        <details>
+          <summary>Match notifications</summary>
+          <label class="privacy-toggle"><input id="notifications-enabled" type="checkbox" /> Notify me about qualifying saved loads</label>
+          <p class="privacy-note">Off by default. Notifications use only loads you save in LoadScore. No load-board monitoring or scraping occurs.</p>
+          <div class="two-col">
+            <label>Quiet hours start<input id="quiet-start" type="time" value="22:00" /></label>
+            <label>Quiet hours end<input id="quiet-end" type="time" value="06:00" /></label>
+          </div>
+          <p id="notification-status" class="status" aria-live="polite"></p>
+        </details>
       </form>
 
       <section class="result" aria-live="polite">
@@ -118,6 +150,10 @@
         <div id="saved-loads" class="saved-loads">
           <p class="saved-empty">No saved loads yet.</p>
         </div>
+      </section>
+      <section class="saved-section" aria-labelledby="notification-history-title">
+        <div class="saved-heading"><div><p class="eyebrow">On this device</p><h2 id="notification-history-title">Notification History</h2></div></div>
+        <div id="notification-history" class="notification-history"><p class="saved-empty">No notifications yet.</p></div>
       </section>
     </main>
     <script type="module" src="popup.js"></script>
