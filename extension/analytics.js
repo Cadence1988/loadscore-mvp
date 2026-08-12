@@ -20,6 +20,10 @@ const supportedEvents = new Set([
   "operating_mode_selected", "operating_mode_settings_updated",
   "preferred_mode_selected", "flexible_mode_selected", "recovery_mode_selected",
   "flexible_options_viewed", "recovery_options_viewed",
+  "paste_import_opened", "paste_import_completed", "csv_import_opened",
+  "csv_import_completed", "csv_import_failed", "import_rows_detected",
+  "import_rows_valid", "import_rows_review", "import_rows_duplicate",
+  "bulk_scoring_completed", "bulk_top7_viewed",
 ]);
 
 const allowedKeys = new Set([
@@ -28,6 +32,7 @@ const allowedKeys = new Set([
   "parser_result", "share_method", "minimum_rate_band", "target_met",
   "status", "equipment", "notification_reason", "suppression_reason",
   "mode", "match_type",
+  "import_count", "import_source",
 ]);
 
 function sanitize(properties = {}) {

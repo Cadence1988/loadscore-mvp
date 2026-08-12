@@ -23,6 +23,8 @@ Use the popup to review:
 - saved loads and local alert-rule matches;
 - optional pickup, delivery, expected-empty, equipment, expiration, and load-status details;
 - optional Chrome notifications for new qualifying loads you save in LoadScore, with quiet hours and duplicate suppression;
+- Preferred, Flexible, and Recovery matching modes selected by the driver;
+- a link to the LoadScore web app for local pasted-text and CSV opportunity review;
 - a concise LoadScore result you can copy and share.
 
 You can enter a load manually or explicitly highlight visible load-offer text and ask LoadScore to fill recognized fields. Highlighted text is read only after you click the parsing control. Always review parsed values before relying on the score.

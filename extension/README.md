@@ -1,6 +1,6 @@
 # LoadScore Chrome Extension MVP
 
-Current beta package: version 0.4.0. It includes optional lifecycle fields and opt-in local match notifications for loads saved by the driver. Reload the unpacked extension after updating because version 0.4.0 adds the narrow Chrome `notifications` permission.
+Current beta package: version 0.5.0. It includes Operating Modes, expanded user-triggered highlighted-text parsing, optional lifecycle fields, and opt-in local match notifications. Full multi-load paste and CSV review are intentionally handled by the web app to keep the popup practical.
 
 ## Install locally
 

@@ -8,6 +8,10 @@ LoadScore helps drivers evaluate freight opportunities. This policy describes th
 
 If a user explicitly enables match notifications, LoadScore uses locally saved load details, local alert preferences, quiet hours, duplicate keys, and local notification history to decide whether to show a Chrome notification. Notifications are off by default. This does not enable load-board monitoring or scraping.
 
+## Pasted text and CSV imports
+
+Pasted freight text and selected CSV files are parsed and evaluated locally in the web browser. Raw pasted text, CSV rows, routes, and broker information are not included in product analytics. The current beta does not upload import files to a LoadScore backend because no such production backend exists.
+
 ## Information stored locally
 
 LoadScore may store truck-cost settings, alert preferences, drafts, saved loads, profiles, local feedback, notification settings/history, a random anonymous analytics identifier, and a bounded local product-event history in the browser or extension storage. Web and extension storage are currently separate.

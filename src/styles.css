@@ -1255,3 +1255,23 @@ textarea {
 .operating-modes .alert-rules-section { margin: 20px 0 0; }
 .mode-default-note, .mode-visibility { color: #607086; font-size: 12px; }
 @media (max-width: 700px) { .mode-picker { grid-template-columns: 1fr; } }
+.bulk-import { max-width: 1180px; margin: 28px auto; padding: 24px; border: 1px solid #d9e1ea; border-radius: 18px; background: white; }
+.import-tabs, .mode-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.import-tabs button, .mode-filters button { padding: 9px 13px; border: 1px solid #cad5e2; border-radius: 9px; background: #f8fafc; cursor: pointer; }
+.import-tabs button.active, .mode-filters button.active { border-color: #f28b24; background: #fff7ed; color: #9a4b0d; }
+.import-entry textarea { width: 100%; min-height: 150px; padding: 12px; border: 1px solid #cad5e2; border-radius: 10px; resize: vertical; }
+.import-entry > button, .bulk-score-button, .bulk-results .section-heading-row button { margin-top: 10px; padding: 10px 14px; border: 0; border-radius: 9px; background: #172033; color: white; font-weight: 800; cursor: pointer; }
+.mapping-review, .import-row { margin-top: 12px; padding: 12px; border: 1px solid #d9e1ea; border-radius: 10px; background: #f8fafc; }
+.mapping-grid, .preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 9px; margin-top: 12px; }
+.mapping-grid select, .preview-grid input { width: 100%; padding: 7px; border: 1px solid #cad5e2; border-radius: 7px; background: white; }
+.preview-grid small { display: block; margin-top: 3px; font-weight: 800; }
+.preview-grid small.high { color: #15803d; } .preview-grid small.review, .import-warning { color: #9a6700; } .preview-grid small.missing, .import-error { color: #b42318; }
+.import-counts { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.import-counts span { padding: 6px 9px; border-radius: 999px; background: #e9eef5; font-size: 12px; font-weight: 800; }
+.import-row summary { cursor: pointer; font-weight: 800; text-transform: none; }
+.import-row summary b { float: right; color: #607086; }
+.bulk-results { margin-top: 25px; padding-top: 20px; border-top: 1px solid #d9e1ea; }
+.bulk-cards { display: grid; gap: 10px; }
+.bulk-cards article { padding: 15px; border: 1px solid #d9e1ea; border-radius: 12px; }
+.bulk-cards article > div { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.bulk-cards span, .bulk-cards small { display: block; color: #607086; font-size: 12px; }

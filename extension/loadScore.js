@@ -83,6 +83,11 @@ export function parseHighlightedLoad(text) {
   const rate = normalized.match(/\$\s*([\d,]+(?:\.\d{1,2})?)/);
   const loadedMiles = normalized.match(/([\d,]+)\s*(?:loaded\s*)?(?:mi(?:les)?|miles)\b/i);
   const deadhead = normalized.match(/(?:deadhead|dh)\s*[:=-]?\s*([\d,]+)\s*(?:mi(?:les)?)?/i);
+  const pickup = normalized.match(/pickup(?:\s+date)?\s*[:=-]?\s*(\d{4}-\d{2}-\d{2})(?:\s+(\d{1,2}:\d{2}))?/i);
+  const delivery = normalized.match(/delivery(?:\s+date)?\s*[:=-]?\s*(\d{4}-\d{2}-\d{2})(?:\s+(\d{1,2}:\d{2}))?/i);
+  const expiration = normalized.match(/(?:expires?|expiration)\s*[:=-]?\s*(\d{4}-\d{2}-\d{2})(?:\s+(\d{1,2}:\d{2}))?/i);
+  const equipment = normalized.match(/\b(dry van|van|reefer|flatbed|step deck|power only|box truck)\b/i);
+  const loadId = normalized.match(/(?:load|reference|ref)\s*(?:id|#)?\s*[:=-]\s*([\w-]+)/i);
 
   return {
     origin: route?.[1]?.replace(/\s+/g, " ").trim() || "",
@@ -90,5 +95,14 @@ export function parseHighlightedLoad(text) {
     loadRate: rate?.[1]?.replace(/,/g, "") || "",
     loadedMiles: loadedMiles?.[1]?.replace(/,/g, "") || "",
     deadheadMiles: deadhead?.[1]?.replace(/,/g, "") || "",
+    pickupDate: pickup?.[1] || "",
+    pickupTime: pickup?.[2] || "",
+    deliveryDate: delivery?.[1] || "",
+    deliveryTime: delivery?.[2] || "",
+    expirationDate: expiration?.[1] || "",
+    expirationTime: expiration?.[2] || "",
+    equipment: equipment?.[1] || "",
+    loadIdentifier: loadId?.[1] || "",
+    source: "highlighted_text",
   };
 }

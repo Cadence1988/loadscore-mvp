@@ -11,6 +11,15 @@ test("legacy alert settings migrate into Preferred without losing destinations",
   assert.equal(profileForMode(config, "preferred").avoidedDestinations, "Miami");
 });
 
+test("new mode storage wins after migration while legacy data remains a fallback", () => {
+  const config = migrateOperatingModes(
+    { preferredDestinations: "Legacy", minimumLoadScore: 75 },
+    { globalDestinations: { preferredDestinations: "Current", avoidedDestinations: "" }, modes: { preferred: { minimumLoadScore: 80 } } },
+  );
+  assert.equal(config.globalDestinations.preferredDestinations, "Current");
+  assert.equal(config.modes.preferred.minimumLoadScore, 80);
+});
+
 test("a load can fail Preferred and pass Flexible and Recovery without changing its score", () => {
   const config = migrateOperatingModes();
   const originalScore = load.result.score;

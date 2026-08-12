@@ -1,0 +1,3 @@
+origin,destination,rate,loaded_miles,deadhead,equipment,reference
+"Dallas, TX","Atlanta, GA",2500,810,35,Dry Van,TEST-001
+"Houston, TX","Phoenix, AZ",2100,1175,,Reefer,TEST-002

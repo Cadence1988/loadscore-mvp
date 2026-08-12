@@ -52,6 +52,17 @@ export const supportedEvents = new Set([
   "recovery_mode_selected",
   "flexible_options_viewed",
   "recovery_options_viewed",
+  "paste_import_opened",
+  "paste_import_completed",
+  "csv_import_opened",
+  "csv_import_completed",
+  "csv_import_failed",
+  "import_rows_detected",
+  "import_rows_valid",
+  "import_rows_review",
+  "import_rows_duplicate",
+  "bulk_scoring_completed",
+  "bulk_top7_viewed",
 ]);
 
 const allowedPropertyKeys = new Set([
@@ -78,6 +89,8 @@ const allowedPropertyKeys = new Set([
   "suppression_reason",
   "mode",
   "match_type",
+  "import_count",
+  "import_source",
 ]);
 
 function safeStorage() {

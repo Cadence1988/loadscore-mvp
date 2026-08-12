@@ -17,12 +17,15 @@ There are no broad host permissions. There is no remotely hosted executable code
 - User-highlighted visible page text, only after explicit click.
 - Locally saved preferences and load records.
 - Optional safe product-use event categories.
+- User-pasted freight text and user-selected CSV rows, processed locally for review and scoring.
 
 Highlighted page text may qualify as website content/user-provided content in the developer dashboard. Founder must answer the dashboard's current wording based on the final package and should disclose that access is user-triggered and raw text is not retained or centrally transmitted.
 
 ## Data not collected
 
 Passwords, load-board credentials, authentication cookies, browsing history, automatic page content, broker contact details for analytics, payment data, health data, precise location, and raw highlighted freight messages.
+
+Raw pasted text and CSV row contents are also excluded from analytics and are not sent to a LoadScore backend in the current browser-local beta.
 
 ## Limited-use commitments
 

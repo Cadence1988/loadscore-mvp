@@ -12,8 +12,8 @@ export const MODE_STARTER_DEFAULTS = {
 };
 export function migrateOperatingModes(legacy = {}, stored = {}) {
   const globalDestinations = {
-    preferredDestinations: legacy.preferredDestinations ?? stored.globalDestinations?.preferredDestinations ?? "",
-    avoidedDestinations: legacy.avoidedDestinations ?? stored.globalDestinations?.avoidedDestinations ?? "",
+    preferredDestinations: stored.globalDestinations?.preferredDestinations ?? legacy.preferredDestinations ?? "",
+    avoidedDestinations: stored.globalDestinations?.avoidedDestinations ?? legacy.avoidedDestinations ?? "",
   };
   const preferredLegacy = Object.fromEntries(Object.entries(legacy).filter(([key]) => !key.includes("Destinations")));
   return {

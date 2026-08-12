@@ -7,6 +7,7 @@ import {
 import { calculateLoadScore } from "./logic/calculateLoadScore";
 import AutocompleteInput from "./components/AutocompleteInput";
 import OperatingModes from "./components/OperatingModes";
+import BulkImport from "./components/BulkImport";
 import ComparisonBoard from "./components/ComparisonBoard";
 import DriverProfiles from "./components/DriverProfiles";
 import FeedbackForm from "./components/FeedbackForm";
@@ -285,6 +286,14 @@ export default function App() {
     trackEvent("comparison_cleared", { surface: "web", saved_load_count: 0 });
   }
 
+  function saveBulkTop(loads) {
+    setComparisonLoads((previous) => {
+      const existing = new Set(previous.map((load) => load.id));
+      return [...previous, ...loads.filter((load) => !existing.has(load.id))].slice(0, 7);
+    });
+    trackEvent("load_saved", { surface: "web", saved_load_count: Math.min(7, comparisonLoads.length + loads.length), mode: modeConfiguration.activeMode });
+  }
+
   return (
     <main className="page">
       <section className="hero">
@@ -561,6 +570,8 @@ export default function App() {
       </section>
 
       <OperatingModes configuration={modeConfiguration} onModeSelect={selectOperatingMode} onRuleChange={updateTarget} />
+
+      <BulkImport truckDefaults={form} modeConfiguration={modeConfiguration} onSaveTop={saveBulkTop} />
 
       <ComparisonBoard
         loads={comparisonLoads}

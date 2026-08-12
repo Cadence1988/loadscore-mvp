@@ -389,3 +389,4 @@ footer .primary-save {
 .notification-item span { margin-top: 3px; color: #65758a; }
 .mode-control { margin-bottom: 10px; padding: 10px; border: 1px solid #fed7aa; border-radius: 10px; background: #fff7ed; }
 .mode-control select { margin-top: 5px; }
+.bulk-web-link { display: block; margin: 8px 0 12px; color: #9a4b0d; font-size: 10px; font-weight: 800; }
