@@ -16,6 +16,8 @@ import { buildExtensionShareText } from "./shareResult.js";
 import { isLoadExpired, normalizeLoadLifecycle, validateLoadTiming } from "./loadLifecycle.js";
 import { countActiveMatches, DEFAULT_NOTIFICATION_SETTINGS } from "./notificationEngine.js";
 import { assessEvaluationTrust } from "./evaluationTrust.js";
+import { installInputReplacement } from "./inputUx.js";
+import { validateNumericFields } from "./inputValidation.js";
 
 const fieldIds = [
   "origin", "destination", "loadRate", "loadedMiles", "deadheadMiles",
@@ -60,7 +62,7 @@ function getForm() {
   return Object.fromEntries(
     fieldIds.map((id) => {
       const value = document.getElementById(id).value;
-      return [id, id === "deadheadMiles" && value === "" ? null : numericFields.has(id) ? Number(value) : value];
+      return [id, numericFields.has(id) ? (value === "" ? (id === "deadheadMiles" ? null : "") : Number(value)) : value];
     }),
   );
 }
@@ -72,10 +74,15 @@ function getLoadEntry() {
 
 function render() {
   const form = getForm();
-  const result = calculateLoadScore(form);
-  const rate = calculateMinimumRate(form);
-  const alertMatch = activeModeEvaluation({ ...form, result }, operatingConfiguration);
-  const trust = assessEvaluationTrust(form);
+  const validation = validateNumericFields(form);
+  numericFields.forEach((id) => document.getElementById(id).setAttribute("aria-invalid", String(Boolean(validation[id]))));
+  const validationMessages = Object.values(validation);
+  document.getElementById("input-validation-status").textContent = validationMessages.length ? `Calculation paused: ${validationMessages[0]}` : "";
+  const safeForm = Object.fromEntries(Object.entries(form).map(([field, value]) => [field, validation[field] ? "" : value]));
+  const result = calculateLoadScore(safeForm);
+  const rate = calculateMinimumRate(safeForm);
+  const alertMatch = activeModeEvaluation({ ...safeForm, result }, operatingConfiguration);
+  const trust = validationMessages.length ? { status: "needs_review", label: "Needs Review", message: "Correct the highlighted numeric fields before using this calculation.", canMatch: false } : assessEvaluationTrust(form);
   const trustIndicator = document.getElementById("trust-indicator");
   trustIndicator.className = `trust-indicator ${trust.status}`;
   trustIndicator.innerHTML = `<strong>${trust.label}</strong><span>${trust.message}</span>`;
@@ -122,6 +129,7 @@ function scheduleCalculationTracking() {
   window.clearTimeout(calculationTimer);
   calculationTimer = window.setTimeout(() => {
     const form = getForm();
+    if (Object.keys(validateNumericFields(form)).length > 0) return;
     const result = calculateLoadScore(form);
     const alertMatch = activeModeEvaluation({ ...form, result }, operatingConfiguration);
     const signature = JSON.stringify({
@@ -252,6 +260,8 @@ document.getElementById("load-form").addEventListener("input", async () => {
   await chrome.storage.local.set({ loadScoreDraft: getForm() });
 });
 
+installInputReplacement(document);
+
 document.getElementById("confirm-zero-deadhead").addEventListener("click", async () => {
   document.getElementById("deadheadMiles").value = "0";
   render(); renderSavedLoads();
@@ -341,6 +351,11 @@ document.getElementById("parse-selection").addEventListener("click", async () =>
 
 document.getElementById("save-defaults").addEventListener("click", async () => {
   const form = getForm();
+  const validation = validateNumericFields(form);
+  if (Object.keys(validation).length > 0) {
+    document.getElementById("save-status").textContent = Object.values(validation)[0];
+    return;
+  }
   updateModeConfigurationFromForm();
   await chrome.storage.local.set({
     loadScoreOperatingModes: operatingConfiguration,

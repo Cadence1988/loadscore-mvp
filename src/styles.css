@@ -1278,6 +1278,9 @@ textarea {
 .required-key { padding: 10px; border-radius: 9px; background: #eff6ff; color: #334155; font-size: 12px; line-height: 1.45; }
 .sample-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; padding: 10px; border: 1px solid #7cb7ff; border-radius: 9px; background: #eaf4ff; color: #17324d; }
 .sample-banner button { width: auto; flex: 0 0 auto; }
+.input-error { display: block; margin-top: 5px; color: #b42318; font-size: 12px; font-weight: 600; line-height: 1.35; }
+input[aria-invalid="true"] { border-color: #d92d20; box-shadow: 0 0 0 2px rgba(217, 45, 32, 0.12); }
+.calculation-paused { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; padding: 11px 13px; border-radius: 10px; background: #fff1f0; color: #912018; }
 .confirm-zero { margin-top: 5px; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 7px; background: white; color: #334155; font-size: 11px; cursor: pointer; }
 .trust-indicator { margin-bottom: 14px; padding: 11px 13px; border-radius: 11px; }
 .trust-indicator strong, .trust-indicator span { display: block; }

@@ -1,0 +1,8 @@
+export const NUMERIC_RULES = {
+  loadRate: { min: 0, label: "Offered rate" }, loadedMiles: { min: 0, label: "Loaded miles" }, deadheadMiles: { min: 0, label: "Deadhead", optional: true },
+  mpg: { minExclusive: 0, label: "MPG" }, fuelPrice: { min: 0, label: "Fuel price" }, fixedCostPerMile: { min: 0, label: "Fixed cost per mile" },
+  reloadScore: { min: 0, max: 100, label: "Reload Score" }, minimumLoadScore: { min: 0, max: 100, label: "Minimum LoadScore" }, minimumReloadScore: { min: 0, max: 100, label: "Minimum Reload Score" },
+  targetAllInRpm: { min: 0, label: "Minimum all-in RPM" }, targetProfit: { min: 0, label: "Minimum trip profit" }, maximumDeadhead: { min: 0, label: "Maximum deadhead" },
+};
+export function validateNumericField(field, value) { const rule = NUMERIC_RULES[field]; if (!rule) return ""; if (value === "" || value === null || value === undefined) return rule.optional ? "" : `${rule.label} is required.`; const number = Number(value); if (!Number.isFinite(number)) return `Enter a valid number for ${rule.label}.`; if (rule.minExclusive !== undefined && number <= rule.minExclusive) return `Enter a value greater than ${rule.minExclusive} for ${rule.label}.`; if (rule.min !== undefined && number < rule.min) return `${rule.label} cannot be negative.`; if (rule.max !== undefined && number > rule.max) return `${rule.label} must be between ${rule.min} and ${rule.max}.`; return ""; }
+export function validateNumericFields(values) { return Object.fromEntries(Object.keys(NUMERIC_RULES).map((field) => [field, validateNumericField(field, values[field])]).filter(([, message]) => message)); }

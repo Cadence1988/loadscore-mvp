@@ -19,6 +19,8 @@ import ShareResult from "./components/ShareResult";
 import AnalyticsPreference from "./components/AnalyticsPreference";
 import { activeModeEvaluation, migrateOperatingModes, profileForMode } from "./logic/operatingModes";
 import { assessEvaluationTrust } from "./logic/evaluationTrust";
+import { validateNumericFields } from "./logic/inputValidation";
+import { handleInputFocusCapture, handleInputPointerDownCapture, handleInputPointerUpCapture } from "./logic/inputUx";
 import {
   EQUIPMENT_TYPES,
   LOAD_STATUS_LABELS,
@@ -123,9 +125,13 @@ export default function App() {
 
   const detectedReloadScore = getCuratedMarketScore(form.destination);
 
+  const formValidation = useMemo(() => validateNumericFields(form, ["loadRate", "loadedMiles", "deadheadMiles", "mpg", "fuelPrice", "fixedCostPerMile", "manualReloadScore"]), [form]);
+  const calculationBlocked = Object.keys(formValidation).length > 0;
+  const safeForm = useMemo(() => Object.fromEntries(Object.entries(form).map(([field, value]) => [field, formValidation[field] ? "" : value])), [form, formValidation]);
+
   const reloadScore =
-    form.manualReloadScore !== ""
-      ? Number(form.manualReloadScore)
+    safeForm.manualReloadScore !== ""
+      ? Number(safeForm.manualReloadScore)
       : detectedReloadScore ?? DEFAULT_RELOAD_SCORE;
 
   const reloadScoreSource =
@@ -144,22 +150,25 @@ export default function App() {
 
   const result = useMemo(() => {
     return calculateLoadScore({
-      ...form,
+      ...safeForm,
       reloadScore
     });
-  }, [form, reloadScore]);
+  }, [safeForm, reloadScore]);
 
   const lifecycleValidation = useMemo(() => validateLoadTiming(form), [form]);
-  const evaluationTrust = useMemo(() => assessEvaluationTrust(form), [form]);
+  const evaluationTrust = useMemo(() => calculationBlocked ? {
+    status: "needs_review", label: "Needs Review", missing: Object.keys(formValidation), canRank: false, canMatch: false,
+    message: "Correct the highlighted numeric fields before using this calculation.",
+  } : assessEvaluationTrust(form), [calculationBlocked, form, formValidation]);
 
   const currentAlertMatch = useMemo(
     () =>
       activeModeEvaluation(
         {
-          ...form,
+          ...safeForm,
           result,
           reloadScoreSource:
-            form.manualReloadScore !== ""
+            safeForm.manualReloadScore !== ""
               ? "manual"
               : detectedReloadScore !== null
                 ? "curated"
@@ -167,7 +176,7 @@ export default function App() {
         },
         modeConfiguration,
       ),
-    [detectedReloadScore, form, modeConfiguration, result],
+    [detectedReloadScore, safeForm, modeConfiguration, result],
   );
 
   useEffect(() => {
@@ -327,7 +336,7 @@ export default function App() {
   }
 
   return (
-    <main className="page">
+    <main className="page" onPointerDownCapture={handleInputPointerDownCapture} onFocusCapture={handleInputFocusCapture} onPointerUpCapture={handleInputPointerUpCapture}>
       <FirstRunOnboarding onUseSample={useSampleLoad} />
       <section className="hero">
         <div>
@@ -369,18 +378,24 @@ export default function App() {
               Load Rate ($)
               <input
                 type="number"
+                min="0"
                 value={form.loadRate}
                 onChange={(e) => updateField("loadRate", e.target.value)}
+                aria-invalid={Boolean(formValidation.loadRate)}
               />
+              {formValidation.loadRate && <small className="input-error">{formValidation.loadRate}</small>}
             </label>
 
             <label>
               Loaded Miles
               <input
                 type="number"
+                min="0"
                 value={form.loadedMiles}
                 onChange={(e) => updateField("loadedMiles", e.target.value)}
+                aria-invalid={Boolean(formValidation.loadedMiles)}
               />
+              {formValidation.loadedMiles && <small className="input-error">{formValidation.loadedMiles}</small>}
             </label>
           </div>
 
@@ -389,9 +404,12 @@ export default function App() {
               Deadhead Miles
               <input
                 type="number"
+                min="0"
                 value={form.deadheadMiles}
                 onChange={(e) => updateField("deadheadMiles", e.target.value)}
+                aria-invalid={Boolean(formValidation.deadheadMiles)}
               />
+              {formValidation.deadheadMiles && <small className="input-error">{formValidation.deadheadMiles}</small>}
               {form.deadheadMiles === "" && <button className="confirm-zero" type="button" onClick={() => { updateField("deadheadMiles", 0); trackEvent("deadhead_confirmed_zero", { surface: "web" }); }}>Confirm 0 miles</button>}
             </label>
 
@@ -399,10 +417,13 @@ export default function App() {
               Fuel MPG
               <input
                 type="number"
+                min="0.1"
                 step="0.1"
                 value={form.mpg}
                 onChange={(e) => updateField("mpg", e.target.value)}
+                aria-invalid={Boolean(formValidation.mpg)}
               />
+              {formValidation.mpg && <small className="input-error">{formValidation.mpg}</small>}
             </label>
           </div>
 
@@ -411,22 +432,28 @@ export default function App() {
               Fuel Price/Gal
               <input
                 type="number"
+                min="0"
                 step="0.01"
                 value={form.fuelPrice}
                 onChange={(e) => updateField("fuelPrice", e.target.value)}
+                aria-invalid={Boolean(formValidation.fuelPrice)}
               />
+              {formValidation.fuelPrice && <small className="input-error">{formValidation.fuelPrice}</small>}
             </label>
 
             <label>
               Fixed Cost/Mile
               <input
                 type="number"
+                min="0"
                 step="0.01"
                 value={form.fixedCostPerMile}
                 onChange={(e) =>
                   updateField("fixedCostPerMile", e.target.value)
                 }
+                aria-invalid={Boolean(formValidation.fixedCostPerMile)}
               />
+              {formValidation.fixedCostPerMile && <small className="input-error">{formValidation.fixedCostPerMile}</small>}
             </label>
           </div>
 
@@ -445,7 +472,9 @@ export default function App() {
                   ? `Auto: ${detectedReloadScore}`
                   : "Default: 50"
               }
+              aria-invalid={Boolean(formValidation.manualReloadScore)}
             />
+            {formValidation.manualReloadScore && <small className="input-error">{formValidation.manualReloadScore}</small>}
           </label>
 
           <p className="helper">
@@ -483,7 +512,7 @@ export default function App() {
             className="compare-save-button"
             type="button"
             onClick={saveCurrentLoad}
-            disabled={comparisonLoads.length >= 7 || lifecycleValidation.errors.length > 0 || !evaluationTrust.canRank}
+            disabled={comparisonLoads.length >= 7 || lifecycleValidation.errors.length > 0 || calculationBlocked || !evaluationTrust.canRank}
           >
             {comparisonLoads.length >= 7
               ? "Comparison list is full"
@@ -496,6 +525,7 @@ export default function App() {
         </form>
 
         <section className="card result-card">
+          {calculationBlocked && <div className="calculation-paused" role="alert"><strong>Calculation paused</strong><span>Correct the highlighted fields. Invalid values are not used in LoadScore.</span></div>}
           <div className={`trust-indicator ${evaluationTrust.status}`}><strong>{evaluationTrust.label}</strong><span>{evaluationTrust.message}</span></div>
           <div className="score-row">
             <div>

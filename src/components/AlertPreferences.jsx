@@ -1,4 +1,7 @@
+import { validateNumericFields } from "../logic/inputValidation";
+
 export default function AlertPreferences({ targets, onChange, modeName = "Preferred" }) {
+  const errors = validateNumericFields(targets, ["minimumLoadScore", "targetAllInRpm", "targetProfit", "maximumDeadhead", "minimumReloadScore"]);
   return (
     <section className="alert-rules-section" aria-labelledby="alert-rules-title">
       <div className="alert-rules-heading">
@@ -22,7 +25,9 @@ export default function AlertPreferences({ targets, onChange, modeName = "Prefer
             max="100"
             value={targets.minimumLoadScore}
             onChange={(event) => onChange("minimumLoadScore", event.target.value)}
+            aria-invalid={Boolean(errors.minimumLoadScore)}
           />
+          {errors.minimumLoadScore && <small className="input-error">{errors.minimumLoadScore}</small>}
         </label>
         <label>
           Minimum All-In RPM
@@ -32,7 +37,9 @@ export default function AlertPreferences({ targets, onChange, modeName = "Prefer
             step="0.05"
             value={targets.targetAllInRpm}
             onChange={(event) => onChange("targetAllInRpm", event.target.value)}
+            aria-invalid={Boolean(errors.targetAllInRpm)}
           />
+          {errors.targetAllInRpm && <small className="input-error">{errors.targetAllInRpm}</small>}
         </label>
         <label>
           Minimum Estimated Profit
@@ -42,7 +49,9 @@ export default function AlertPreferences({ targets, onChange, modeName = "Prefer
             step="50"
             value={targets.targetProfit}
             onChange={(event) => onChange("targetProfit", event.target.value)}
+            aria-invalid={Boolean(errors.targetProfit)}
           />
+          {errors.targetProfit && <small className="input-error">{errors.targetProfit}</small>}
         </label>
         <label>
           Maximum Deadhead Miles
@@ -52,7 +61,9 @@ export default function AlertPreferences({ targets, onChange, modeName = "Prefer
             step="10"
             value={targets.maximumDeadhead}
             onChange={(event) => onChange("maximumDeadhead", event.target.value)}
+            aria-invalid={Boolean(errors.maximumDeadhead)}
           />
+          {errors.maximumDeadhead && <small className="input-error">{errors.maximumDeadhead}</small>}
         </label>
         <label>
           Minimum Reload Score
@@ -62,7 +73,9 @@ export default function AlertPreferences({ targets, onChange, modeName = "Prefer
             max="100"
             value={targets.minimumReloadScore}
             onChange={(event) => onChange("minimumReloadScore", event.target.value)}
+            aria-invalid={Boolean(errors.minimumReloadScore)}
           />
+          {errors.minimumReloadScore && <small className="input-error">{errors.minimumReloadScore}</small>}
         </label>
       </div>
 
