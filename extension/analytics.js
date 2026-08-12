@@ -28,6 +28,9 @@ const supportedEvents = new Set([
   "sample_load_used", "provisional_evaluation_shown", "missing_deadhead_prompted",
   "deadhead_confirmed_zero", "deadhead_added", "import_review_corrected",
   "first_successful_calculation",
+  "multiple_loads_calculated", "beta_source_recorded", "problem_reported",
+  "parser_feedback_submitted", "diagnostic_copied", "feedback_form_submitted",
+  "willing_to_pay_indicated",
 ]);
 
 const allowedKeys = new Set([
@@ -37,6 +40,7 @@ const allowedKeys = new Set([
   "status", "equipment", "notification_reason", "suppression_reason",
   "mode", "match_type",
   "import_count", "import_source",
+  "tester_source", "feature_area", "error_category", "willingness",
 ]);
 
 function sanitize(properties = {}) {

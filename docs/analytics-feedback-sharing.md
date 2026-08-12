@@ -14,6 +14,12 @@ Event properties are allowlisted. Raw highlighted text, raw freight offers, brok
 
 The anonymous identifier is randomly generated and stored locally. It is not fingerprinting and is not shared with a provider in the current build.
 
+## First-driver beta learning additions
+
+The current beta records an explicitly selected, allowlisted tester-source category; first successful complete calculation; second calculation; problem category; parser outcome/field category; feedback-form submission; and explicit willingness-to-pay response. A synthetic sample load emits only `sample_load_used` and does not count as real activation or calculation depth.
+
+The in-product problem reporter stores only the driver's deliberately typed explanation plus structured categories. Its copyable diagnostic contains build versions, coarse browser category, random installation ID, selected mode, feature/error category, parser source/outcome/field status, and timestamp. It excludes raw freight text, routes, rates, broker contacts, credentials, cookies, and personal details. Email is prepared for the driver to review; it is never sent automatically.
+
 ## Periodic feedback trigger
 
 The lightweight product prompt first becomes eligible after five meaningful, debounced calculations. After it is shown, it will not be shown again until at least ten additional calculations. It is optional and can be dismissed.

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { trackEvent } from "../analytics/analytics";
 
 const defaultFb = {
   name: "",
@@ -7,6 +8,7 @@ const defaultFb = {
   wouldUse: "",
   missing: "",
   payFor: "",
+  willingToPay: "",
 };
 
 export default function FeedbackForm() {
@@ -23,6 +25,7 @@ export default function FeedbackForm() {
       `Email: ${fb.email || "(not provided)"}`,
       `Role: ${fb.role}`,
       `Would you use LoadScore? ${fb.wouldUse || "(no answer)"}`,
+      `Would you consider paying if it repeatedly saves time or improves decisions? ${fb.willingToPay || "(no answer)"}`,
       "",
       "What is missing or confusing?",
       fb.missing || "(no answer)",
@@ -34,11 +37,13 @@ export default function FeedbackForm() {
       `mailto:rgm88@loadscore.app` +
       `?subject=${encodeURIComponent("LoadScore MVP Feedback")}` +
       `&body=${encodeURIComponent(lines.join("\n"))}`;
+    trackEvent("feedback_form_submitted", { surface: "web" });
+    if (fb.willingToPay) trackEvent("willing_to_pay_indicated", { surface: "web", willingness: fb.willingToPay.toLowerCase() });
     window.location.href = mailto;
   }
 
   return (
-    <section className="feedback-section">
+    <section className="feedback-section" id="feedback-form">
       <h2>Share Your Feedback</h2>
       <p className="feedback-intro">
         Help shape what LoadScore becomes. Takes under a minute.
@@ -114,6 +119,11 @@ export default function FeedbackForm() {
             rows={3}
           />
         </label>
+
+        <div className="fb-question">
+          <p className="fb-label">Would you consider paying if LoadScore repeatedly saved time or improved decisions?</p>
+          <div className="btn-group">{["Yes", "Maybe", "No"].map((option) => <button key={option} type="button" className={`btn-option${fb.willingToPay === option ? " selected" : ""}`} onClick={() => update("willingToPay", option)}>{option}</button>)}</div>
+        </div>
 
         <div className="feedback-footer">
           <p className="mailto-note">

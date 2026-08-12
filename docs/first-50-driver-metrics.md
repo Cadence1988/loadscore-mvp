@@ -26,6 +26,14 @@ Positive/negative recommendation feedback and structured reason/usefulness codes
 
 Result copies, native shares, later attributed referral visits and activations.
 
+## Beta measurement rules
+
+- Acquisition uses only an explicitly supplied allowlisted tester-source category; LoadScore never guesses it.
+- Activation requires a first successful complete calculation. Provisional evaluations and synthetic samples do not count.
+- Depth includes the second calculation, comparisons, Operating Modes, and import use.
+- Product quality includes problem categories and parser source/outcome/missing-field categories.
+- Monetization evidence is only an explicit yes/maybe/no willingness-to-pay answer. Do not infer payment, subscription, booking, or revenue.
+
 ## Dashboard readiness
 
 The provider dashboard should show event totals, unique anonymous installations, activation funnel, repeat-day cohort, feature adoption, feedback ratio, and copy/share events. Central dashboard is not operational until the founder selects/configures a provider and verifies consented events end to end.

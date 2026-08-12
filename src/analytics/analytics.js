@@ -73,6 +73,13 @@ export const supportedEvents = new Set([
   "deadhead_added",
   "import_review_corrected",
   "first_successful_calculation",
+  "multiple_loads_calculated",
+  "beta_source_recorded",
+  "problem_reported",
+  "parser_feedback_submitted",
+  "diagnostic_copied",
+  "feedback_form_submitted",
+  "willing_to_pay_indicated",
 ]);
 
 const allowedPropertyKeys = new Set([
@@ -101,6 +108,10 @@ const allowedPropertyKeys = new Set([
   "match_type",
   "import_count",
   "import_source",
+  "tester_source",
+  "feature_area",
+  "error_category",
+  "willingness",
 ]);
 
 function safeStorage() {
@@ -131,6 +142,14 @@ function anonymousId(storage) {
     storage?.setItem(ANALYTICS_ID_KEY, id);
   }
   return id;
+}
+
+export function getOrCreateAnonymousInstallationId(storage) {
+  return anonymousId(storage);
+}
+
+export function getAnonymousInstallationId() {
+  return anonymousId(safeStorage());
 }
 
 export function sanitizeEventProperties(properties = {}) {

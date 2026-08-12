@@ -9,6 +9,7 @@ import AutocompleteInput from "./components/AutocompleteInput";
 import OperatingModes from "./components/OperatingModes";
 import BulkImport from "./components/BulkImport";
 import FirstRunOnboarding from "./components/FirstRunOnboarding";
+import BetaFeedbackCenter from "./components/BetaFeedbackCenter";
 import ComparisonBoard from "./components/ComparisonBoard";
 import DriverProfiles from "./components/DriverProfiles";
 import FeedbackForm from "./components/FeedbackForm";
@@ -194,6 +195,8 @@ export default function App() {
     const timer = window.setTimeout(() => {
       if (signature === lastTrackedCalculation.current) return;
       lastTrackedCalculation.current = signature;
+      // The guided example has its own event and must not inflate real-driver usage metrics.
+      if (form.source === "synthetic_sample") return;
       if (isComplete && evaluationTrust.status === "complete") {
         trackEvent("load_calculated", {
           surface: "web",
@@ -218,6 +221,7 @@ export default function App() {
       });
       if (isComplete && evaluationTrust.status === "complete") {
         const calculationCount = incrementCalculationCount();
+        if (calculationCount === 2) trackEvent("multiple_loads_calculated", { surface: "web" });
         if (shouldShowPeriodicFeedback(calculationCount)) {
           markPeriodicFeedbackShown(calculationCount);
           setShowPeriodicFeedback(true);
@@ -247,6 +251,15 @@ export default function App() {
     setForm({ ...defaultForm, origin: "Dallas, TX", destination: "Atlanta, GA", loadRate: 2500, loadedMiles: 810, deadheadMiles: 35, deadheadConfirmed: true, equipment: "Dry Van", source: "synthetic_sample" });
     setHasInteracted(true);
     trackEvent("sample_load_used", { surface: "web" });
+  }
+
+  function resetSampleLoad() {
+    setForm((previous) => ({
+      ...previous,
+      origin: "", destination: "", loadRate: "", loadedMiles: "", deadheadMiles: "",
+      deadheadConfirmed: false, manualReloadScore: "", equipment: "", source: "",
+    }));
+    setHasInteracted(false);
   }
 
   function updateTarget(field, value) {
@@ -331,6 +344,7 @@ export default function App() {
         <form className="card form-card" onSubmit={(event) => event.preventDefault()}>
           <h2>Load Details</h2>
           <p className="required-key"><strong>Required for a complete evaluation:</strong> origin, destination, offered rate, loaded miles, and known deadhead. Timing, equipment, and references are optional context.</p>
+          {form.source === "synthetic_sample" && <div className="sample-banner"><span>Example load — not a real freight offer.</span><button type="button" onClick={resetSampleLoad}>Clear example</button></div>}
 
           <label>
             Origin
@@ -669,6 +683,7 @@ export default function App() {
         </div>
       </section>
 
+      <BetaFeedbackCenter activeMode={modeConfiguration.activeMode} />
       <FeedbackForm />
       <AnalyticsPreference />
     </main>
