@@ -1,3 +1,5 @@
+import { sendApprovedEvent } from "./productionAdapter.js";
+
 const ANALYTICS_ID_KEY = "loadscore-analytics-id";
 const ANALYTICS_USAGE_KEY = "loadscore-analytics-usage";
 const ANALYTICS_EVENTS_KEY = "loadscore-analytics-events";
@@ -145,6 +147,7 @@ export function trackEvent(eventName, properties = {}) {
     JSON.stringify([...events, event].slice(-MAX_LOCAL_EVENTS)),
   );
   window.dispatchEvent(new CustomEvent("loadscore:analytics", { detail: event }));
+  void sendApprovedEvent(event);
   return true;
 }
 

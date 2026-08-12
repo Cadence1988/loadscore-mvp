@@ -14,6 +14,7 @@ import FeedbackForm from "./components/FeedbackForm";
 import MinimumRateGuide from "./components/MinimumRateGuide";
 import RecommendationFeedback from "./components/RecommendationFeedback";
 import ShareResult from "./components/ShareResult";
+import AnalyticsPreference from "./components/AnalyticsPreference";
 import {
   incrementCalculationCount,
   initializeAnalytics,
@@ -555,6 +556,7 @@ export default function App() {
       </section>
 
       <FeedbackForm />
+      <AnalyticsPreference />
     </main>
   );
 }

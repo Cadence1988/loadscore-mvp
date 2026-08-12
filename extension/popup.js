@@ -5,7 +5,13 @@ import {
   parseHighlightedLoad,
 } from "./loadScore.js";
 import { evaluateAlertMatch } from "./evaluateAlertMatch.js";
-import { initializeExtensionAnalytics, scoreBand, trackEvent } from "./analytics.js";
+import {
+  getCentralAnalyticsConsent,
+  initializeExtensionAnalytics,
+  scoreBand,
+  setCentralAnalyticsConsent,
+  trackEvent,
+} from "./analytics.js";
 import { buildExtensionShareText } from "./shareResult.js";
 
 const fieldIds = [
@@ -212,6 +218,10 @@ document.getElementById("load-form").addEventListener("input", async () => {
   await chrome.storage.local.set({ loadScoreDraft: getForm() });
 });
 
+document.getElementById("analytics-consent").addEventListener("change", async (event) => {
+  await setCentralAnalyticsConsent(event.target.checked);
+});
+
 document.getElementById("parse-selection").addEventListener("click", async () => {
   const status = document.getElementById("parse-status");
   await trackEvent("highlight_parser_used", { surface: "extension" });
@@ -349,6 +359,7 @@ const stored = await chrome.storage.local.get([
   "loadScoreSavedLoads",
 ]);
 savedLoads = Array.isArray(stored.loadScoreSavedLoads) ? stored.loadScoreSavedLoads : [];
+document.getElementById("analytics-consent").checked = await getCentralAnalyticsConsent();
 setForm({ ...(stored.loadScoreDefaults || {}), ...(stored.loadScoreDraft || {}) });
 renderSavedLoads();
 await initializeExtensionAnalytics();

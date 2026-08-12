@@ -1,8 +1,10 @@
 /* global chrome */
+import { extensionAnalyticsConfig } from "./analyticsConfig.js";
 const EVENTS_KEY = "loadScoreAnalyticsEvents";
 const ID_KEY = "loadScoreAnalyticsId";
 const USAGE_KEY = "loadScoreAnalyticsUsage";
 const MAX_EVENTS = 200;
+const CONSENT_KEY = "loadScoreCentralAnalyticsConsent";
 
 const supportedEvents = new Set([
   "extension_opened", "load_calculated", "load_saved", "comparison_viewed",
@@ -49,7 +51,30 @@ export async function trackEvent(eventName, properties = {}) {
     [ID_KEY]: id,
     [EVENTS_KEY]: [...events, event].slice(-MAX_EVENTS),
   });
+  const consent = await chrome.storage.local.get(CONSENT_KEY);
+  if (consent[CONSENT_KEY] === true && extensionAnalyticsConfig.endpoint && extensionAnalyticsConfig.siteId) {
+    void fetch(extensionAnalyticsConfig.endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        site_id: extensionAnalyticsConfig.siteId,
+        event: event.event,
+        occurred_at: event.occurred_at,
+        anonymous_id: event.anonymous_id,
+        properties: event.properties,
+      }),
+    }).catch(() => undefined);
+  }
   return true;
+}
+
+export async function getCentralAnalyticsConsent() {
+  const stored = await chrome.storage.local.get(CONSENT_KEY);
+  return stored[CONSENT_KEY] === true;
+}
+
+export async function setCentralAnalyticsConsent(enabled) {
+  await chrome.storage.local.set({ [CONSENT_KEY]: Boolean(enabled) });
 }
 
 export async function initializeExtensionAnalytics() {

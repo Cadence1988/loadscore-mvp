@@ -271,6 +271,10 @@ summary { cursor: pointer; color: #405166; font-size: 12px; font-weight: 800; }
 
 footer { margin-top: 12px; }
 
+.privacy-toggle { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 10px; }
+.privacy-toggle input { width: 15px; height: 15px; margin: 0; }
+.privacy-note { margin: -2px 0 8px; color: #65758a; font-size: 9px; line-height: 1.4; }
+
 .save-actions {
   justify-content: flex-start;
   flex-wrap: wrap;
