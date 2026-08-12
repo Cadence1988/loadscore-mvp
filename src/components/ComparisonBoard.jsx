@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { evaluateAlertMatch } from "../logic/evaluateAlertMatch";
+import { activeModeEvaluation } from "../logic/operatingModes";
 import { trackEvent } from "../analytics/analytics";
 import { isActiveLoad, LOAD_STATUS_LABELS, LOAD_STATUSES, normalizeLoadLifecycle } from "../logic/loadLifecycle";
 
@@ -11,14 +11,7 @@ function money(value) {
   });
 }
 
-const statusLabels = {
-  match: "Matches alert",
-  near_match: "Almost matches",
-  no_match: "Does not match",
-  missing_data: "Missing data",
-};
-
-export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChange, alertProfile }) {
+export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChange, modeConfiguration }) {
   const lastViewedCount = useRef(0);
   const rankedLoads = [...loads].sort(
     (a, b) =>
@@ -28,7 +21,7 @@ export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChan
   );
   const evaluatedLoads = rankedLoads.map((original) => {
     const load = normalizeLoadLifecycle(original);
-    return { ...load, alertMatch: evaluateAlertMatch(load, alertProfile) };
+    return { ...load, alertMatch: activeModeEvaluation(load, modeConfiguration) };
   });
   const matchedCount = evaluatedLoads.filter((load) => load.alertMatch.matches && isActiveLoad(load)).length;
 
@@ -56,7 +49,7 @@ export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChan
         </div>
         <div className="comparison-actions">
           {loads.length > 0 && (
-            <span className="match-count">{matchedCount} matched saved load{matchedCount === 1 ? "" : "s"}</span>
+            <span className="match-count">{matchedCount} {modeConfiguration.activeMode} match{matchedCount === 1 ? "" : "es"}</span>
           )}
           {loads.length > 0 && (
             <button className="text-button" type="button" onClick={onClear}>
@@ -107,12 +100,13 @@ export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChan
                   <td>{load.result.reloadScore}/100</td>
                   <td className="alert-match-cell">
                     <span className={`alert-status ${load.alertMatch.status}`}>
-                      {statusLabels[load.alertMatch.status]}
+                      {load.alertMatch.label}
                     </span>
                     <small>{load.alertMatch.explanation}</small>
                     {load.alertMatch.warnings.map((warning) => (
                       <small className="alert-warning" key={warning}>{warning}</small>
                     ))}
+                    <small className="mode-visibility">Preferred: {load.alertMatch.evaluations.preferred.matches ? "Yes" : "No"} · Flexible: {load.alertMatch.evaluations.flexible.matches ? "Yes" : "No"} · Recovery: {load.alertMatch.evaluations.recovery.matches ? "Yes" : "No"}</small>
                   </td>
                   <td>
                     <select className="load-status-select" value={load.status} onChange={(event) => onStatusChange(load.id, event.target.value)}>

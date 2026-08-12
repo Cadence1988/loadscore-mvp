@@ -5,9 +5,8 @@ import {
   getCuratedMarketScore,
 } from "./data/marketScores";
 import { calculateLoadScore } from "./logic/calculateLoadScore";
-import { evaluateAlertMatch } from "./logic/evaluateAlertMatch";
 import AutocompleteInput from "./components/AutocompleteInput";
-import AlertPreferences from "./components/AlertPreferences";
+import OperatingModes from "./components/OperatingModes";
 import ComparisonBoard from "./components/ComparisonBoard";
 import DriverProfiles from "./components/DriverProfiles";
 import FeedbackForm from "./components/FeedbackForm";
@@ -15,6 +14,7 @@ import MinimumRateGuide from "./components/MinimumRateGuide";
 import RecommendationFeedback from "./components/RecommendationFeedback";
 import ShareResult from "./components/ShareResult";
 import AnalyticsPreference from "./components/AnalyticsPreference";
+import { activeModeEvaluation, migrateOperatingModes, profileForMode } from "./logic/operatingModes";
 import {
   EQUIPMENT_TYPES,
   LOAD_STATUS_LABELS,
@@ -83,10 +83,11 @@ export default function App() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [showPeriodicFeedback, setShowPeriodicFeedback] = useState(false);
   const lastTrackedCalculation = useRef("");
-  const [targets, setTargets] = useState(() => ({
-    ...defaultTargets,
-    ...loadStored("loadscore-targets", {}),
-  }));
+  const [modeConfiguration, setModeConfiguration] = useState(() => migrateOperatingModes(
+    { ...defaultTargets, ...loadStored("loadscore-targets", {}) },
+    loadStored("loadscore-operating-modes", {}),
+  ));
+  const targets = profileForMode(modeConfiguration, modeConfiguration.activeMode);
   const [comparisonLoads, setComparisonLoads] = useState(() =>
     loadStored("loadscore-comparisons", []),
   );
@@ -97,6 +98,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("loadscore-targets", JSON.stringify(targets));
   }, [targets]);
+
+  useEffect(() => {
+    localStorage.setItem("loadscore-operating-modes", JSON.stringify(modeConfiguration));
+  }, [modeConfiguration]);
 
   useEffect(() => {
     localStorage.setItem("loadscore-comparisons", JSON.stringify(comparisonLoads));
@@ -142,7 +147,7 @@ export default function App() {
 
   const currentAlertMatch = useMemo(
     () =>
-      evaluateAlertMatch(
+      activeModeEvaluation(
         {
           ...form,
           result,
@@ -153,9 +158,9 @@ export default function App() {
                 ? "curated"
                 : "default",
         },
-        targets,
+        modeConfiguration,
       ),
-    [detectedReloadScore, form, result, targets],
+    [detectedReloadScore, form, modeConfiguration, result],
   );
 
   useEffect(() => {
@@ -225,7 +230,19 @@ export default function App() {
   }
 
   function updateTarget(field, value) {
-    setTargets((previous) => ({ ...previous, [field]: value }));
+    setModeConfiguration((previous) => {
+      const isDestination = field === "preferredDestinations" || field === "avoidedDestinations";
+      return isDestination
+        ? { ...previous, globalDestinations: { ...previous.globalDestinations, [field]: value } }
+        : { ...previous, modes: { ...previous.modes, [previous.activeMode]: { ...previous.modes[previous.activeMode], [field]: value } } };
+    });
+    trackEvent("operating_mode_settings_updated", { surface: "web", mode: modeConfiguration.activeMode });
+  }
+
+  function selectOperatingMode(mode) {
+    setModeConfiguration((previous) => ({ ...previous, activeMode: mode }));
+    trackEvent("operating_mode_selected", { surface: "web", mode });
+    trackEvent(`${mode}_mode_selected`, { surface: "web", mode });
   }
 
   function saveCurrentLoad() {
@@ -532,6 +549,7 @@ export default function App() {
             result={result}
             targets={targets}
             reloadScoreSource={reloadScoreSourceKey}
+            modeLabel={currentAlertMatch.label}
           />
 
           <RecommendationFeedback
@@ -542,11 +560,12 @@ export default function App() {
         </section>
       </section>
 
-      <AlertPreferences targets={targets} onChange={updateTarget} />
+      <OperatingModes configuration={modeConfiguration} onModeSelect={selectOperatingMode} onRuleChange={updateTarget} />
 
       <ComparisonBoard
         loads={comparisonLoads}
         alertProfile={targets}
+        modeConfiguration={modeConfiguration}
         onRemove={removeComparisonLoad}
         onClear={clearComparisonLoads}
         onStatusChange={updateComparisonStatus}
@@ -573,15 +592,20 @@ export default function App() {
             fuelPrice: profile.fuelPrice,
             fixedCostPerMile: profile.fixedCostPerMile,
           }));
-          setTargets((previous) => ({
+          setModeConfiguration((previous) => ({
             ...previous,
-            targetAllInRpm: profile.targetAllInRpm,
-            targetProfit: profile.targetProfit,
-            minimumLoadScore: profile.minimumLoadScore ?? 70,
-            maximumDeadhead: profile.maximumDeadhead ?? 100,
-            minimumReloadScore: profile.minimumReloadScore ?? 50,
-            preferredDestinations: profile.preferredDestinations ?? "",
-            avoidedDestinations: profile.avoidedDestinations ?? "",
+            globalDestinations: {
+              preferredDestinations: profile.preferredDestinations ?? "",
+              avoidedDestinations: profile.avoidedDestinations ?? "",
+            },
+            modes: { ...previous.modes, [previous.activeMode]: {
+              ...previous.modes[previous.activeMode],
+              targetAllInRpm: profile.targetAllInRpm,
+              targetProfit: profile.targetProfit,
+              minimumLoadScore: profile.minimumLoadScore ?? 70,
+              maximumDeadhead: profile.maximumDeadhead ?? 100,
+              minimumReloadScore: profile.minimumReloadScore ?? 50,
+            } },
           }));
           trackEvent("profile_applied", {
             surface: "web",
@@ -652,13 +676,15 @@ function AlertMatchSummary({ alertMatch }) {
       <div className="current-alert-heading">
         <div>
           <p className="eyebrow">Local alert check</p>
-          <h3>{alertStatusLabels[alertMatch.status]}</h3>
+          <h3>{alertMatch.label || alertStatusLabels[alertMatch.status]}</h3>
         </div>
         <span className={`alert-status ${alertMatch.status}`}>
           {alertStatusLabels[alertMatch.status]}
         </span>
       </div>
       <p>{alertMatch.explanation}</p>
+      {alertMatch.preferredComparison && <p><strong>{alertMatch.preferredComparison}</strong></p>}
+      {alertMatch.evaluations && <p className="mode-visibility">Preferred: {alertMatch.evaluations.preferred.matches ? "Yes" : "No"} · Flexible: {alertMatch.evaluations.flexible.matches ? "Yes" : "No"} · Recovery: {alertMatch.evaluations.recovery.matches ? "Yes" : "No"}</p>}
       {(alertMatch.failedRules.length > 0 || alertMatch.warnings.length > 0) && (
         <details>
           <summary>Review alert details</summary>

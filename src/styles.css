@@ -1245,3 +1245,13 @@ textarea {
 .lifecycle-error, .lifecycle-expired { color: #b42318; font-weight: 700; }
 .lifecycle-warning { color: #9a6700; }
 .load-status-select { min-width: 145px; padding: 7px; font-size: 12px; }
+.operating-modes { max-width: 1180px; margin: 28px auto; padding: 24px; border: 1px solid #d9e1ea; border-radius: 18px; background: white; }
+.operating-heading { display: flex; justify-content: space-between; gap: 16px; align-items: start; }
+.mode-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
+.mode-picker button { padding: 14px; border: 1px solid #cad5e2; border-radius: 12px; background: #f8fafc; color: #25364c; text-align: left; cursor: pointer; }
+.mode-picker button.active { border-color: #f28b24; box-shadow: 0 0 0 2px #fed7aa; background: #fff7ed; }
+.mode-picker strong, .mode-picker span { display: block; }
+.mode-picker span { margin-top: 5px; color: #607086; font-size: 12px; line-height: 1.4; }
+.operating-modes .alert-rules-section { margin: 20px 0 0; }
+.mode-default-note, .mode-visibility { color: #607086; font-size: 12px; }
+@media (max-width: 700px) { .mode-picker { grid-template-columns: 1fr; } }

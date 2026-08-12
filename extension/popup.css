@@ -387,3 +387,5 @@ footer .primary-save {
 .notification-item { padding: 8px 10px; border: 1px solid #d8e0ea; border-radius: 9px; background: white; font-size: 10px; }
 .notification-item strong, .notification-item span { display: block; }
 .notification-item span { margin-top: 3px; color: #65758a; }
+.mode-control { margin-bottom: 10px; padding: 10px; border: 1px solid #fed7aa; border-radius: 10px; background: #fff7ed; }
+.mode-control select { margin-top: 5px; }

@@ -17,6 +17,9 @@ const supportedEvents = new Set([
   "notification_opened", "notification_dismissed",
   "notification_suppressed_duplicate", "notification_suppressed_quiet_hours",
   "load_expired", "load_status_changed", "load_timing_added", "equipment_selected",
+  "operating_mode_selected", "operating_mode_settings_updated",
+  "preferred_mode_selected", "flexible_mode_selected", "recovery_mode_selected",
+  "flexible_options_viewed", "recovery_options_viewed",
 ]);
 
 const allowedKeys = new Set([
@@ -24,6 +27,7 @@ const allowedKeys = new Set([
   "reload_score_source", "deadhead_entered", "alert_status", "saved_load_count",
   "parser_result", "share_method", "minimum_rate_band", "target_met",
   "status", "equipment", "notification_reason", "suppression_reason",
+  "mode", "match_type",
 ]);
 
 function sanitize(properties = {}) {

@@ -6,13 +6,14 @@ function money(value) {
   });
 }
 
-export function buildExtensionShareText({ form, result, rate }) {
+export function buildExtensionShareText({ form, result, rate, modeLabel }) {
   const factors = [...(result.positives || []), ...(result.warnings || [])].slice(0, 4);
   const why = factors.length ? factors.map((factor) => `• ${factor}`).join("\n") : `• ${result.recommendation}`;
   return [
     `LoadScore — ${form.origin || "Unknown origin"} → ${form.destination || "Unknown destination"}`,
     "",
     `LoadScore: ${result.score} / ${result.label}`,
+    ...(modeLabel ? [`Operating Mode: ${modeLabel}`] : []),
     `Offer: ${money(form.loadRate)}`,
     `All-in RPM: $${Number(result.allInRpm || 0).toFixed(2)}`,
     `Estimated Profit: ${money(result.estimatedProfit)}`,

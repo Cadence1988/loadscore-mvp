@@ -4,7 +4,7 @@ import {
   calculateMinimumRate,
   parseHighlightedLoad,
 } from "./loadScore.js";
-import { evaluateAlertMatch } from "./evaluateAlertMatch.js";
+import { activeModeEvaluation, migrateOperatingModes, MODE_DEFINITIONS, profileForMode } from "./operatingModes.js";
 import {
   getCentralAnalyticsConsent,
   initializeExtensionAnalytics,
@@ -37,18 +37,23 @@ const loadFieldIds = [
   "expectedEmptyDate", "expectedEmptyTime", "equipment", "brokerReference",
   "source", "loadIdentifier", "expirationDate", "expirationTime", "status",
 ];
-const alertLabels = {
-  match: "Matches alert",
-  near_match: "Almost matches",
-  no_match: "Does not match",
-  missing_data: "Missing data",
-};
 let savedLoads = [];
 let negotiationText = "";
 let shareText = "";
 let calculationTimer;
 let lastTrackedCalculation = "";
 let lastTrackedMinimumRate = null;
+let operatingConfiguration = migrateOperatingModes();
+const modeFieldIds = ["targetAllInRpm", "targetProfit", "minimumLoadScore", "maximumDeadhead", "minimumReloadScore"];
+
+function updateModeConfigurationFromForm() {
+  const form = getForm();
+  operatingConfiguration = {
+    ...operatingConfiguration,
+    globalDestinations: { preferredDestinations: form.preferredDestinations, avoidedDestinations: form.avoidedDestinations },
+    modes: { ...operatingConfiguration.modes, [operatingConfiguration.activeMode]: Object.fromEntries(modeFieldIds.map((id) => [id, form[id]])) },
+  };
+}
 
 function getForm() {
   return Object.fromEntries(
@@ -65,7 +70,7 @@ function render() {
   const form = getForm();
   const result = calculateLoadScore(form);
   const rate = calculateMinimumRate(form);
-  const alertMatch = evaluateAlertMatch({ ...form, result }, form);
+  const alertMatch = activeModeEvaluation({ ...form, result }, operatingConfiguration);
   document.getElementById("score").textContent = result.score;
   const badge = document.getElementById("label");
   badge.textContent = result.label;
@@ -76,9 +81,10 @@ function render() {
   document.getElementById("total-miles").textContent = result.totalMiles.toFixed(0);
   document.getElementById("reload-result").textContent = `${result.reloadScore}/100`;
   const alertStatus = document.getElementById("alert-match-status");
-  alertStatus.textContent = alertLabels[alertMatch.status];
+  alertStatus.textContent = alertMatch.label;
   alertStatus.className = alertMatch.status;
   document.getElementById("local-alert-title").textContent = alertMatch.explanation;
+  document.getElementById("cross-mode-status").textContent = `Preferred: ${alertMatch.evaluations.preferred.matches ? "Yes" : "No"} · Flexible: ${alertMatch.evaluations.flexible.matches ? "Yes" : "No"} · Recovery: ${alertMatch.evaluations.recovery.matches ? "Yes" : "No"}`;
   const timing = validateLoadTiming(form);
   document.getElementById("timing-status").textContent = timing.errors[0]
     || timing.warnings[0]
@@ -93,7 +99,7 @@ function render() {
     ? `The current $${Number(form.loadRate || 0).toLocaleString()} offer from ${form.origin || "origin"} to ${form.destination || "destination"} meets my operating targets.`
     : `I can cover ${form.origin || "the origin"} to ${form.destination || "the destination"} for $${rate.minimumRate.toLocaleString()} based on the deadhead and operating cost. Can you make that work?`;
   document.getElementById("negotiation-message").textContent = negotiationText;
-  shareText = buildExtensionShareText({ form, result, rate });
+  shareText = buildExtensionShareText({ form, result, rate, modeLabel: alertMatch.label });
   if (result.totalMiles > 0 && rate.minimumRate !== lastTrackedMinimumRate) {
     lastTrackedMinimumRate = rate.minimumRate;
     void trackEvent("minimum_rate_viewed", {
@@ -109,7 +115,7 @@ function scheduleCalculationTracking() {
   calculationTimer = window.setTimeout(() => {
     const form = getForm();
     const result = calculateLoadScore(form);
-    const alertMatch = evaluateAlertMatch({ ...form, result }, form);
+    const alertMatch = activeModeEvaluation({ ...form, result }, operatingConfiguration);
     const signature = JSON.stringify({
       origin: form.origin,
       destination: form.destination,
@@ -185,7 +191,7 @@ function renderSavedLoads() {
         fuelPrice: alertProfile.fuelPrice,
         fixedCostPerMile: alertProfile.fixedCostPerMile,
       });
-      const alertMatch = evaluateAlertMatch({ ...load, result }, alertProfile);
+      const alertMatch = activeModeEvaluation({ ...load, result }, operatingConfiguration);
       return `
         <article class="saved-load">
           <div class="saved-load-top">
@@ -196,7 +202,7 @@ function renderSavedLoads() {
             <span class="saved-load-score">${result.score}</span>
           </div>
           <div class="saved-alert">
-            <span class="saved-alert-status ${alertMatch.status}">${alertLabels[alertMatch.status]}</span>
+            <span class="saved-alert-status ${alertMatch.status}">${alertMatch.label}</span>
             <span class="saved-alert-explanation">${escapeHtml(alertMatch.explanation)}</span>
           </div>
           <span class="lifecycle-meta">${escapeHtml(load.equipment || "Equipment not specified")} · ${escapeHtml(load.status.replaceAll("_", " "))}</span>
@@ -223,17 +229,30 @@ async function updateMatchedBadge() {
       fuelPrice: alertProfile.fuelPrice,
       fixedCostPerMile: alertProfile.fixedCostPerMile,
     });
-    return evaluateAlertMatch({ ...load, result }, alertProfile);
+    return activeModeEvaluation({ ...load, result }, operatingConfiguration);
   });
   await chrome.action.setBadgeBackgroundColor({ color: "#15803d" });
   await chrome.action.setBadgeText({ text: matchedCount > 0 ? String(matchedCount) : "" });
 }
 
 document.getElementById("load-form").addEventListener("input", async () => {
+  updateModeConfigurationFromForm();
+  await chrome.storage.local.set({ loadScoreOperatingModes: operatingConfiguration });
   render();
   renderSavedLoads();
   scheduleCalculationTracking();
   await chrome.storage.local.set({ loadScoreDraft: getForm() });
+});
+
+document.getElementById("operating-mode").addEventListener("change", async (event) => {
+  updateModeConfigurationFromForm();
+  operatingConfiguration.activeMode = event.target.value;
+  setForm(profileForMode(operatingConfiguration, operatingConfiguration.activeMode));
+  document.getElementById("mode-description").textContent = `${MODE_DEFINITIONS[operatingConfiguration.activeMode].description} LoadScore itself does not change.`;
+  await chrome.storage.local.set({ loadScoreOperatingModes: operatingConfiguration });
+  await trackEvent("operating_mode_selected", { surface: "extension", mode: operatingConfiguration.activeMode });
+  await trackEvent(`${operatingConfiguration.activeMode}_mode_selected`, { surface: "extension", mode: operatingConfiguration.activeMode });
+  renderSavedLoads();
 });
 
 document.getElementById("analytics-consent").addEventListener("change", async (event) => {
@@ -306,7 +325,9 @@ document.getElementById("parse-selection").addEventListener("click", async () =>
 
 document.getElementById("save-defaults").addEventListener("click", async () => {
   const form = getForm();
+  updateModeConfigurationFromForm();
   await chrome.storage.local.set({
+    loadScoreOperatingModes: operatingConfiguration,
     loadScoreDefaults: {
       mpg: form.mpg,
       fuelPrice: form.fuelPrice,
@@ -379,7 +400,7 @@ document.getElementById("save-load").addEventListener("click", async () => {
   if (load.status === "expired") await trackEvent("load_expired", { surface: "extension", status: "expired" });
   const form = getForm();
   const result = calculateLoadScore(form);
-  const alertMatch = evaluateAlertMatch({ ...load, result }, form);
+  const alertMatch = activeModeEvaluation({ ...load, result }, operatingConfiguration);
   const notificationDecision = await chrome.runtime.sendMessage({ type: "evaluateNotification", load, result, alertMatch });
   if (notificationDecision?.eligible) document.getElementById("save-status").textContent = "Load saved and match notification created";
   renderSavedLoads();
@@ -427,14 +448,18 @@ const stored = await chrome.storage.local.get([
   "loadScoreDraft",
   "loadScoreSavedLoads",
   "loadScoreNotificationSettings",
+  "loadScoreOperatingModes",
 ]);
 savedLoads = Array.isArray(stored.loadScoreSavedLoads) ? stored.loadScoreSavedLoads : [];
+operatingConfiguration = migrateOperatingModes(stored.loadScoreDefaults || {}, stored.loadScoreOperatingModes || {});
+document.getElementById("operating-mode").value = operatingConfiguration.activeMode;
+document.getElementById("mode-description").textContent = `${MODE_DEFINITIONS[operatingConfiguration.activeMode].description} LoadScore itself does not change.`;
 const notificationSettings = { ...DEFAULT_NOTIFICATION_SETTINGS, ...(stored.loadScoreNotificationSettings || {}) };
 document.getElementById("notifications-enabled").checked = notificationSettings.enabled;
 document.getElementById("quiet-start").value = notificationSettings.quietStart;
 document.getElementById("quiet-end").value = notificationSettings.quietEnd;
 document.getElementById("analytics-consent").checked = await getCentralAnalyticsConsent();
-setForm({ ...(stored.loadScoreDefaults || {}), ...(stored.loadScoreDraft || {}) });
+setForm({ ...(stored.loadScoreDefaults || {}), ...(stored.loadScoreDraft || {}), ...profileForMode(operatingConfiguration, operatingConfiguration.activeMode) });
 renderSavedLoads();
 await renderNotificationHistory();
 await initializeExtensionAnalytics();

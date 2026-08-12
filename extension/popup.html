@@ -24,6 +24,10 @@
       </p>
 
       <form id="load-form">
+        <label class="mode-control">Operating Mode
+          <select id="operating-mode"><option value="preferred">Preferred</option><option value="flexible">Flexible</option><option value="recovery">Recovery</option></select>
+          <span id="mode-description" class="privacy-note">Strong fit with your normal targets. LoadScore itself does not change.</span>
+        </label>
         <div class="two-col">
           <label>Origin<input id="origin" placeholder="Dallas, TX" /></label>
           <label>Destination<input id="destination" placeholder="Atlanta, GA" /></label>
@@ -108,6 +112,7 @@
             <b id="alert-match-status">Missing data</b>
           </div>
           <p id="local-alert-title">This evaluates only the load you entered or selected.</p>
+          <p id="cross-mode-status" class="privacy-note"></p>
         </section>
 
         <section class="negotiator" aria-labelledby="negotiator-title">

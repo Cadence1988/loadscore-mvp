@@ -45,6 +45,13 @@ export const supportedEvents = new Set([
   "load_status_changed",
   "load_timing_added",
   "equipment_selected",
+  "operating_mode_selected",
+  "operating_mode_settings_updated",
+  "preferred_mode_selected",
+  "flexible_mode_selected",
+  "recovery_mode_selected",
+  "flexible_options_viewed",
+  "recovery_options_viewed",
 ]);
 
 const allowedPropertyKeys = new Set([
@@ -69,6 +76,8 @@ const allowedPropertyKeys = new Set([
   "equipment",
   "notification_reason",
   "suppression_reason",
+  "mode",
+  "match_type",
 ]);
 
 function safeStorage() {

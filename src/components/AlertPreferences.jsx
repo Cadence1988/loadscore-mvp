@@ -1,10 +1,10 @@
-export default function AlertPreferences({ targets, onChange }) {
+export default function AlertPreferences({ targets, onChange, modeName = "Preferred" }) {
   return (
     <section className="alert-rules-section" aria-labelledby="alert-rules-title">
       <div className="alert-rules-heading">
         <div>
-          <p className="eyebrow">Phase 10A</p>
-          <h2 id="alert-rules-title">Your Alert Rules</h2>
+          <p className="eyebrow">{modeName} settings</p>
+          <h2 id="alert-rules-title">{modeName} Mode Rules</h2>
           <p>
             These local rules evaluate only loads you manually enter, save, or
             select. They do not monitor load boards or find loads automatically.

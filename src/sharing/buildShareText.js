@@ -14,7 +14,7 @@ function reloadLabel(source) {
   return "Neutral default estimate (unknown market)";
 }
 
-export function buildShareText({ form, result, reloadScoreSource, minimumRate }) {
+export function buildShareText({ form, result, reloadScoreSource, minimumRate, modeLabel }) {
   const positives = result.explanation?.positives || [];
   const warnings = result.explanation?.warnings || [];
   const reasons = [...positives.slice(0, 3), ...warnings.slice(0, 2)].slice(0, 4);
@@ -26,6 +26,7 @@ export function buildShareText({ form, result, reloadScoreSource, minimumRate })
     `LoadScore — ${form.origin || "Unknown origin"} → ${form.destination || "Unknown destination"}`,
     "",
     `LoadScore: ${result.score} / ${result.label}`,
+    ...(modeLabel ? [`Operating Mode: ${modeLabel}`] : []),
     `Offer: ${money(form.loadRate)}`,
     `All-in RPM: $${Number(result.allInRpm || 0).toFixed(2)}`,
     `Estimated Profit: ${money(result.estimatedProfit)}`,
