@@ -1,4 +1,6 @@
+import { useEffect, useRef } from "react";
 import { evaluateAlertMatch } from "../logic/evaluateAlertMatch";
+import { trackEvent } from "../analytics/analytics";
 
 function money(value) {
   return value.toLocaleString(undefined, {
@@ -16,6 +18,7 @@ const statusLabels = {
 };
 
 export default function ComparisonBoard({ loads, onRemove, onClear, alertProfile }) {
+  const lastViewedCount = useRef(0);
   const rankedLoads = [...loads].sort(
     (a, b) =>
       b.result.score - a.result.score ||
@@ -27,6 +30,16 @@ export default function ComparisonBoard({ loads, onRemove, onClear, alertProfile
     alertMatch: evaluateAlertMatch(load, alertProfile),
   }));
   const matchedCount = evaluatedLoads.filter((load) => load.alertMatch.matches).length;
+
+  useEffect(() => {
+    if (loads.length > 0 && loads.length !== lastViewedCount.current) {
+      trackEvent("comparison_viewed", {
+        surface: "web",
+        saved_load_count: loads.length,
+      });
+    }
+    lastViewedCount.current = loads.length;
+  }, [loads.length]);
 
   return (
     <section className="comparison-section" aria-labelledby="comparison-title">

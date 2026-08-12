@@ -217,6 +217,58 @@ summary { cursor: pointer; color: #405166; font-size: 12px; font-weight: 800; }
   cursor: pointer;
 }
 
+.share-result {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  background: #fff7ed;
+}
+
+.share-result span,
+.share-result strong {
+  display: block;
+}
+
+.share-result > div span {
+  color: #9a3412;
+  font-size: 9px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.share-result > div strong {
+  margin-top: 3px;
+  color: #152033;
+  font-size: 14px;
+}
+
+.share-result p {
+  margin: 8px 0;
+  color: #7c4a21;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+#copy-result {
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: #ff8c1a;
+  color: white;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+#share-status {
+  min-height: 0;
+  margin-top: 7px;
+  color: #166534;
+}
+
 footer { margin-top: 12px; }
 
 .save-actions {

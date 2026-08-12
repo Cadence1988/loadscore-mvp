@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./styles.css";
 import {
   DEFAULT_RELOAD_SCORE,
@@ -12,6 +12,16 @@ import ComparisonBoard from "./components/ComparisonBoard";
 import DriverProfiles from "./components/DriverProfiles";
 import FeedbackForm from "./components/FeedbackForm";
 import MinimumRateGuide from "./components/MinimumRateGuide";
+import RecommendationFeedback from "./components/RecommendationFeedback";
+import ShareResult from "./components/ShareResult";
+import {
+  incrementCalculationCount,
+  initializeAnalytics,
+  markPeriodicFeedbackShown,
+  scoreBand,
+  shouldShowPeriodicFeedback,
+  trackEvent,
+} from "./analytics/analytics";
 
 const defaultForm = {
   origin: "Dallas, TX",
@@ -58,6 +68,9 @@ function decimal(value) {
 
 export default function App() {
   const [form, setForm] = useState(defaultForm);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [showPeriodicFeedback, setShowPeriodicFeedback] = useState(false);
+  const lastTrackedCalculation = useRef("");
   const [targets, setTargets] = useState(() => ({
     ...defaultTargets,
     ...loadStored("loadscore-targets", {}),
@@ -81,6 +94,10 @@ export default function App() {
     localStorage.setItem("loadscore-profiles", JSON.stringify(profiles));
   }, [profiles]);
 
+  useEffect(() => {
+    initializeAnalytics("web");
+  }, []);
+
   const detectedReloadScore = getCuratedMarketScore(form.destination);
 
   const reloadScore =
@@ -94,6 +111,13 @@ export default function App() {
       : detectedReloadScore !== null
         ? "Curated starter estimate"
         : "Neutral default for an unscored market";
+
+  const reloadScoreSourceKey =
+    form.manualReloadScore !== ""
+      ? "manual"
+      : detectedReloadScore !== null
+        ? "curated"
+        : "default";
 
   const result = useMemo(() => {
     return calculateLoadScore({
@@ -120,7 +144,66 @@ export default function App() {
     [detectedReloadScore, form, result, targets],
   );
 
+  useEffect(() => {
+    if (!hasInteracted) return undefined;
+    const isComplete = Boolean(
+      String(form.origin).trim()
+      && String(form.destination).trim()
+      && Number(form.loadRate) > 0
+      && Number(form.loadedMiles) > 0,
+    );
+
+    const signature = JSON.stringify({
+      origin: form.origin,
+      destination: form.destination,
+      loadRate: form.loadRate,
+      loadedMiles: form.loadedMiles,
+      deadheadMiles: form.deadheadMiles,
+      manualReloadScore: form.manualReloadScore,
+      mpg: form.mpg,
+      fuelPrice: form.fuelPrice,
+      fixedCostPerMile: form.fixedCostPerMile,
+      alertStatus: currentAlertMatch.status,
+    });
+
+    const timer = window.setTimeout(() => {
+      if (signature === lastTrackedCalculation.current) return;
+      lastTrackedCalculation.current = signature;
+      if (isComplete) {
+        trackEvent("load_calculated", {
+          surface: "web",
+          score_band: scoreBand(result.score),
+          reload_market_known: reloadScoreSourceKey !== "default",
+          reload_score_source: reloadScoreSourceKey,
+          deadhead_entered: Number(form.deadheadMiles) > 0,
+          alert_status: currentAlertMatch.status,
+        });
+      }
+      trackEvent(`alert_${currentAlertMatch.status}`, {
+        surface: "web",
+        score_band: scoreBand(result.score),
+        alert_status: currentAlertMatch.status,
+      });
+      if (isComplete) {
+        const calculationCount = incrementCalculationCount();
+        if (shouldShowPeriodicFeedback(calculationCount)) {
+          markPeriodicFeedbackShown(calculationCount);
+          setShowPeriodicFeedback(true);
+        }
+      }
+    }, 800);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    currentAlertMatch.status,
+    form,
+    hasInteracted,
+    reloadScoreSourceKey,
+    result.score,
+  ]);
+
   function updateField(field, value) {
+    setHasInteracted(true);
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -129,23 +212,34 @@ export default function App() {
   }
 
   function saveCurrentLoad() {
-    setComparisonLoads((previous) => {
-      if (previous.length >= 7) return previous;
-      return [
-        ...previous,
-        {
-          ...form,
-          id: crypto.randomUUID(),
-          result,
-          reloadScoreSource:
-            form.manualReloadScore !== ""
-              ? "manual"
-              : detectedReloadScore !== null
-                ? "curated"
-                : "default",
-        },
-      ];
+    if (comparisonLoads.length >= 7) return;
+    setHasInteracted(true);
+    const nextLoad = {
+      ...form,
+      id: crypto.randomUUID(),
+      result,
+      reloadScoreSource: reloadScoreSourceKey,
+    };
+    setComparisonLoads((previous) => [...previous, nextLoad]);
+    trackEvent("load_saved", {
+      surface: "web",
+      score_band: scoreBand(result.score),
+      saved_load_count: comparisonLoads.length + 1,
+      alert_status: currentAlertMatch.status,
     });
+  }
+
+  function removeComparisonLoad(id) {
+    setComparisonLoads((previous) => previous.filter((load) => load.id !== id));
+    trackEvent("comparison_load_removed", {
+      surface: "web",
+      saved_load_count: Math.max(0, comparisonLoads.length - 1),
+    });
+  }
+
+  function clearComparisonLoads() {
+    setComparisonLoads([]);
+    trackEvent("comparison_cleared", { surface: "web", saved_load_count: 0 });
   }
 
   return (
@@ -379,6 +473,19 @@ export default function App() {
             targets={targets}
             onTargetChange={updateTarget}
           />
+
+          <ShareResult
+            form={form}
+            result={result}
+            targets={targets}
+            reloadScoreSource={reloadScoreSourceKey}
+          />
+
+          <RecommendationFeedback
+            score={result.score}
+            showPeriodicPrompt={showPeriodicFeedback}
+            onPeriodicComplete={() => setShowPeriodicFeedback(false)}
+          />
         </section>
       </section>
 
@@ -387,19 +494,21 @@ export default function App() {
       <ComparisonBoard
         loads={comparisonLoads}
         alertProfile={targets}
-        onRemove={(id) =>
-          setComparisonLoads((previous) =>
-            previous.filter((load) => load.id !== id),
-          )
-        }
-        onClear={() => setComparisonLoads([])}
+        onRemove={removeComparisonLoad}
+        onClear={clearComparisonLoads}
       />
 
       <DriverProfiles
         profiles={profiles}
         form={form}
         targets={targets}
-        onSave={(profile) => setProfiles((previous) => [...previous, profile])}
+        onSave={(profile) => {
+          setProfiles((previous) => [...previous, profile]);
+          trackEvent("profile_saved", {
+            surface: "web",
+            profile_count: profiles.length + 1,
+          });
+        }}
         onDelete={(id) =>
           setProfiles((previous) => previous.filter((profile) => profile.id !== id))
         }
@@ -420,6 +529,10 @@ export default function App() {
             preferredDestinations: profile.preferredDestinations ?? "",
             avoidedDestinations: profile.avoidedDestinations ?? "",
           }));
+          trackEvent("profile_applied", {
+            surface: "web",
+            profile_count: profiles.length,
+          });
         }}
       />
 

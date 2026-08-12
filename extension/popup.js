@@ -5,6 +5,8 @@ import {
   parseHighlightedLoad,
 } from "./loadScore.js";
 import { evaluateAlertMatch } from "./evaluateAlertMatch.js";
+import { initializeExtensionAnalytics, scoreBand, trackEvent } from "./analytics.js";
+import { buildExtensionShareText } from "./shareResult.js";
 
 const fieldIds = [
   "origin", "destination", "loadRate", "loadedMiles", "deadheadMiles",
@@ -29,6 +31,10 @@ const alertLabels = {
 };
 let savedLoads = [];
 let negotiationText = "";
+let shareText = "";
+let calculationTimer;
+let lastTrackedCalculation = "";
+let lastTrackedMinimumRate = null;
 
 function getForm() {
   return Object.fromEntries(
@@ -69,6 +75,50 @@ function render() {
     ? `The current $${Number(form.loadRate || 0).toLocaleString()} offer from ${form.origin || "origin"} to ${form.destination || "destination"} meets my operating targets.`
     : `I can cover ${form.origin || "the origin"} to ${form.destination || "the destination"} for $${rate.minimumRate.toLocaleString()} based on the deadhead and operating cost. Can you make that work?`;
   document.getElementById("negotiation-message").textContent = negotiationText;
+  shareText = buildExtensionShareText({ form, result, rate });
+  if (result.totalMiles > 0 && rate.minimumRate !== lastTrackedMinimumRate) {
+    lastTrackedMinimumRate = rate.minimumRate;
+    void trackEvent("minimum_rate_viewed", {
+      surface: "extension",
+      minimum_rate_band: rate.minimumRate >= 3000 ? "3000_plus" : rate.minimumRate >= 2000 ? "2000_2999" : rate.minimumRate >= 1000 ? "1000_1999" : "under_1000",
+      target_met: rate.meetsTarget,
+    });
+  }
+}
+
+function scheduleCalculationTracking() {
+  window.clearTimeout(calculationTimer);
+  calculationTimer = window.setTimeout(() => {
+    const form = getForm();
+    const result = calculateLoadScore(form);
+    const alertMatch = evaluateAlertMatch({ ...form, result }, form);
+    const signature = JSON.stringify({
+      origin: form.origin,
+      destination: form.destination,
+      loadRate: form.loadRate,
+      loadedMiles: form.loadedMiles,
+      deadheadMiles: form.deadheadMiles,
+      reloadScore: form.reloadScore,
+      alertStatus: alertMatch.status,
+    });
+    if (signature === lastTrackedCalculation) return;
+    lastTrackedCalculation = signature;
+    if (alertMatch.status !== "missing_data") {
+      void trackEvent("load_calculated", {
+        surface: "extension",
+        score_band: scoreBand(result.score),
+        reload_market_known: false,
+        reload_score_source: "user_entered",
+        deadhead_entered: Number(form.deadheadMiles) > 0,
+        alert_status: alertMatch.status,
+      });
+    }
+    void trackEvent(`alert_${alertMatch.status}`, {
+      surface: "extension",
+      score_band: scoreBand(result.score),
+      alert_status: alertMatch.status,
+    });
+  }, 700);
 }
 
 function setForm(values) {
@@ -158,11 +208,13 @@ async function updateMatchedBadge() {
 document.getElementById("load-form").addEventListener("input", async () => {
   render();
   renderSavedLoads();
+  scheduleCalculationTracking();
   await chrome.storage.local.set({ loadScoreDraft: getForm() });
 });
 
 document.getElementById("parse-selection").addEventListener("click", async () => {
   const status = document.getElementById("parse-status");
+  await trackEvent("highlight_parser_used", { surface: "extension" });
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const [{ result: selectedText }] = await chrome.scripting.executeScript({
@@ -171,6 +223,10 @@ document.getElementById("parse-selection").addEventListener("click", async () =>
     });
     if (!selectedText.trim()) {
       status.textContent = "No text is highlighted. Select the visible load offer and try again.";
+      await trackEvent("highlight_parser_failed", {
+        surface: "extension",
+        parser_result: "no_selection",
+      });
       return;
     }
     const parsed = parseHighlightedLoad(selectedText);
@@ -179,11 +235,27 @@ document.getElementById("parse-selection").addEventListener("click", async () =>
     status.textContent = filled.length
       ? `Filled ${filled.length} field${filled.length === 1 ? "" : "s"}. Review the values before using the score.`
       : "Text was read, but no route, rate, or mileage pattern was recognized.";
+    const requiredFields = ["origin", "destination", "loadRate", "loadedMiles"];
+    const requiredCount = requiredFields.filter((field) => parsed[field] !== "").length;
+    const parserEvent = requiredCount === requiredFields.length
+      ? "highlight_parser_success"
+      : filled.length > 0
+        ? "highlight_parser_partial"
+        : "highlight_parser_failed";
+    await trackEvent(parserEvent, {
+      surface: "extension",
+      parser_result: parserEvent.replace("highlight_parser_", ""),
+    });
     render();
     renderSavedLoads();
+    scheduleCalculationTracking();
     await chrome.storage.local.set({ loadScoreDraft: getForm() });
   } catch {
     status.textContent = "This page does not allow selected-text access. Enter the load manually.";
+    await trackEvent("highlight_parser_failed", {
+      surface: "extension",
+      parser_result: "page_blocked",
+    });
   }
 });
 
@@ -207,11 +279,31 @@ document.getElementById("save-defaults").addEventListener("click", async () => {
   document.getElementById("save-status").textContent = loadScoreDefaults
     ? "Truck settings saved"
     : "Truck settings could not be saved";
+  if (loadScoreDefaults) {
+    await trackEvent("profile_saved", { surface: "extension" });
+  }
 });
 
 document.getElementById("copy-negotiation").addEventListener("click", async () => {
   await navigator.clipboard.writeText(negotiationText);
   document.getElementById("save-status").textContent = "Broker message copied";
+  await trackEvent("broker_message_copied", {
+    surface: "extension",
+    share_method: "clipboard",
+  });
+});
+
+document.getElementById("copy-result").addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(shareText);
+    document.getElementById("share-status").textContent = "LoadScore result copied. Review it before sending.";
+    await trackEvent("loadscore_result_copied", {
+      surface: "extension",
+      share_method: "clipboard",
+    });
+  } catch {
+    document.getElementById("share-status").textContent = "Copy was blocked on this page.";
+  }
 });
 
 document.getElementById("save-load").addEventListener("click", async () => {
@@ -225,6 +317,10 @@ document.getElementById("save-load").addEventListener("click", async () => {
   ];
   await chrome.storage.local.set({ loadScoreSavedLoads: savedLoads });
   document.getElementById("save-status").textContent = "Load saved on this device";
+  await trackEvent("load_saved", {
+    surface: "extension",
+    saved_load_count: savedLoads.length,
+  });
   renderSavedLoads();
 });
 
@@ -239,6 +335,10 @@ document.getElementById("saved-loads").addEventListener("click", async (event) =
   } else if (button.dataset.action === "remove") {
     savedLoads = savedLoads.filter((item) => item.id !== button.dataset.id);
     await chrome.storage.local.set({ loadScoreSavedLoads: savedLoads });
+    await trackEvent("comparison_load_removed", {
+      surface: "extension",
+      saved_load_count: savedLoads.length,
+    });
     renderSavedLoads();
   }
 });
@@ -251,3 +351,10 @@ const stored = await chrome.storage.local.get([
 savedLoads = Array.isArray(stored.loadScoreSavedLoads) ? stored.loadScoreSavedLoads : [];
 setForm({ ...(stored.loadScoreDefaults || {}), ...(stored.loadScoreDraft || {}) });
 renderSavedLoads();
+await initializeExtensionAnalytics();
+if (savedLoads.length > 0) {
+  await trackEvent("comparison_viewed", {
+    surface: "extension",
+    saved_load_count: savedLoads.length,
+  });
+}

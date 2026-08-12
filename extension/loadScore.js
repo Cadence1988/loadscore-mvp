@@ -37,7 +37,17 @@ export function calculateLoadScore(input) {
     ? `${label}: the main concern is ${warnings[0]}.`
     : `${label}: the strongest factor is ${positives[0] || "the overall balance"}.`;
 
-  return { score, label, totalMiles, allInRpm, estimatedProfit, reloadScore, recommendation };
+  return {
+    score,
+    label,
+    totalMiles,
+    allInRpm,
+    estimatedProfit,
+    reloadScore,
+    recommendation,
+    positives,
+    warnings,
+  };
 }
 
 export function calculateMinimumRate(input) {

@@ -1,4 +1,6 @@
+import { useEffect, useRef } from "react";
 import { calculateMinimumRate } from "../logic/calculateMinimumRate";
+import { moneyBand, trackEvent } from "../analytics/analytics";
 
 function money(value) {
   return value.toLocaleString(undefined, {
@@ -10,6 +12,17 @@ function money(value) {
 
 export default function MinimumRateGuide({ form, targets, onTargetChange }) {
   const guidance = calculateMinimumRate({ ...form, ...targets });
+  const lastTrackedRate = useRef(null);
+
+  useEffect(() => {
+    if (guidance.totalMiles <= 0 || guidance.minimumRate === lastTrackedRate.current) return;
+    lastTrackedRate.current = guidance.minimumRate;
+    trackEvent("minimum_rate_viewed", {
+      surface: "web",
+      minimum_rate_band: moneyBand(guidance.minimumRate),
+      target_met: guidance.meetsTarget,
+    });
+  }, [guidance.meetsTarget, guidance.minimumRate, guidance.totalMiles]);
 
   return (
     <section className="minimum-rate" aria-labelledby="minimum-rate-title">
