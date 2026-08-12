@@ -13,6 +13,7 @@ $requiredFiles = @(
   "loadLifecycle.js", "notificationEngine.js", "background.js",
   "operatingModes.js",
   "evaluationTrust.js",
+  "inputUx.js", "inputValidation.js",
   "icons\icon-16.png", "icons\icon-32.png", "icons\icon-48.png", "icons\icon-128.png"
 )
 

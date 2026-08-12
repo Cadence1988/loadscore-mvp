@@ -19,6 +19,8 @@ Use unpacked installation only with trusted invited testers. Open `chrome://exte
 
 Permissions: `activeTab` and `scripting` read only the visible text the tester deliberately highlights after clicking the parser; `storage` keeps local settings/history; `notifications` supports explicit opt-in alerts for loads already known to LoadScore. There are no broad host permissions or automatic load-board monitoring.
 
-Version 0.5.1 protects unknown deadhead, supports Operating Modes, saved loads, highlighted parsing, sharing, and links to web import/problem reporting. Replace these Developer Mode instructions with the official store link only after approval.
+Version 0.6.0 protects unknown deadhead, supports replacement-friendly validated inputs, a compact quick start, Operating Modes, saved loads, highlighted parsing, sharing, and an Open Full LoadScore control. Replace these Developer Mode instructions with the official Store link only after approval.
+
+The website CTA uses `VITE_CHROME_WEB_STORE_URL` as its single Store-link source. Until it contains an official Chrome Web Store URL, the public UI truthfully says the Store release is coming soon and offers no fake install destination.
 
 **FOUNDER ACTION REQUIRED:** register/pay/verify the Chrome developer account, publish the privacy-policy URL, capture screenshots, complete disclosures, submit, and await approval.

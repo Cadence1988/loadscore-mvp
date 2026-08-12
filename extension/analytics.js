@@ -31,6 +31,7 @@ const supportedEvents = new Set([
   "multiple_loads_calculated", "beta_source_recorded", "problem_reported",
   "parser_feedback_submitted", "diagnostic_copied", "feedback_form_submitted",
   "willing_to_pay_indicated",
+  "extension_install_cta_viewed", "extension_install_cta_clicked", "extension_page_viewed", "open_full_loadscore_clicked",
 ]);
 
 const allowedKeys = new Set([

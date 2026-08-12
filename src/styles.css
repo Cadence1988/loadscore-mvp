@@ -1281,6 +1281,17 @@ textarea {
 .input-error { display: block; margin-top: 5px; color: #b42318; font-size: 12px; font-weight: 600; line-height: 1.35; }
 input[aria-invalid="true"] { border-color: #d92d20; box-shadow: 0 0 0 2px rgba(217, 45, 32, 0.12); }
 .calculation-paused { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; padding: 11px 13px; border-radius: 10px; background: #fff1f0; color: #912018; }
+.extension-install { margin: 24px 0; padding: 24px; border: 1px solid #c9d8e8; border-radius: 18px; background: linear-gradient(135deg, #f8fbff, #eef6ff); }
+.extension-install h2 { margin: 3px 0 8px; }
+.extension-feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 18px 0; }
+.extension-feature-grid div { padding: 14px; border-radius: 12px; background: white; box-shadow: 0 5px 18px rgba(30, 64, 95, .08); }
+.extension-feature-grid strong, .extension-feature-grid span { display: block; }
+.extension-feature-grid span { margin-top: 5px; color: #53657a; font-size: 13px; line-height: 1.45; }
+.extension-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
+.install-cta { display: inline-flex; padding: 11px 16px; border-radius: 10px; background: #162235; color: white; font-weight: 800; text-decoration: none; }
+.install-cta.coming-soon { background: #dbe7f3; color: #32465c; cursor: default; }
+.extension-nudge { font-weight: 700; color: #075985; }
+@media (max-width: 700px) { .extension-feature-grid { grid-template-columns: 1fr; } .extension-install { padding: 18px; } }
 .confirm-zero { margin-top: 5px; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 7px; background: white; color: #334155; font-size: 11px; cursor: pointer; }
 .trust-indicator { margin-bottom: 14px; padding: 11px 13px; border-radius: 11px; }
 .trust-indicator strong, .trust-indicator span { display: block; }

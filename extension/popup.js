@@ -262,6 +262,15 @@ document.getElementById("load-form").addEventListener("input", async () => {
 
 installInputReplacement(document);
 
+document.getElementById("open-full-loadscore").addEventListener("click", async () => {
+  await trackEvent("open_full_loadscore_clicked", { surface: "extension" });
+});
+
+document.getElementById("dismiss-quick-start").addEventListener("click", async () => {
+  document.getElementById("extension-quick-start").hidden = true;
+  await chrome.storage.local.set({ loadScoreQuickStartDismissed: true });
+});
+
 document.getElementById("confirm-zero-deadhead").addEventListener("click", async () => {
   document.getElementById("deadheadMiles").value = "0";
   render(); renderSavedLoads();
@@ -486,6 +495,7 @@ const stored = await chrome.storage.local.get([
   "loadScoreSavedLoads",
   "loadScoreNotificationSettings",
   "loadScoreOperatingModes",
+  "loadScoreQuickStartDismissed",
 ]);
 savedLoads = Array.isArray(stored.loadScoreSavedLoads) ? stored.loadScoreSavedLoads : [];
 operatingConfiguration = migrateOperatingModes(stored.loadScoreDefaults || {}, stored.loadScoreOperatingModes || {});
@@ -496,6 +506,7 @@ document.getElementById("notifications-enabled").checked = notificationSettings.
 document.getElementById("quiet-start").value = notificationSettings.quietStart;
 document.getElementById("quiet-end").value = notificationSettings.quietEnd;
 document.getElementById("analytics-consent").checked = await getCentralAnalyticsConsent();
+document.getElementById("extension-quick-start").hidden = Boolean(stored.loadScoreQuickStartDismissed);
 setForm({ ...(stored.loadScoreDefaults || {}), ...(stored.loadScoreDraft || {}), ...profileForMode(operatingConfiguration, operatingConfiguration.activeMode) });
 renderSavedLoads();
 await renderNotificationHistory();

@@ -7,7 +7,7 @@ import { centralAnalyticsStatus, sendApprovedEvent } from "../src/analytics/prod
 test("manifest stays narrow and declares the beta icon set", async () => {
   const manifest = JSON.parse(await readFile(new URL("../extension/manifest.json", import.meta.url)));
   assert.equal(manifest.manifest_version, 3);
-  assert.equal(manifest.version, "0.5.2");
+  assert.equal(manifest.version, "0.6.0");
   assert.deepEqual(manifest.permissions, ["activeTab", "scripting", "storage", "notifications"]);
   assert.equal(manifest.host_permissions, undefined);
   assert.deepEqual(manifest.background, { service_worker: "background.js", type: "module" });

@@ -80,6 +80,10 @@ export const supportedEvents = new Set([
   "diagnostic_copied",
   "feedback_form_submitted",
   "willing_to_pay_indicated",
+  "extension_install_cta_viewed",
+  "extension_install_cta_clicked",
+  "extension_page_viewed",
+  "open_full_loadscore_clicked",
 ]);
 
 const allowedPropertyKeys = new Set([

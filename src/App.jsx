@@ -10,6 +10,7 @@ import OperatingModes from "./components/OperatingModes";
 import BulkImport from "./components/BulkImport";
 import FirstRunOnboarding from "./components/FirstRunOnboarding";
 import BetaFeedbackCenter from "./components/BetaFeedbackCenter";
+import ExtensionInstall from "./components/ExtensionInstall";
 import ComparisonBoard from "./components/ComparisonBoard";
 import DriverProfiles from "./components/DriverProfiles";
 import FeedbackForm from "./components/FeedbackForm";
@@ -638,6 +639,8 @@ export default function App() {
           />
         </section>
       </section>
+
+      <ExtensionInstall calculationComplete={evaluationTrust.status === "complete"} />
 
       <OperatingModes configuration={modeConfiguration} onModeSelect={selectOperatingMode} onRuleChange={updateTarget} />
 
