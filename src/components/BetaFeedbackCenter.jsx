@@ -39,6 +39,7 @@ export default function BetaFeedbackCenter({ activeMode }) {
     catch { setStatus("Copy was blocked. Expand the preview and copy it manually."); }
   }
   function prepareEmail() {
+    trackEvent("problem_report_prepared", { surface: "web", feature_area: feature, error_category: category });
     const body = [`Problem category: ${category}`, `Feature: ${feature}`, "", "Driver explanation (entered deliberately):", explanation || "(none)", "", "Safe diagnostic:", diagnosticText(diagnostic)].join("\n");
     window.location.href = `mailto:rgm88@loadscore.app?subject=${encodeURIComponent("LoadScore Beta Problem Report")}&body=${encodeURIComponent(body)}`;
   }
@@ -49,7 +50,7 @@ export default function BetaFeedbackCenter({ activeMode }) {
       <div className="section-heading-row"><div><p className="eyebrow">{PRODUCT_STAGE}</p><h2 id="beta-center-title">Feedback & Beta</h2></div><span className="local-only">Web {WEB_BUILD_VERSION} · Extension {EXTENSION_BUILD_VERSION}</span></div>
       <p>LoadScore is under active development. Calculations are estimates—review load details before making a freight decision.</p>
       <div className="beta-tools">
-        <details><summary>Something look wrong? Report a problem</summary>
+        <details onToggle={(event) => { if (event.currentTarget.open) trackEvent("problem_report_started", { surface: "web", feature_area: feature }); }}><summary>Something look wrong? Report a problem</summary>
           <div className="two-col"><label>Category<select value={category} onChange={(event) => setCategory(event.target.value)}>{PROBLEM_CATEGORIES.map((item) => <option value={item} key={item}>{item.replaceAll("_", " ")}</option>)}</select></label><label>Feature area<select value={feature} onChange={(event) => setFeature(event.target.value)}><option>calculator</option><option>comparison</option><option>import</option><option>operating modes</option><option>extension</option><option>notifications</option><option>sharing</option><option>onboarding</option></select></label></div>
           <label>What happened? <span className="optional">Optional; do not paste private freight details</span><textarea value={explanation} onChange={(event) => setExplanation(event.target.value)} rows="3" /></label>
           {category === "parser" && <div className="parser-report"><div className="two-col"><label>Parser source<select value={parserSource} onChange={(event) => setParserSource(event.target.value)}><option value="">Select</option><option value="highlighted_text">Highlighted text</option><option value="pasted_text">Pasted text</option><option value="csv">CSV</option></select></label><label>Outcome<select value={parserOutcome} onChange={(event) => setParserOutcome(event.target.value)}><option value="">Select</option><option>success</option><option>partial</option><option>failure</option></select></label></div><p>Which fields need work? The original freight message is not attached.</p><div className="field-checks">{PARSER_FIELDS.map((field) => <label key={field}><input type="checkbox" checked={parserFields.includes(field)} onChange={() => toggleParserField(field)} />{field.replaceAll("_", " ")}</label>)}</div></div>}

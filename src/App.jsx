@@ -18,6 +18,7 @@ import MinimumRateGuide from "./components/MinimumRateGuide";
 import RecommendationFeedback from "./components/RecommendationFeedback";
 import ShareResult from "./components/ShareResult";
 import AnalyticsPreference from "./components/AnalyticsPreference";
+import AnalyticsDebugPanel from "./components/AnalyticsDebugPanel";
 import { activeModeEvaluation, migrateOperatingModes, profileForMode } from "./logic/operatingModes";
 import { assessEvaluationTrust } from "./logic/evaluationTrust";
 import { validateNumericFields } from "./logic/inputValidation";
@@ -719,6 +720,7 @@ export default function App() {
       <BetaFeedbackCenter activeMode={modeConfiguration.activeMode} />
       <FeedbackForm />
       <AnalyticsPreference />
+      <AnalyticsDebugPanel />
     </main>
   );
 }

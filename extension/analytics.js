@@ -31,6 +31,7 @@ const supportedEvents = new Set([
   "multiple_loads_calculated", "beta_source_recorded", "problem_reported",
   "parser_feedback_submitted", "diagnostic_copied", "feedback_form_submitted",
   "willing_to_pay_indicated",
+  "problem_report_started", "problem_report_prepared",
   "extension_install_cta_viewed", "extension_install_cta_clicked", "extension_page_viewed", "open_full_loadscore_clicked",
 ]);
 
@@ -42,11 +43,13 @@ const allowedKeys = new Set([
   "mode", "match_type",
   "import_count", "import_source",
   "tester_source", "feature_area", "error_category", "willingness",
+  "build_version", "extension_version", "environment", "evaluation_status", "source_category",
+  "valid_count", "provisional_count", "duplicate_count",
 ]);
 
 function sanitize(properties = {}) {
   return Object.fromEntries(Object.entries(properties).filter(([key, value]) =>
-    allowedKeys.has(key) && ["string", "number", "boolean"].includes(typeof value),
+    allowedKeys.has(key) && ["string", "number", "boolean"].includes(typeof value) && (typeof value !== "string" || value.length <= 80),
   ));
 }
 
@@ -68,23 +71,23 @@ export async function trackEvent(eventName, properties = {}) {
     event: eventName,
     occurred_at: new Date().toISOString(),
     anonymous_id: id,
-    properties: sanitize(properties),
+    properties: sanitize({ ...properties, extension_version: "0.6.1", environment: "production" }),
   };
   await chrome.storage.local.set({
     [ID_KEY]: id,
     [EVENTS_KEY]: [...events, event].slice(-MAX_EVENTS),
   });
   const consent = await chrome.storage.local.get(CONSENT_KEY);
-  if (consent[CONSENT_KEY] === true && extensionAnalyticsConfig.endpoint && extensionAnalyticsConfig.siteId) {
-    void fetch(extensionAnalyticsConfig.endpoint, {
+  if (consent[CONSENT_KEY] === true && extensionAnalyticsConfig.enabled && extensionAnalyticsConfig.provider === "posthog" && extensionAnalyticsConfig.projectToken) {
+    void fetch(`${extensionAnalyticsConfig.host.replace(/\/$/, "")}/i/v0/e/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        site_id: extensionAnalyticsConfig.siteId,
+        api_key: extensionAnalyticsConfig.projectToken,
         event: event.event,
-        occurred_at: event.occurred_at,
-        anonymous_id: event.anonymous_id,
-        properties: event.properties,
+        timestamp: event.occurred_at,
+        distinct_id: event.anonymous_id,
+        properties: { ...event.properties, $process_person_profile: false },
       }),
     }).catch(() => undefined);
   }

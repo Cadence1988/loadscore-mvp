@@ -19,7 +19,7 @@ The extension does not automatically monitor DAT, Truckstop, or other load board
 1. Register, pay, and verify the Chrome Web Store developer account.
 2. Capture and approve real extension screenshots.
 3. Complete privacy/data-use declarations.
-4. Submit `artifacts/loadscore-extension-v0.6.0.zip` and respond to review.
+4. Submit `artifacts/loadscore-extension-v0.6.1.zip` and respond to review.
 5. Set `VITE_CHROME_WEB_STORE_URL` to the approved official listing URL.
 6. Deploy and verify the website CTA reaches the approved listing.
 7. Begin Driver #1 outreach only after the installation path is verified.

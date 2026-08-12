@@ -5,7 +5,7 @@
 - Public privacy route: `/privacy.html`.
 - Store CTA configuration: `VITE_CHROME_WEB_STORE_URL`.
 - Pre-approval state: truthful Store-coming-soon label with no fake URL.
-- Submission artifact target: `artifacts/loadscore-extension-v0.6.0.zip`.
+- Submission artifact target: `artifacts/loadscore-extension-v0.6.1.zip`.
 - After approval: configure the official URL, deploy, verify CTA, then begin outside-driver outreach.
 
 ## Package readiness

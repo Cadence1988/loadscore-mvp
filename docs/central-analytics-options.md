@@ -1,12 +1,9 @@
-# Central Analytics Configuration Options
+# Central Analytics Configuration
 
 Updated: 2026-08-12
 
-The product calls only `trackEvent()`. The production adapter accepts a configurable HTTPS endpoint and site ID through:
+PostHog is the selected first provider and the provider-independent `trackEvent()` seam is preserved. See `centralized-product-analytics.md` for architecture, privacy controls, environment variables, dashboard specification, validation, and founder setup.
 
-- `VITE_ANALYTICS_ENDPOINT`
-- `VITE_ANALYTICS_SITE_ID`
+Central delivery is configuration-ready but currently disabled/unconfigured. Local bounded analytics remains the fallback. No credentials are committed.
 
-Local bounded event storage remains the fallback, failures never block calculations, and optional central analytics consent defaults off. Possible later destinations include a privacy-conscious hosted analytics service or a small founder-controlled event endpoint. Selection requires reviewing data terms, retention, deletion, security, geographic processing, pricing, and Chrome disclosure impacts.
-
-**FOUNDER ACTION REQUIRED — CENTRAL ANALYTICS CONFIGURATION:** choose a provider, create the account/endpoint, configure deployment environment variables outside Git, update privacy/subprocessor/retention documentation, verify consented end-to-end delivery, and re-review extension host-permission needs. No provider or credentials are currently configured.
+**FOUNDER ACTION REQUIRED — CREATE/CONFIGURE ANALYTICS PROJECT:** create PostHog project, disable autocapture/replay/heatmaps/logs/IP capture, define retention, add Vercel variables, deploy, opt in, inspect safe live events, test opt-out/failure, then build the documented First 50 dashboard.

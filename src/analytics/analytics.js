@@ -1,4 +1,6 @@
 import { sendApprovedEvent } from "./productionAdapter.js";
+import { sanitizeAnalyticsProperties } from "./eventSchema.js";
+import { EXTENSION_BUILD_VERSION, WEB_BUILD_VERSION } from "../config/version.js";
 
 const ANALYTICS_ID_KEY = "loadscore-analytics-id";
 const ANALYTICS_USAGE_KEY = "loadscore-analytics-usage";
@@ -7,7 +9,7 @@ const CALCULATION_COUNT_KEY = "loadscore-calculation-count";
 const PERIODIC_PROMPT_KEY = "loadscore-periodic-feedback-prompt";
 const MAX_LOCAL_EVENTS = 200;
 
-export const ANALYTICS_PROVIDER = "local-foundation";
+export const ANALYTICS_PROVIDER = "local-plus-optional-posthog";
 
 export const supportedEvents = new Set([
   "app_opened",
@@ -76,6 +78,8 @@ export const supportedEvents = new Set([
   "multiple_loads_calculated",
   "beta_source_recorded",
   "problem_reported",
+  "problem_report_started",
+  "problem_report_prepared",
   "parser_feedback_submitted",
   "diagnostic_copied",
   "feedback_form_submitted",
@@ -84,38 +88,6 @@ export const supportedEvents = new Set([
   "extension_install_cta_clicked",
   "extension_page_viewed",
   "open_full_loadscore_clicked",
-]);
-
-const allowedPropertyKeys = new Set([
-  "surface",
-  "usage_type",
-  "repeat_day",
-  "score_band",
-  "reload_market_known",
-  "reload_score_source",
-  "deadhead_entered",
-  "alert_status",
-  "saved_load_count",
-  "profile_count",
-  "parser_result",
-  "reason_code",
-  "useful_feature",
-  "share_method",
-  "trigger",
-  "minimum_rate_band",
-  "target_met",
-  "status",
-  "equipment",
-  "notification_reason",
-  "suppression_reason",
-  "mode",
-  "match_type",
-  "import_count",
-  "import_source",
-  "tester_source",
-  "feature_area",
-  "error_category",
-  "willingness",
 ]);
 
 function safeStorage() {
@@ -157,12 +129,7 @@ export function getAnonymousInstallationId() {
 }
 
 export function sanitizeEventProperties(properties = {}) {
-  return Object.fromEntries(
-    Object.entries(properties).filter(([key, value]) => {
-      if (!allowedPropertyKeys.has(key)) return false;
-      return ["string", "number", "boolean"].includes(typeof value);
-    }),
-  );
+  return sanitizeAnalyticsProperties(properties);
 }
 
 export function scoreBand(score) {
@@ -210,7 +177,12 @@ export function trackEvent(eventName, properties = {}) {
     event: eventName,
     occurred_at: new Date().toISOString(),
     anonymous_id: anonymousId(storage),
-    properties: sanitizeEventProperties(properties),
+    properties: sanitizeEventProperties({
+      ...properties,
+      build_version: WEB_BUILD_VERSION,
+      extension_version: EXTENSION_BUILD_VERSION,
+      environment: import.meta.env?.PROD ? "production" : "development",
+    }),
   };
   storage.setItem(
     ANALYTICS_EVENTS_KEY,
@@ -258,4 +230,8 @@ export function getLocalAnalyticsStatus() {
     eventCount: parseStored(storage, ANALYTICS_EVENTS_KEY, []).length,
     calculationCount: getCalculationCount(),
   };
+}
+
+export function getLocalAnalyticsEvents() {
+  return parseStored(safeStorage(), ANALYTICS_EVENTS_KEY, []).slice(-10).reverse();
 }

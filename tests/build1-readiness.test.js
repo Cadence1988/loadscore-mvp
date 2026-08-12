@@ -7,7 +7,7 @@ import { centralAnalyticsStatus, sendApprovedEvent } from "../src/analytics/prod
 test("manifest stays narrow and declares the beta icon set", async () => {
   const manifest = JSON.parse(await readFile(new URL("../extension/manifest.json", import.meta.url)));
   assert.equal(manifest.manifest_version, 3);
-  assert.equal(manifest.version, "0.6.0");
+  assert.equal(manifest.version, "0.6.1");
   assert.deepEqual(manifest.permissions, ["activeTab", "scripting", "storage", "notifications"]);
   assert.equal(manifest.host_permissions, undefined);
   assert.deepEqual(manifest.background, { service_worker: "background.js", type: "module" });
@@ -15,10 +15,11 @@ test("manifest stays narrow and declares the beta icon set", async () => {
 });
 
 test("central analytics defaults unconfigured and cannot break the app", async () => {
-  assert.deepEqual(centralAnalyticsStatus(), { configured: false, consentGranted: false });
-  assert.deepEqual(await sendApprovedEvent({}), {
+  assert.equal(centralAnalyticsStatus().configured, false);
+  assert.equal(centralAnalyticsStatus().consentGranted, false);
+  assert.deepEqual(await sendApprovedEvent({ event: "load_calculated" }), {
     sent: false,
-    reason: "not_enabled_or_configured",
+    reason: "consent_not_granted",
   });
 });
 

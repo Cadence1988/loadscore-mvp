@@ -1291,6 +1291,8 @@ input[aria-invalid="true"] { border-color: #d92d20; box-shadow: 0 0 0 2px rgba(2
 .install-cta { display: inline-flex; padding: 11px 16px; border-radius: 10px; background: #162235; color: white; font-weight: 800; text-decoration: none; }
 .install-cta.coming-soon { background: #dbe7f3; color: #32465c; cursor: default; }
 .extension-nudge { font-weight: 700; color: #075985; }
+.analytics-debug { margin-top: 18px; padding: 12px; border: 1px dashed #94a3b8; border-radius: 10px; background: #f8fafc; }
+.analytics-debug pre { overflow: auto; max-height: 420px; white-space: pre-wrap; font-size: 11px; }
 @media (max-width: 700px) { .extension-feature-grid { grid-template-columns: 1fr; } .extension-install { padding: 18px; } }
 .confirm-zero { margin-top: 5px; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 7px; background: white; color: #334155; font-size: 11px; cursor: pointer; }
 .trust-indicator { margin-bottom: 14px; padding: 11px 13px; border-radius: 11px; }
