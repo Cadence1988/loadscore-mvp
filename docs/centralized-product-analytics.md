@@ -4,7 +4,7 @@ Updated: 2026-08-13
 
 ## Status and provider
 
-The adapter is complete and configuration-ready for PostHog; bounded local analytics remains the always-working sink. Central delivery is disabled because no LoadScore PostHog project/token is configured. PostHog was selected for custom events, anonymous identifiers, funnels, retention, and dashboards without LoadScore accounts. Product code continues to call only `trackEvent()`.
+Production web analytics is live in the LoadScore US Cloud PostHog project; bounded local analytics remains the always-working sink. Real production events have been observed. PostHog was selected for custom events, anonymous identifiers, funnels, retention, and dashboards without LoadScore accounts. Product code continues to call only `trackEvent()`.
 
 Architecture: product code → strict LoadScore sanitizer → bounded local sink → optional PostHog capture endpoint. Failure, blocking, missing configuration, development mode, or opt-out never interrupts LoadScore.
 
@@ -12,13 +12,23 @@ LoadScore uses only PostHog's custom-event ingestion endpoint. It does not load 
 
 ## Consent and identity
 
-Central analytics defaults OFF. The driver must enable Anonymous Product Analytics. Turning it off stops future central requests; local settings/events keep working. The ID is a random local UUID—not fingerprint-, hardware-, email-, IP-, driver-, broker-, or freight-derived. Clearing storage may reset it. Web and extension IDs remain separate.
+Central web analytics defaults ON with a clear, persistent opt-out. A stored `denied` preference remains denied after the upgrade; a stored `granted` preference remains granted; a missing preference is migrated once to `granted`. Turning it off stops future central requests; local settings/events keep working. The ID is a random local UUID—not fingerprint-, hardware-, email-, IP-, driver-, broker-, or freight-derived. Clearing storage may reset it. Web and extension IDs remain separate.
+
+The stable local UUID becomes PostHog's `distinct_id`. Repeated `load_calculated` events on later days can therefore be attributed to the same anonymous installation. It is not a verified driver identity and is reset if the user clears the relevant browser storage.
 
 ## Strict data boundary
 
 Only allowlisted event names pass. Properties are primitive-only and allowlisted; long strings are discarded and counts capped at 250. The production adapter sanitizes again before delivery. Origin, destination, lane, exact rate, broker details, references, raw/highlighted/pasted text, CSV contents, share text, credentials, cookies, passwords, driver contact/identity, precise location, and free-form feedback are dropped even if accidentally supplied.
 
-PostHog payloads include `$process_person_profile: false`. The founder must disable IP capture in PostHog project settings, define retention, and review PostHog as a subprocessor before activation.
+PostHog payloads include `$process_person_profile: false`. The production project has client IP storage discarded. Session replay, autocapture, heatmaps, web-vitals/dead-click capture, form/input capture, console capture, and network header/body capture remain off.
+
+## Event-quality semantics
+
+- `load_calculated`: a driver has interacted with the form and a complete, valid evaluation settles. A local-only fingerprint prevents an unchanged evaluation from emitting again because of a rerender. A meaningfully changed evaluation can emit again.
+- `minimum_rate_viewed`: the always-visible minimum-rate result is counted only after a meaningful complete evaluation, once per local evaluation fingerprint. Initial component mounting does not count.
+- `alert_match`, `alert_near_match`, `alert_no_match`, and `alert_missing_data`: emitted once per unchanged local evaluation/status combination. React updates alone do not repeat them; changed evaluations may produce new outcomes.
+
+The fingerprint can reflect freight inputs and therefore never leaves the device, never becomes an event property, and is never sent as a hash.
 
 ## Development and extension
 

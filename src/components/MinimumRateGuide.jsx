@@ -10,19 +10,19 @@ function money(value) {
   });
 }
 
-export default function MinimumRateGuide({ form, targets, onTargetChange }) {
+export default function MinimumRateGuide({ form, targets, onTargetChange, meaningfulEvaluation = false, evaluationFingerprint = "" }) {
   const guidance = calculateMinimumRate({ ...form, ...targets });
   const lastTrackedRate = useRef(null);
 
   useEffect(() => {
-    if (guidance.totalMiles <= 0 || guidance.minimumRate === lastTrackedRate.current) return;
-    lastTrackedRate.current = guidance.minimumRate;
+    if (!meaningfulEvaluation || guidance.totalMiles <= 0 || evaluationFingerprint === lastTrackedRate.current) return;
+    lastTrackedRate.current = evaluationFingerprint;
     trackEvent("minimum_rate_viewed", {
       surface: "web",
       minimum_rate_band: moneyBand(guidance.minimumRate),
       target_met: guidance.meetsTarget,
     });
-  }, [guidance.meetsTarget, guidance.minimumRate, guidance.totalMiles]);
+  }, [evaluationFingerprint, guidance.meetsTarget, guidance.minimumRate, guidance.totalMiles, meaningfulEvaluation]);
 
   return (
     <section className="minimum-rate" aria-labelledby="minimum-rate-title">

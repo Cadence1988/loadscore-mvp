@@ -19,8 +19,10 @@ export default function AnalyticsPreference() {
         <p className="eyebrow">Privacy preference</p>
         <h2 id="analytics-preference-title">Anonymous Product Analytics</h2>
         <p>
-          Help improve LoadScore by sharing anonymous feature-use events. Load routes, rates,
-          broker messages, highlighted freight text, CSV contents, and personal details are not sent.
+          Enabled by default to help improve the LoadScore beta. LoadScore sends limited
+          feature-use events, such as when a load is calculated, compared, or shared.
+          Raw routes, rates, broker details, highlighted freight text, CSV contents, and
+          personal driver information are not sent.
         </p>
       </div>
       <label className="analytics-toggle">
@@ -28,9 +30,10 @@ export default function AnalyticsPreference() {
         <span>{enabled ? "Optional analytics allowed" : "Optional analytics off"}</span>
       </label>
       <small>
-        Essential local storage still works when this is off. {initial.configured
-          ? "The configured PostHog project receives only allowlisted events when you opt in."
-          : "Central analytics is not configured yet; this preference is saved for later."}
+        Turn this off at any time. Essential local storage and the calculator still work.
+        {initial.configured
+          ? " PostHog receives only explicit allowlisted product events while this is on."
+          : " Central analytics is not configured; this preference is saved locally."}
       </small>
     </section>
   );

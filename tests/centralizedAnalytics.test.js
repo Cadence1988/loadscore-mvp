@@ -1,11 +1,35 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createPostHogPayload, sendApprovedEvent, setCentralAnalyticsConsent, validatedProviderConfig } from "../src/analytics/productionAdapter.js";
+import { hasCentralAnalyticsConsent } from "../src/analytics/productionAdapter.js";
 import { sanitizeEventProperties, supportedEvents } from "../src/analytics/analytics.js";
+import { createLocalEvaluationFingerprint, createLocalEventDeduper } from "../src/analytics/evaluationEvents.js";
 
 function memoryStorage() { const values = new Map(); return { getItem: (key) => values.get(key) ?? null, setItem: (key, value) => values.set(key, value) }; }
 const config = { enabled: true, provider: "posthog", projectToken: "phc_public_test", host: "https://us.i.posthog.com", environment: "production" };
 const event = { event: "load_calculated", anonymous_id: "random-install-id", occurred_at: "2026-08-12T00:00:00.000Z", properties: { surface: "web", score_band: "strong", origin: "Dallas", destination: "Atlanta", rate: 2500, broker: "private", rawText: "private", csvContents: "private", import_count: 9999 } };
+
+test("analytics defaults on, migrates a missing preference, and preserves explicit choices", () => {
+  const fresh = memoryStorage();
+  assert.equal(hasCentralAnalyticsConsent(fresh), true);
+  assert.equal(fresh.getItem("loadscore-central-analytics-consent"), "granted");
+  const optedOut = memoryStorage(); setCentralAnalyticsConsent(false, optedOut);
+  assert.equal(hasCentralAnalyticsConsent(optedOut), false);
+  const optedIn = memoryStorage(); setCentralAnalyticsConsent(true, optedIn);
+  assert.equal(hasCentralAnalyticsConsent(optedIn), true);
+});
+
+test("local evaluation dedupe suppresses unchanged rerenders but allows changed calculations", () => {
+  const deduper = createLocalEventDeduper();
+  const first = createLocalEvaluationFingerprint({ origin: "Dallas", destination: "Atlanta", loadRate: 2000, loadedMiles: 800 }, "match");
+  const changed = createLocalEvaluationFingerprint({ origin: "Dallas", destination: "Atlanta", loadRate: 2100, loadedMiles: 800 }, "match");
+  assert.equal(deduper.shouldEmit("load_calculated", first), true);
+  assert.equal(deduper.shouldEmit("load_calculated", first), false);
+  assert.equal(deduper.shouldEmit("alert_match", first), true);
+  assert.equal(deduper.shouldEmit("alert_match", first), false);
+  assert.equal(deduper.shouldEmit("load_calculated", changed), true);
+  assert.equal(deduper.shouldEmit("alert_match", changed), true);
+});
 
 test("known central events pass while unknown names are blocked", async () => {
   assert.equal(supportedEvents.has("load_calculated"), true);
@@ -23,7 +47,7 @@ test("PostHog payload double-sanitizes forbidden freight fields and caps counts"
 
 test("opt-out and development mode suppress central network requests", async () => {
   let requests = 0; const fetchImpl = async () => { requests += 1; return { ok: true }; };
-  const off = memoryStorage();
+  const off = memoryStorage(); setCentralAnalyticsConsent(false, off);
   assert.equal((await sendApprovedEvent(event, { storage: off, config, fetchImpl })).reason, "consent_not_granted");
   setCentralAnalyticsConsent(true, off);
   assert.equal((await sendApprovedEvent(event, { storage: off, config: { ...config, environment: "development" }, fetchImpl })).reason, "non_production_suppressed");

@@ -26,6 +26,7 @@ test("extension package includes new runtime modules and public privacy copy mat
   assert.match(packaging, /inputUx\.js/);
   assert.match(packaging, /inputValidation\.js/);
   const privacy = await readFile(new URL("../public/privacy.html", import.meta.url), "utf8");
-  assert.match(privacy, /centralized analytics is disabled/i);
+  assert.match(privacy, /extension reads deliberately highlighted/i);
+  assert.match(privacy, /session replay.*disabled/i);
   assert.match(privacy, /does not automatically monitor load boards/i);
 });

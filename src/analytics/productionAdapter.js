@@ -26,7 +26,14 @@ function environmentConfiguration() {
   };
 }
 
-export function hasCentralAnalyticsConsent(storage = safeStorage()) { return storage?.getItem(CONSENT_KEY) === "granted"; }
+export function hasCentralAnalyticsConsent(storage = safeStorage()) {
+  if (!storage) return false;
+  const preference = storage.getItem(CONSENT_KEY);
+  if (preference === "denied") return false;
+  if (preference === "granted") return true;
+  try { storage.setItem(CONSENT_KEY, "granted"); } catch { return false; }
+  return true;
+}
 export function setCentralAnalyticsConsent(enabled, storage = safeStorage()) { try { storage?.setItem(CONSENT_KEY, enabled ? "granted" : "denied"); return true; } catch { return false; } }
 export function validatedProviderConfig(config = environmentConfiguration()) {
   const validHost = /^https:\/\/[a-z0-9.-]+(?::\d+)?$/i.test(config.host || "");

@@ -38,6 +38,7 @@ import {
   shouldShowPeriodicFeedback,
   trackEvent,
 } from "./analytics/analytics";
+import { createLocalEvaluationFingerprint, createLocalEventDeduper } from "./analytics/evaluationEvents";
 
 const defaultForm = {
   origin: "Dallas, TX",
@@ -91,7 +92,7 @@ export default function App() {
   const [form, setForm] = useState(defaultForm);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [showPeriodicFeedback, setShowPeriodicFeedback] = useState(false);
-  const lastTrackedCalculation = useRef("");
+  const evaluationEventDeduper = useRef(createLocalEventDeduper());
   const firstSuccessTracked = useRef(false);
   const [modeConfiguration, setModeConfiguration] = useState(() => migrateOperatingModes(
     { ...defaultTargets, ...loadStored("loadscore-targets", {}) },
@@ -181,6 +182,8 @@ export default function App() {
     [detectedReloadScore, safeForm, modeConfiguration, result],
   );
 
+  const evaluationFingerprint = createLocalEvaluationFingerprint(form, currentAlertMatch.status);
+
   useEffect(() => {
     if (!hasInteracted) return undefined;
     const isComplete = Boolean(
@@ -190,59 +193,50 @@ export default function App() {
       && Number(form.loadedMiles) > 0,
     );
 
-    const signature = JSON.stringify({
-      origin: form.origin,
-      destination: form.destination,
-      loadRate: form.loadRate,
-      loadedMiles: form.loadedMiles,
-      deadheadMiles: form.deadheadMiles,
-      manualReloadScore: form.manualReloadScore,
-      mpg: form.mpg,
-      fuelPrice: form.fuelPrice,
-      fixedCostPerMile: form.fixedCostPerMile,
-      alertStatus: currentAlertMatch.status,
-    });
-
     const timer = window.setTimeout(() => {
-      if (signature === lastTrackedCalculation.current) return;
-      lastTrackedCalculation.current = signature;
       // The guided example has its own event and must not inflate real-driver usage metrics.
       if (form.source === "synthetic_sample") return;
       if (isComplete && evaluationTrust.status === "complete") {
-        trackEvent("load_calculated", {
-          surface: "web",
-          score_band: scoreBand(result.score),
-          reload_market_known: reloadScoreSourceKey !== "default",
-          reload_score_source: reloadScoreSourceKey,
-          deadhead_entered: Number(form.deadheadMiles) > 0,
-          alert_status: currentAlertMatch.status,
-        });
-        if (!firstSuccessTracked.current) {
-          firstSuccessTracked.current = true;
-          trackEvent("first_successful_calculation", { surface: "web" });
+        if (evaluationEventDeduper.current.shouldEmit("load_calculated", evaluationFingerprint)) {
+          trackEvent("load_calculated", {
+            surface: "web",
+            score_band: scoreBand(result.score),
+            reload_market_known: reloadScoreSourceKey !== "default",
+            reload_score_source: reloadScoreSourceKey,
+            deadhead_entered: Number(form.deadheadMiles) > 0,
+            alert_status: currentAlertMatch.status,
+          });
+          if (!firstSuccessTracked.current) {
+            firstSuccessTracked.current = true;
+            trackEvent("first_successful_calculation", { surface: "web" });
+          }
+          const calculationCount = incrementCalculationCount();
+          if (calculationCount === 2) trackEvent("multiple_loads_calculated", { surface: "web" });
+          if (shouldShowPeriodicFeedback(calculationCount)) {
+            markPeriodicFeedbackShown(calculationCount);
+            setShowPeriodicFeedback(true);
+          }
         }
       } else if (evaluationTrust.status === "provisional") {
-        trackEvent("provisional_evaluation_shown", { surface: "web" });
-        trackEvent("missing_deadhead_prompted", { surface: "web" });
-      }
-      trackEvent(`alert_${currentAlertMatch.status}`, {
-        surface: "web",
-        score_band: scoreBand(result.score),
-        alert_status: currentAlertMatch.status,
-      });
-      if (isComplete && evaluationTrust.status === "complete") {
-        const calculationCount = incrementCalculationCount();
-        if (calculationCount === 2) trackEvent("multiple_loads_calculated", { surface: "web" });
-        if (shouldShowPeriodicFeedback(calculationCount)) {
-          markPeriodicFeedbackShown(calculationCount);
-          setShowPeriodicFeedback(true);
+        if (evaluationEventDeduper.current.shouldEmit("provisional_evaluation_shown", evaluationFingerprint)) {
+          trackEvent("provisional_evaluation_shown", { surface: "web" });
+          trackEvent("missing_deadhead_prompted", { surface: "web" });
         }
+      }
+      const alertEvent = `alert_${currentAlertMatch.status}`;
+      if (evaluationEventDeduper.current.shouldEmit(alertEvent, evaluationFingerprint)) {
+        trackEvent(alertEvent, {
+          surface: "web",
+          score_band: scoreBand(result.score),
+          alert_status: currentAlertMatch.status,
+        });
       }
     }, 800);
 
     return () => window.clearTimeout(timer);
   }, [
     currentAlertMatch.status,
+    evaluationFingerprint,
     form,
     hasInteracted,
     reloadScoreSourceKey,
@@ -622,6 +616,8 @@ export default function App() {
             form={form}
             targets={targets}
             onTargetChange={updateTarget}
+            meaningfulEvaluation={hasInteracted && evaluationTrust.status === "complete"}
+            evaluationFingerprint={evaluationFingerprint}
           />
 
           <ShareResult
