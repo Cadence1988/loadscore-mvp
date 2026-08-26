@@ -50,6 +50,18 @@ Before activation, decide and configure:
 Never place billing secret keys in the React app or Chrome extension. Checkout,
 webhooks, and subscription authorization must run on a trusted server.
 
+### PRO-0 architecture definition
+
+The paid-tier audit and architecture specification are documented, but no paid
+implementation is active. The target uses capability-based entitlements,
+Supabase Auth/Postgres/RLS, Vercel serverless endpoints, Stripe-hosted billing,
+and one account-aware extension. Free manual calculation remains anonymous and
+raw freight remains local by default.
+
+See `driver-pro-architecture.md`, `free-vs-pro-entitlements.md`, and
+`paid-beta-roadmap.md`. PRO-1 must be approved separately and is limited to
+website authentication; it does not authorize billing or feature gates.
+
 ## Phase 10: Full-app foundation
 
 Current foundation:
