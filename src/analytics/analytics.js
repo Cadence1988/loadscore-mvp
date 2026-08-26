@@ -88,6 +88,10 @@ export const supportedEvents = new Set([
   "extension_install_cta_clicked",
   "extension_page_viewed",
   "open_full_loadscore_clicked",
+  "account_signin_viewed",
+  "magic_link_requested",
+  "auth_completed",
+  "auth_signed_out",
 ]);
 
 function safeStorage() {

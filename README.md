@@ -45,10 +45,14 @@ The result rounds up to the next $25 to provide a practical negotiation number.
 
 ## Driver Pro architecture status
 
-PRO-0 is a documentation-only architecture milestone. LoadScore still has no
-authentication, backend, database, Stripe integration, subscription, or secure
-paid feature enforcement. See:
+PRO-0 is complete. PRO-1 now contains a configuration-ready, optional website
+magic-link account system. It remains inactive until a real Supabase project and
+the public Vercel environment variables are configured and verified. Anonymous
+calculator use and local data are unchanged. LoadScore still has no billing
+database, Stripe integration, subscription state, entitlement enforcement, cloud
+freight sync, or extension authentication. See:
 
 - [`docs/driver-pro-architecture.md`](docs/driver-pro-architecture.md)
 - [`docs/free-vs-pro-entitlements.md`](docs/free-vs-pro-entitlements.md)
 - [`docs/paid-beta-roadmap.md`](docs/paid-beta-roadmap.md)
+- [`docs/authentication.md`](docs/authentication.md)

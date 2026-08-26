@@ -19,6 +19,7 @@ import RecommendationFeedback from "./components/RecommendationFeedback";
 import ShareResult from "./components/ShareResult";
 import AnalyticsPreference from "./components/AnalyticsPreference";
 import AnalyticsDebugPanel from "./components/AnalyticsDebugPanel";
+import AccountEntry from "./components/AccountEntry";
 import { activeModeEvaluation, migrateOperatingModes, profileForMode } from "./logic/operatingModes";
 import { assessEvaluationTrust } from "./logic/evaluationTrust";
 import { validateNumericFields } from "./logic/inputValidation";
@@ -335,6 +336,7 @@ export default function App() {
     <main className="page" onPointerDownCapture={handleInputPointerDownCapture} onFocusCapture={handleInputFocusCapture} onPointerUpCapture={handleInputPointerUpCapture}>
       <FirstRunOnboarding onUseSample={useSampleLoad} />
       <section className="hero">
+        <AccountEntry />
         <div>
           <p className="eyebrow">LoadScore Beta</p>
           <h1>Know if a load is worth it in seconds.</h1>

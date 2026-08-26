@@ -1,6 +1,6 @@
 # LoadScore Privacy Policy — Beta Draft
 
-Last updated: August 12, 2026
+Last updated: August 26, 2026
 
 LoadScore helps drivers evaluate freight opportunities. This policy describes the current web and Chrome extension beta.
 
@@ -18,7 +18,11 @@ Pasted freight text and selected CSV files are parsed and evaluated locally in t
 
 LoadScore may store truck-cost settings, alert preferences, drafts, saved loads, profiles, local feedback, notification settings/history, a random anonymous analytics identifier, and a bounded local product-event history in the browser or extension storage. Web and extension storage are currently separate.
 
-Clearing the website's browser storage or removing/resetting the extension deletes the corresponding local data. LoadScore does not currently provide server-side account deletion because accounts and cloud storage do not exist.
+Clearing the website's browser storage or removing/resetting the extension deletes the corresponding local data.
+
+## Optional website account
+
+LoadScore contains an optional email magic-link account system that becomes available when the production Supabase project is configured. Supabase Auth processes the email address and authentication/session records needed to sign in. LoadScore does not send the account email, magic-link token, authorization code, or session tokens to PostHog. Creating an account does not upload local freight, truck settings, saved loads, comparisons, alerts, imports, or preferences. Signing out does not delete that local data. Account deletion/support procedures must be finalized before broad production account distribution.
 
 ## Highlighted text
 
@@ -54,7 +58,7 @@ LoadScore does not sell personal information or use current beta data for target
 
 ## Security and limitations
 
-No method of storage is perfectly secure. The current beta relies primarily on browser/extension storage and does not provide cloud accounts or cross-device recovery.
+No method of storage is perfectly secure. The current beta relies primarily on browser/extension storage. Optional authentication does not provide cloud freight storage, local-data synchronization, or cross-device recovery.
 
 ## Contact
 

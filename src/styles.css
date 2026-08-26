@@ -18,6 +18,7 @@ body {
 }
 
 .hero {
+  position: relative;
   max-width: 1100px;
   margin: 0 auto 28px;
   padding: 36px;
@@ -148,6 +149,129 @@ input:focus {
   background: #f7fafc;
   color: #405166;
   line-height: 1.5;
+}
+
+.account-entry {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+
+.account-entry a {
+  padding: 9px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  color: white;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.account-entry a:hover,
+.account-entry a:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+
+.account-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: linear-gradient(180deg, #eef3f8, #f8fafc);
+}
+
+.back-link {
+  display: block;
+  max-width: 640px;
+  margin: 0 auto 18px;
+  color: #334e6f;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.account-card {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 34px;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 20px 50px rgba(18, 32, 51, 0.1);
+}
+
+.account-card h1 {
+  color: #152033;
+  font-size: clamp(2rem, 7vw, 3.25rem);
+  line-height: 1.05;
+}
+
+.account-intro {
+  margin: 18px 0 26px;
+  color: #56677a;
+  line-height: 1.6;
+}
+
+.auth-form,
+.account-identity,
+.account-unavailable {
+  margin-top: 24px;
+  padding: 22px;
+  border: 1px solid #d8e0ea;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.auth-primary,
+.auth-secondary {
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #172033;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.auth-primary:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.auth-secondary {
+  margin-top: 12px;
+  background: white;
+  color: #172033;
+  border: 1px solid #b9c5d2;
+}
+
+.auth-message {
+  margin: 14px 0 0;
+  padding: 11px 13px;
+  border-radius: 10px;
+  background: #e9f7ef;
+  color: #175c35;
+}
+
+.auth-message.error {
+  background: #fff0ee;
+  color: #9f261e;
+}
+
+.account-identity span,
+.account-identity strong {
+  display: block;
+}
+
+.account-identity strong {
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  font-size: 1.1rem;
+}
+
+.account-identity p,
+.account-unavailable p,
+.auth-callback p {
+  color: #56677a;
+  line-height: 1.55;
 }
 
 .result-summary strong {

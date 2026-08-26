@@ -1,6 +1,8 @@
 # Driver Pro Architecture
 
-Status: **PRO-0 approved implementation specification. Architecture only; nothing here is active in production.**
+Status: **PRO-0 approved. PRO-1 website authentication is implemented but remains unconfigured/unverified against a real Supabase project. Billing, entitlements, cloud freight storage, and extension authentication are not active.**
+
+PRO-1 implementation details, exact redirects, and the founder activation checklist are in [`authentication.md`](authentication.md). This document also describes later planned phases; planned components must not be mistaken for shipped features.
 
 ## 1. Decision and constraints
 

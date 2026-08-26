@@ -1,13 +1,13 @@
 # Driver Pro Paid-Beta Roadmap
 
-Status: **PRO-0 architecture only. PRO-1 has not begun.**
+Status: **PRO-0 is complete. PRO-1 is code/configuration-ready; real Supabase activation and a live magic-link verification remain pending.**
 
 The engineering roadmap may progress before charging, but the current 0/50 Verified Beta Driver goal remains separate from a future Paying Founding Driver count.
 
 | Phase | Entry criteria | Work | Exit criteria and tests | Founder action | Independent deploy? | Chrome package change? |
 |---|---|---|---|---|---|---|
 | PRO-0 Architecture | Paid-tier audit complete | Capability matrix, schema, flows, API/Stripe contracts, threat/privacy/test plan | Documentation reviewed; existing tests remain green | Approve architecture and unresolved decisions | Documentation only | No |
-| PRO-1 Website Auth | PRO-0 approved; Supabase project/redirects available | Magic-link auth, callback, session provider, account shell, logout; no billing | Login/logout/expiry/account-switch tests; Free calculator unaffected | Create Supabase project, SMTP/from-address decision, approve domains | Yes, behind account entry points | No |
+| PRO-1 Website Auth | PRO-0 approved | **Code ready:** magic-link auth, callback, session provider, account shell, logout; no billing | Automated checks pass; **pending:** configured-project login/logout/expiry/account-switch and real-email verification | Create/configure Supabase project, set Vercel public variables, review sender/SMTP and exact redirects, run activation checklist | Yes, account controls fail safely until configured | No |
 | PRO-2 Database/RLS | Auth identity stable | Migrations for account, customer, subscription, entitlement, webhook idempotency; RLS | Migration rollback/reapply; cross-user isolation; service-only billing writes | Approve retention/deletion and operational access | Yes, no paid UI | No |
 | PRO-3 Stripe test mode | Auth+RLS verified; Stripe test account/catalog approved | Test Checkout, webhook, Customer mapping/Portal, state sync | Signature/idempotency/order/price-tamper/cancel/past-due tests | Create test product/prices and webhook secret; approve candidate offer copy | Yes, test/admin only | No |
 | PRO-4 Entitlements | Reliable subscription state | Versioned capability catalog, resolver, API, signed offline assertion/cache | State matrix, tampering, expiry, outage, account-switch tests | Approve grace and cache durations | Yes, shadow/read-only mode | No |
@@ -19,16 +19,16 @@ The engineering roadmap may progress before charging, but the current 0/50 Verif
 
 ## Sequencing guardrails
 
-- Do not begin PRO-1 automatically from PRO-0.
+- Do not call PRO-1 fully production-verified until the real Supabase activation checklist passes.
 - Do not install Supabase or Stripe packages until the corresponding approved phase.
 - Do not enable gates before server entitlements work in shadow mode.
 - Do not add Chrome permissions before PRO-6 and a Store disclosure review.
 - Do not call the paid beta validated until a real driver pays and access is restored correctly in the same website/extension.
 - Continue Chrome distribution and outside-driver learning in parallel; do not redefine 0/50 Verified Beta Drivers as paying drivers.
 
-## Exact next phase if approved
+## PRO-1 implementation boundary
 
-PRO-1 is limited to website magic-link authentication and an account shell:
+PRO-1 is limited to website magic-link authentication and an account shell. The implementation is present; activation steps are in `authentication.md`:
 
 - Supabase browser client configured only with public URL/key.
 - Auth provider/session restoration.
