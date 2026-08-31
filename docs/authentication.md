@@ -1,6 +1,6 @@
 # Website Authentication (PRO-1)
 
-Status: **implementation and configuration guidance complete; production activation and a real-email verification are pending founder Supabase/Vercel setup.**
+Status: **PRO-1 production flow reported verified by the founder before PRO-2. Canonical `loadscoreapp.com` app routing requires re-check because the 2026-08-30 public response served Squarespace rather than the React account route.**
 
 PRO-1 adds optional website account identity. It does not add billing, subscriptions, entitlements, cloud freight storage, or extension authentication. The calculator and all existing local features continue to work anonymously.
 
@@ -82,4 +82,4 @@ Complete these screens in order. Do not share the database password or any secre
 
 ## Exit boundary
 
-The code milestone is complete, but PRO-1 is not fully production-verified until the founder creates/configures the real Supabase project, adds the two public Vercel variables, redeploys, and completes the real-email checklist. Do not begin PRO-2 database/RLS work until that evidence is recorded.
+The founder reports the real magic-link, refresh/session restoration, logout, and local-data checklist complete. PRO-2 database/RLS details and its separate production gate are recorded in [`database-and-rls.md`](database-and-rls.md).

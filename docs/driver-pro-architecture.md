@@ -1,6 +1,8 @@
 # Driver Pro Architecture
 
-Status: **PRO-0 approved. PRO-1 website authentication is implemented but remains unconfigured/unverified against a real Supabase project. Billing, entitlements, cloud freight storage, and extension authentication are not active.**
+Status: **PRO-0 approved; PRO-1 authentication reported live; PRO-2 secure account/RLS migration is code-complete but not yet production-verified. Stripe, paid activation, entitlements, cloud freight storage, and extension authentication are not active.**
+
+PRO-2 implements `public.user_profiles` and a minimal `public.subscriptions` foundation. The subscription row is future server authority, starts `free` / `inactive`, is browser read-only through own-row RLS, and does not itself activate capabilities. See [`database-and-rls.md`](database-and-rls.md).
 
 PRO-1 implementation details, exact redirects, and the founder activation checklist are in [`authentication.md`](authentication.md). This document also describes later planned phases; planned components must not be mistaken for shipped features.
 
@@ -96,11 +98,11 @@ Account metadata, not existing local truck profiles.
 | Column | Type/constraint |
 |---|---|
 | `user_id` | `uuid primary key references auth.users(id) on delete cascade` |
+| `display_name` | `text` nullable, user-editable, trimmed, maximum 80 characters |
 | `created_at` | `timestamptz not null default now()` |
 | `updated_at` | `timestamptz not null default now()` |
-| `analytics_opt_out` | `boolean not null default false` |
 
-RLS: authenticated user may read/update their own non-billing row. Insert is created by signup trigger or trusted server. Email remains in Supabase Auth unless a separate operational need is approved.
+RLS: authenticated user may read their own row and update only `display_name`. Insert is created by the signup trigger or trusted server. Email remains in Supabase Auth and is not duplicated here.
 
 ### `stripe_customers`
 
@@ -119,19 +121,17 @@ Index: unique Stripe customer ID. RLS: owner may read a redacted/existence view 
 |---|---|
 | `id` | `uuid primary key default gen_random_uuid()` |
 | `user_id` | `uuid not null references auth.users(id) on delete cascade` |
-| `stripe_customer_id` | `text not null references stripe_customers(stripe_customer_id)` |
-| `stripe_subscription_id` | `text not null unique` |
-| `stripe_price_id` | `text not null` |
-| `plan_key` | constrained text: `founding_driver_pro`, `driver_pro` |
+| `stripe_customer_id` | `text unique` nullable until Stripe exists |
+| `stripe_subscription_id` | `text unique` nullable until Stripe exists |
+| `plan` | constrained text: `free`, `founding_driver_pro`, `driver_pro`; defaults `free` |
 | `status` | constrained normalized subscription status |
 | `current_period_end` | `timestamptz` |
 | `cancel_at_period_end` | `boolean not null default false` |
-| `past_due_at` | `timestamptz` nullable |
-| `founding_cohort` | `boolean not null default false` |
+| `grace_period_ends_at` | `timestamptz` nullable |
 | `created_at` | `timestamptz not null default now()` |
 | `updated_at` | `timestamptz not null default now()` |
 
-Indexes: `(user_id, status)`, `stripe_customer_id`, unique subscription ID. Enforce at most one current paid subscription per user using a partial unique index or transactional service rule. RLS: owner may read a safe projection; all writes service-role only.
+PRO-2 enforces one row per user and initializes `free` / `inactive`. Indexes cover `(user_id, status)` and unique provider identifiers. RLS permits the owner to read only a safe column projection; every write is trusted-server only. Stripe price/cohort details are deferred to PRO-3 rather than pretending billing exists.
 
 ### `entitlements`
 

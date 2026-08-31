@@ -14,6 +14,8 @@ artifacts/
 .env.production.local
 dist-ssr
 *.local
+supabase/.temp/
+supabase/.branches/
 
 # Editor directories and files
 .vscode/*

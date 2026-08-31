@@ -1,6 +1,6 @@
 # LoadScore Privacy Policy — Beta Draft
 
-Last updated: August 26, 2026
+Last updated: August 30, 2026
 
 LoadScore helps drivers evaluate freight opportunities. This policy describes the current web and Chrome extension beta.
 
@@ -22,7 +22,7 @@ Clearing the website's browser storage or removing/resetting the extension delet
 
 ## Optional website account
 
-LoadScore contains an optional email magic-link account system that becomes available when the production Supabase project is configured. Supabase Auth processes the email address and authentication/session records needed to sign in. LoadScore does not send the account email, magic-link token, authorization code, or session tokens to PostHog. Creating an account does not upload local freight, truck settings, saved loads, comparisons, alerts, imports, or preferences. Signing out does not delete that local data. Account deletion/support procedures must be finalized before broad production account distribution.
+LoadScore offers optional email magic-link accounts through Supabase Auth. Supabase processes the email address and authentication/session records needed to sign in. When the PRO-2 database migration is activated, Supabase also stores a minimal account-profile row and a Free/inactive account-tier foundation row. The browser may read only its own safe account state and may update only its own display name; it cannot write billing/tier state. LoadScore does not send account email, user UUID, database IDs, magic-link token, authorization code, or session tokens to PostHog. Creating an account does not upload local freight, truck settings, saved loads, comparisons, alerts, imports, or preferences. Signing out does not delete that local data. Account deletion/support procedures must be finalized before broad production account distribution.
 
 ## Highlighted text
 

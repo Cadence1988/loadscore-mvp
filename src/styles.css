@@ -274,6 +274,31 @@ input:focus {
   line-height: 1.55;
 }
 
+.account-database-status {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.9rem 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #d7e0e9;
+  border-radius: 10px;
+  background: #f7fafc;
+}
+
+.account-database-status span,
+.account-database-status small {
+  color: #536474;
+}
+
+.account-database-status.connected {
+  border-color: #9cccad;
+  background: #f0faf3;
+}
+
+.account-database-status.unavailable {
+  border-color: #e1c998;
+  background: #fff9ed;
+}
+
 .result-summary strong {
   display: block;
   margin-bottom: 6px;

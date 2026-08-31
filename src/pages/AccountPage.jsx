@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../auth/useAuth.js";
 import SignInForm from "../components/SignInForm.jsx";
 import { trackEvent } from "../analytics/analytics.js";
@@ -12,8 +12,19 @@ export default function AccountPage() {
     authAvailable,
     configurationIssue,
     signOut,
+    loadAccountDatabase,
   } = useAuth();
   const [signOutMessage, setSignOutMessage] = useState("");
+  const [database, setDatabase] = useState({ state: "idle" });
+
+  useEffect(() => {
+    let active = true;
+    if (isLoading || !isAuthenticated) return () => { active = false; };
+    loadAccountDatabase().then((result) => {
+      if (active) setDatabase(result);
+    });
+    return () => { active = false; };
+  }, [isAuthenticated, isLoading, loadAccountDatabase]);
 
   async function handleSignOut() {
     setSignOutMessage("");
@@ -54,6 +65,22 @@ export default function AccountPage() {
             <span>Signed in as</span>
             <strong>{user?.email}</strong>
             <p>This account is authentication only. No subscription, billing, Pro status, or cloud freight sync exists yet.</p>
+            <div className={`account-database-status ${database.state}`} role="status">
+              <span>Account database</span>
+              {(database.state === "idle" || database.state === "loading") && <strong>Checking secure connection...</strong>}
+              {database.state === "connected" && (
+                <>
+                  <strong>Connected</strong>
+                  <small>Current account tier: {database.accountTier}. Billing is not enabled yet.</small>
+                </>
+              )}
+              {database.state === "unavailable" && (
+                <>
+                  <strong>Setup pending</strong>
+                  <small>Sign-in and Free LoadScore still work. No local freight data was uploaded.</small>
+                </>
+              )}
+            </div>
             <button className="auth-secondary" type="button" onClick={handleSignOut}>Sign out</button>
           </div>
         )}

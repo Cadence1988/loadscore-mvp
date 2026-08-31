@@ -3,6 +3,7 @@ import { readSupabaseConfig } from "./authConfig.js";
 import { completeAuthCallback as verifyAuthCallback } from "./authCallback.js";
 import { AuthContext } from "./authContextValue.js";
 import { endAuthSession, requestMagicLink } from "./authOperations.js";
+import { loadAccountDatabase as readAccountDatabase } from "../account/accountDatabase.js";
 
 const GENERIC_REQUEST_ERROR = "We couldn't send a sign-in link. Please wait a moment and try again.";
 const GENERIC_SIGNOUT_ERROR = "We couldn't finish signing out. Please try again.";
@@ -98,6 +99,11 @@ export function AuthProvider({ children, client: providedClient = null, configur
     [client],
   );
 
+  const loadAccountDatabase = useCallback(
+    () => readAccountDatabase(client),
+    [client],
+  );
+
   const value = useMemo(() => ({
     user: session?.user || null,
     isAuthenticated: Boolean(session?.user),
@@ -108,6 +114,7 @@ export function AuthProvider({ children, client: providedClient = null, configur
     signInWithMagicLink,
     signOut,
     completeAuthCallback,
+    loadAccountDatabase,
   }), [
     authError,
     client,
@@ -115,6 +122,7 @@ export function AuthProvider({ children, client: providedClient = null, configur
     configuration.configured,
     configuration.issue,
     isLoading,
+    loadAccountDatabase,
     session,
     signInWithMagicLink,
     signOut,

@@ -145,7 +145,7 @@ test("auth analytics are allowlisted while identity and token properties are dro
 });
 
 test("PRO-1 routing, version, and extension boundary are explicit", async () => {
-  assert.equal(WEB_BUILD_VERSION, "2026.08.26-beta.6");
+  assert.equal(WEB_BUILD_VERSION, "2026.08.30-beta.7");
   assert.equal(EXTENSION_BUILD_VERSION, "0.6.1");
   const manifest = JSON.parse(await readFile(`${root}extension/manifest.json`, "utf8"));
   assert.equal(manifest.version, "0.6.1");
