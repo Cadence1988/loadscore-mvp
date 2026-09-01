@@ -4,6 +4,7 @@ import { completeAuthCallback as verifyAuthCallback } from "./authCallback.js";
 import { AuthContext } from "./authContextValue.js";
 import { endAuthSession, requestMagicLink } from "./authOperations.js";
 import { loadAccountDatabase as readAccountDatabase } from "../account/accountDatabase.js";
+import { createTestCheckout } from "../billing/billingClient.js";
 
 const GENERIC_REQUEST_ERROR = "We couldn't send a sign-in link. Please wait a moment and try again.";
 const GENERIC_SIGNOUT_ERROR = "We couldn't finish signing out. Please try again.";
@@ -104,6 +105,11 @@ export function AuthProvider({ children, client: providedClient = null, configur
     [client],
   );
 
+  const startTestCheckout = useCallback(
+    (plan) => createTestCheckout(client, plan),
+    [client],
+  );
+
   const value = useMemo(() => ({
     user: session?.user || null,
     isAuthenticated: Boolean(session?.user),
@@ -115,6 +121,7 @@ export function AuthProvider({ children, client: providedClient = null, configur
     signOut,
     completeAuthCallback,
     loadAccountDatabase,
+    startTestCheckout,
   }), [
     authError,
     client,
@@ -123,6 +130,7 @@ export function AuthProvider({ children, client: providedClient = null, configur
     configuration.issue,
     isLoading,
     loadAccountDatabase,
+    startTestCheckout,
     session,
     signInWithMagicLink,
     signOut,

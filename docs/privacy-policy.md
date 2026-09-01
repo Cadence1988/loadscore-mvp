@@ -1,6 +1,6 @@
 # LoadScore Privacy Policy — Beta Draft
 
-Last updated: August 30, 2026
+Last updated: August 31, 2026
 
 LoadScore helps drivers evaluate freight opportunities. This policy describes the current web and Chrome extension beta.
 
@@ -23,6 +23,8 @@ Clearing the website's browser storage or removing/resetting the extension delet
 ## Optional website account
 
 LoadScore offers optional email magic-link accounts through Supabase Auth. Supabase processes the email address and authentication/session records needed to sign in. When the PRO-2 database migration is activated, Supabase also stores a minimal account-profile row and a Free/inactive account-tier foundation row. The browser may read only its own safe account state and may update only its own display name; it cannot write billing/tier state. LoadScore does not send account email, user UUID, database IDs, magic-link token, authorization code, or session tokens to PostHog. Creating an account does not upload local freight, truck settings, saved loads, comparisons, alerts, imports, or preferences. Signing out does not delete that local data. Account deletion/support procedures must be finalized before broad production account distribution.
+
+The PRO-3 billing foundation is test-mode only. During a founder-run Stripe test, Stripe may receive the authenticated LoadScore account UUID as a customer/subscription mapping identifier and the selected allowlisted test-plan key; Stripe processes test Checkout/payment details on its hosted page. LoadScore stores server-authoritative Stripe customer/subscription relationships, safe subscription status/dates, and a minimal webhook event receipt ledger in Supabase. The ledger does not store full webhook payloads, card data, email, billing addresses, or freight. These billing identifiers and events are excluded from PostHog. A Checkout redirect does not grant paid access, and no live charging or paid capability is enabled in PRO-3.
 
 ## Highlighted text
 

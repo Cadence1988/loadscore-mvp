@@ -1,6 +1,8 @@
 # Secure Account Database and RLS (PRO-2)
 
-Status: **code complete; production migration and real authenticated database read pending.**
+Status: **PRO-2 production-verified per founder.** PRO-3 adds a separate test-mode server-write/event-ledger migration; no paid access is active.
+
+PRO-3 migration `20260831000000_stripe_test_billing.sql` adds a browser-inaccessible Stripe event receipt ledger and subscription event-order fields. It does not weaken PRO-2 RLS or add a browser billing write path. See [`stripe-test-billing.md`](stripe-test-billing.md).
 
 PRO-2 creates only the minimum account and future subscription-state foundation. It does not add Stripe, paid access, entitlement enforcement, cloud freight storage, extension authentication, or feature gates. Existing calculator, freight, truck, saved-load, comparison, Operating Mode, alert, import, and preference data remain local-only.
 
@@ -90,6 +92,4 @@ After applying:
 
 ## Current deployment evidence
 
-The founder reports PRO-1 magic-link/session/logout/local-data verification complete. A public check on 2026-08-30 confirms the React app and its public Supabase configuration on `https://loadscore-mvp.vercel.app`. The same check found `https://loadscoreapp.com` serving Squarespace and `/account` not serving the React account route, so canonical-domain routing must be re-verified before claiming a production read on that hostname.
-
-PRO-2 remains **code complete / production verification pending** until the migration, pgTAP allow/deny tests, existing-user backfill, and real authenticated account read are verified.
+The founder reports PRO-1 and PRO-2 production verification complete, including the migration, database checks, existing-user backfill, and authenticated own-row read. A 2026-08-31 public route check returned the Vercel app from both `https://loadscoreapp.com/account` and the legacy Vercel hostname. PRO-3 production test evidence remains pending.

@@ -57,6 +57,7 @@ test("email, callback, and route helpers reject unsafe input", () => {
   assert.equal(safeInternalRoute("//evil.example"), "/account");
   assert.equal(routeKind("/auth/callback"), "auth_callback");
   assert.equal(routeKind("/account/"), "account");
+  assert.equal(routeKind("/checkout/success"), "checkout_success");
   assert.equal(routeKind("/anything"), "calculator");
 });
 
@@ -145,7 +146,7 @@ test("auth analytics are allowlisted while identity and token properties are dro
 });
 
 test("PRO-1 routing, version, and extension boundary are explicit", async () => {
-  assert.equal(WEB_BUILD_VERSION, "2026.08.30-beta.7");
+  assert.equal(WEB_BUILD_VERSION, "2026.08.31-beta.8");
   assert.equal(EXTENSION_BUILD_VERSION, "0.6.1");
   const manifest = JSON.parse(await readFile(`${root}extension/manifest.json`, "utf8"));
   assert.equal(manifest.version, "0.6.1");
@@ -153,14 +154,14 @@ test("PRO-1 routing, version, and extension boundary are explicit", async () => 
   assert.equal("host_permissions" in manifest, false);
 
   const vercel = JSON.parse(await readFile(`${root}vercel.json`, "utf8"));
-  assert.deepEqual(vercel.rewrites.map((item) => item.source), ["/account", "/auth/callback"]);
+  assert.deepEqual(vercel.rewrites.map((item) => item.source), ["/account", "/auth/callback", "/checkout/success"]);
 });
 
-test("account UI remains honest about local data and absent billing", async () => {
+test("account UI remains honest about local data and test-only billing", async () => {
   const accountPage = await readFile(`${root}src/pages/AccountPage.jsx`, "utf8");
   const signInForm = await readFile(`${root}src/components/SignInForm.jsx`, "utf8");
   assert.match(accountPage, /remain stored locally/i);
-  assert.match(accountPage, /No subscription, billing, Pro status, or cloud freight sync exists yet/i);
+  assert.match(accountPage, /No live charges, paid feature gates, or cloud freight sync are enabled/i);
   assert.match(signInForm, /Check your email for your LoadScore sign-in link/i);
   assert.doesNotMatch(signInForm, /trackEvent\([^\n]*email/i);
 });

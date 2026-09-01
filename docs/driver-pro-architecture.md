@@ -1,6 +1,8 @@
 # Driver Pro Architecture
 
-Status: **PRO-0 approved; PRO-1 authentication reported live; PRO-2 secure account/RLS migration is code-complete but not yet production-verified. Stripe, paid activation, entitlements, cloud freight storage, and extension authentication are not active.**
+Status: **PRO-0 through PRO-2 complete. PRO-3 Stripe test-mode pipeline is code complete / production verification pending. Live charging, entitlements, cloud freight storage, and extension authentication are not active.**
+
+PRO-3 adds authenticated Vercel Checkout creation, a raw-body signature-verified webhook, server-only Stripe event ledger, conservative subscription persistence, and safe test-status UI. It deliberately does not convert billing state into capability access. See [`stripe-test-billing.md`](stripe-test-billing.md).
 
 PRO-2 implements `public.user_profiles` and a minimal `public.subscriptions` foundation. The subscription row is future server authority, starts `free` / `inactive`, is browser read-only through own-row RLS, and does not itself activate capabilities. See [`database-and-rls.md`](database-and-rls.md).
 

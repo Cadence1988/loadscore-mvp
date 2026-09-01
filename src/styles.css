@@ -299,6 +299,38 @@ input:focus {
   background: #fff9ed;
 }
 
+.billing-test-panel {
+  margin: 1.2rem 0;
+  padding: 1rem;
+  border: 1px dashed #c99733;
+  border-radius: 12px;
+  background: #fffbef;
+}
+
+.billing-test-panel h2 {
+  margin: 0.25rem 0 0.5rem;
+  color: #152033;
+}
+
+.billing-test-actions,
+.account-actions {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+.account-actions a {
+  display: block;
+  box-sizing: border-box;
+  text-align: center;
+  text-decoration: none;
+}
+
+.checkout-success > p {
+  color: #56677a;
+  line-height: 1.6;
+}
+
 .result-summary strong {
   display: block;
   margin-bottom: 6px;

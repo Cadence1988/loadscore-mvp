@@ -1,6 +1,12 @@
 const PROFILE_COLUMNS = "user_id,display_name,created_at,updated_at";
 const SUBSCRIPTION_COLUMNS = "plan,status,current_period_end,cancel_at_period_end,grace_period_ends_at,created_at,updated_at";
 
+const PLAN_LABELS = Object.freeze({
+  free: "Free",
+  founding_driver_pro: "Founding Driver Pro (test record)",
+  driver_pro: "Driver Pro (test record)",
+});
+
 function safeResult(result) {
   if (!result || result.error || !result.data) return null;
   return result.data;
@@ -23,7 +29,9 @@ export async function loadAccountDatabase(client) {
         displayName: profile.display_name || "",
         createdAt: profile.created_at || null,
       },
-      accountTier: subscription.plan === "free" ? "Free" : "Unavailable",
+      accountTier: PLAN_LABELS[subscription.plan] || "Unavailable",
+      subscriptionStatus: subscription.status || "inactive",
+      billingMode: "test",
       billingEnabled: false,
     };
   } catch {

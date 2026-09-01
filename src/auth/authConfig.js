@@ -1,5 +1,6 @@
 export const AUTH_CALLBACK_PATH = "/auth/callback";
 export const ACCOUNT_PATH = "/account";
+export const CHECKOUT_SUCCESS_PATH = "/checkout/success";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SAFE_RETURN_ROUTES = new Set(["/", ACCOUNT_PATH]);
@@ -81,5 +82,6 @@ export function routeKind(pathname = "/") {
   const normalized = String(pathname || "/").replace(/\/+$/, "") || "/";
   if (normalized === AUTH_CALLBACK_PATH) return "auth_callback";
   if (normalized === ACCOUNT_PATH) return "account";
+  if (normalized === CHECKOUT_SUCCESS_PATH) return "checkout_success";
   return "calculator";
 }

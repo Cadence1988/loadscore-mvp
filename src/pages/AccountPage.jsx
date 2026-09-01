@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../auth/useAuth.js";
 import SignInForm from "../components/SignInForm.jsx";
 import { trackEvent } from "../analytics/analytics.js";
+import { TEST_BILLING_PLANS } from "../billing/billingClient.js";
 
 export default function AccountPage() {
   const {
@@ -13,9 +14,11 @@ export default function AccountPage() {
     configurationIssue,
     signOut,
     loadAccountDatabase,
+    startTestCheckout,
   } = useAuth();
   const [signOutMessage, setSignOutMessage] = useState("");
   const [database, setDatabase] = useState({ state: "idle" });
+  const [checkoutState, setCheckoutState] = useState({ state: "idle", message: "" });
 
   useEffect(() => {
     let active = true;
@@ -35,6 +38,19 @@ export default function AccountPage() {
     } else {
       setSignOutMessage(result.message);
     }
+  }
+
+  async function handleCheckout(plan) {
+    setCheckoutState({ state: "loading", message: "Opening secure Stripe test checkout…" });
+    const result = await startTestCheckout(plan);
+    if (result.ok) {
+      window.location.assign(result.url);
+      return;
+    }
+    const message = result.reason === "plan_not_configured" || result.reason === "billing_test_mode_not_configured"
+      ? "Stripe test setup is not connected yet. Free LoadScore is unchanged."
+      : "Test checkout is unavailable right now. Please try again later.";
+    setCheckoutState({ state: "error", message });
   }
 
   return (
@@ -64,14 +80,14 @@ export default function AccountPage() {
           <div className="account-identity">
             <span>Signed in as</span>
             <strong>{user?.email}</strong>
-            <p>This account is authentication only. No subscription, billing, Pro status, or cloud freight sync exists yet.</p>
+            <p>This account has a secure billing foundation in Stripe test mode. No live charges, paid feature gates, or cloud freight sync are enabled.</p>
             <div className={`account-database-status ${database.state}`} role="status">
               <span>Account database</span>
               {(database.state === "idle" || database.state === "loading") && <strong>Checking secure connection...</strong>}
               {database.state === "connected" && (
                 <>
                   <strong>Connected</strong>
-                  <small>Current account tier: {database.accountTier}. Billing is not enabled yet.</small>
+                  <small>Current account tier: {database.accountTier}. Safe subscription status: {database.subscriptionStatus}.</small>
                 </>
               )}
               {database.state === "unavailable" && (
@@ -81,6 +97,25 @@ export default function AccountPage() {
                 </>
               )}
             </div>
+            <section className="billing-test-panel" aria-labelledby="billing-test-title">
+              <p className="eyebrow">Internal testing only</p>
+              <h2 id="billing-test-title">Billing test mode</h2>
+              <p>No live charges are enabled. Completing a Stripe test checkout does not unlock paid features.</p>
+              <div className="billing-test-actions">
+                {TEST_BILLING_PLANS.map((plan) => (
+                  <button
+                    className="auth-primary"
+                    type="button"
+                    key={plan.key}
+                    disabled={checkoutState.state === "loading"}
+                    onClick={() => handleCheckout(plan.key)}
+                  >
+                    {plan.label}
+                  </button>
+                ))}
+              </div>
+              {checkoutState.message && <p className={`auth-message ${checkoutState.state}`} role="status">{checkoutState.message}</p>}
+            </section>
             <button className="auth-secondary" type="button" onClick={handleSignOut}>Sign out</button>
           </div>
         )}

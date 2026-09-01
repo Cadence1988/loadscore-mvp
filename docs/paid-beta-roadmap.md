@@ -1,6 +1,6 @@
 # Driver Pro Paid-Beta Roadmap
 
-Status: **PRO-0 complete; PRO-1 reported production-verified; PRO-2 code complete with production migration/pgTAP/account-read verification pending.**
+Status: **PRO-0, PRO-1, and PRO-2 complete. PRO-3 code complete / Stripe test-mode production verification pending.**
 
 The engineering roadmap may progress before charging, but the current 0/50 Verified Beta Driver goal remains separate from a future Paying Founding Driver count.
 
@@ -8,8 +8,8 @@ The engineering roadmap may progress before charging, but the current 0/50 Verif
 |---|---|---|---|---|---|---|
 | PRO-0 Architecture | Paid-tier audit complete | Capability matrix, schema, flows, API/Stripe contracts, threat/privacy/test plan | Documentation reviewed; existing tests remain green | Approve architecture and unresolved decisions | Documentation only | No |
 | PRO-1 Website Auth | PRO-0 approved | Magic-link auth, callback, session provider, account shell, logout; no billing | **Founder reports live login/restore/logout/local-data verification complete** | Re-check canonical custom-domain routing | Yes | No |
-| PRO-2 Database/RLS | Auth identity stable | **Code ready:** `user_profiles`, locked subscription foundation, trigger/backfill, explicit grants/RLS, pgTAP and app checks | **Pending:** run pgTAP, apply production migration, verify existing-user backfill and authenticated own-row read | Apply reviewed migration only after DB tests; verify account page | Yes, no paid UI | No |
-| PRO-3 Stripe test mode | Auth+RLS verified; Stripe test account/catalog approved | Test Checkout, webhook, Customer mapping/Portal, state sync | Signature/idempotency/order/price-tamper/cancel/past-due tests | Create test product/prices and webhook secret; approve candidate offer copy | Yes, test/admin only | No |
+| PRO-2 Database/RLS | Auth identity stable | `user_profiles`, locked subscription foundation, trigger/backfill, explicit grants/RLS, pgTAP and account read | **Founder reports production exit verified** | Preserve RLS and own-row read | Complete | No |
+| PRO-3 Stripe test mode | Auth+RLS verified | **Code ready:** authenticated hosted Checkout, Customer mapping, signed/idempotent/order-aware webhook, test account UI and success route | **Pending:** apply PRO-3 migration/config, complete real test Checkout, verify signed webhook + update/cancel state | Create test products/prices/secrets directly in providers and run checklist | Yes, test/admin only | No |
 | PRO-4 Entitlements | Reliable subscription state | Versioned capability catalog, resolver, API, signed offline assertion/cache | State matrix, tampering, expiry, outage, account-switch tests | Approve grace and cache durations | Yes, shadow/read-only mode | No |
 | PRO-5 Website Gating | Entitlements verified in shadow mode | `/pro`, account/billing/success UX, soft/hard/limit gates | Free core never blocked; Pro/Free/payment-delay/accessibility tests | Approve final Free/Pro copy; do not enable charging yet | Yes behind launch flag/allowlist | No |
 | PRO-6 Extension Linking | Website auth/entitlements stable; canonical extension ID/domain known | `identity`+PKCE linking, tokens, refresh/revoke, popup states | State/code/token/offline/restore tests and Store permission review | Approve manifest disclosure; reload/test package | Website APIs yes; extension package separately | **Yes**: `identity` and exact API host |
@@ -19,7 +19,7 @@ The engineering roadmap may progress before charging, but the current 0/50 Verif
 
 ## Sequencing guardrails
 
-- Do not call PRO-2 complete until pgTAP, production migration, backfill, and authenticated own-row read are recorded.
+- Do not call PRO-3 complete until a real Stripe test Checkout, signed production webhook, Supabase state update, and update/cancel event are recorded.
 - Do not install Supabase or Stripe packages until the corresponding approved phase.
 - Do not enable gates before server entitlements work in shadow mode.
 - Do not add Chrome permissions before PRO-6 and a Store disclosure review.

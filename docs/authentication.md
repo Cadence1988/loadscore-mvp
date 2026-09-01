@@ -1,6 +1,6 @@
 # Website Authentication (PRO-1)
 
-Status: **PRO-1 production flow reported verified by the founder before PRO-2. Canonical `loadscoreapp.com` app routing requires re-check because the 2026-08-30 public response served Squarespace rather than the React account route.**
+Status: **PRO-1 production flow verified by the founder. On 2026-08-31 both canonical `loadscoreapp.com/account` and the legacy Vercel account route returned the deployed Vercel app.**
 
 PRO-1 adds optional website account identity. It does not add billing, subscriptions, entitlements, cloud freight storage, or extension authentication. The calculator and all existing local features continue to work anonymously.
 

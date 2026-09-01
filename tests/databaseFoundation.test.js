@@ -42,6 +42,7 @@ test("account database reads only secured account foundation tables and safe col
   assert.equal(result.state, "connected");
   assert.equal(result.accountTier, "Free");
   assert.equal(result.billingEnabled, false);
+  assert.equal(result.billingMode, "test");
   assert.deepEqual(client.calls.map(({ table }) => table), ACCOUNT_DATABASE_TABLES);
   assert.equal(JSON.stringify(client.calls).match(/load|freight|truck|route|broker|alert|comparison|csv/gi), null);
   assert.equal(JSON.stringify(result).includes("not-rendered"), false);
@@ -61,7 +62,8 @@ test("missing or failed account database reads remain non-fatal and never claim 
     subscriptions: { data: { plan: "driver_pro", status: "active" }, error: null },
   });
   const result = await loadAccountDatabase(unexpectedPaidState);
-  assert.equal(result.accountTier, "Unavailable");
+  assert.equal(result.accountTier, "Driver Pro (test record)");
+  assert.equal(result.subscriptionStatus, "active");
   assert.equal(result.billingEnabled, false);
 });
 
@@ -107,11 +109,11 @@ test("pgTAP suite covers required allow, deny, idempotency, cascade, and RLS ass
   ]) assert.match(policyTests, new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"));
 });
 
-test("account UI reports database state without implying billing or cloud freight sync", async () => {
+test("account UI reports safe test billing state without implying access or cloud freight sync", async () => {
   const accountPage = await readFile(`${root}src/pages/AccountPage.jsx`, "utf8");
   assert.match(accountPage, /Account database/);
   assert.match(accountPage, /Current account tier/);
-  assert.match(accountPage, /Billing is not enabled yet/);
+  assert.match(accountPage, /No live charges/i);
   assert.match(accountPage, /No local freight data was uploaded/);
   assert.doesNotMatch(accountPage, /trackEvent\([^\n]*(database|tier|user_id|email)/i);
 });
