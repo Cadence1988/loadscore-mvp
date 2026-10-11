@@ -92,6 +92,8 @@ export const supportedEvents = new Set([
   "magic_link_requested",
   "auth_completed",
   "auth_signed_out",
+  "dual_score_viewed",
+  "nearsight_foresight_tradeoff_viewed",
 ]);
 
 function safeStorage() {

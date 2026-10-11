@@ -5,6 +5,7 @@ export const SAFE_PROPERTY_KEYS = new Set([
   "useful_feature", "share_method", "trigger", "minimum_rate_band", "target_met", "status", "equipment",
   "notification_reason", "suppression_reason", "mode", "match_type", "import_count", "valid_count",
   "provisional_count", "duplicate_count", "import_source", "tester_source", "feature_area", "error_category", "willingness",
+  "nearsight_band", "foresight_band", "tradeoff_type",
 ]);
 
 const COUNT_KEYS = new Set(["saved_load_count", "profile_count", "import_count", "valid_count", "provisional_count", "duplicate_count"]);

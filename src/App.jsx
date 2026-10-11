@@ -4,6 +4,7 @@ import {
   DEFAULT_RELOAD_SCORE,
   getCuratedMarketScore,
 } from "./data/marketScores";
+import { calculateDualScore } from "./logic/calculateDualScore";
 import { calculateLoadScore } from "./logic/calculateLoadScore";
 import AutocompleteInput from "./components/AutocompleteInput";
 import OperatingModes from "./components/OperatingModes";
@@ -159,6 +160,13 @@ export default function App() {
     });
   }, [safeForm, reloadScore]);
 
+  const dualScore = useMemo(() => calculateDualScore({
+    ...safeForm,
+    destination: form.destination,
+    deadheadConfirmed: form.deadheadConfirmed,
+    curatedReloadScore: detectedReloadScore,
+  }), [detectedReloadScore, form.deadheadConfirmed, form.destination, safeForm]);
+
   const lifecycleValidation = useMemo(() => validateLoadTiming(form), [form]);
   const evaluationTrust = useMemo(() => calculationBlocked ? {
     status: "needs_review", label: "Needs Review", missing: Object.keys(formValidation), canRank: false, canMatch: false,
@@ -218,6 +226,23 @@ export default function App() {
             setShowPeriodicFeedback(true);
           }
         }
+        const dualScoreSignature = `${dualScore.nearSight.band}:${dualScore.foreSight.band}:${dualScore.foreSight.status}`;
+        if (evaluationEventDeduper.current.shouldEmit("dual_score_viewed", dualScoreSignature)) {
+          trackEvent("dual_score_viewed", {
+            surface: "web",
+            nearsight_band: dualScore.nearSight.band,
+            foresight_band: dualScore.foreSight.band,
+            tradeoff_type: dualScore.foreSight.status,
+          });
+        }
+        if (dualScore.foreSight.status === "complete" && evaluationEventDeduper.current.shouldEmit("nearsight_foresight_tradeoff_viewed", dualScoreSignature)) {
+          trackEvent("nearsight_foresight_tradeoff_viewed", {
+            surface: "web",
+            nearsight_band: dualScore.nearSight.band,
+            foresight_band: dualScore.foreSight.band,
+            tradeoff_type: `${dualScore.nearSight.band}_${dualScore.foreSight.band}`,
+          });
+        }
       } else if (evaluationTrust.status === "provisional") {
         if (evaluationEventDeduper.current.shouldEmit("provisional_evaluation_shown", evaluationFingerprint)) {
           trackEvent("provisional_evaluation_shown", { surface: "web" });
@@ -242,6 +267,7 @@ export default function App() {
     hasInteracted,
     reloadScoreSourceKey,
     result.score,
+    dualScore,
     evaluationTrust.status,
   ]);
 
@@ -540,6 +566,8 @@ export default function App() {
             <p>{result.explanation.recommendation}</p>
           </div>
 
+          <DualScorePanel dualScore={dualScore} />
+
           <div className="metrics">
             <div>
               <span>Total Miles</span>
@@ -720,6 +748,66 @@ export default function App() {
       <AnalyticsPreference />
       <AnalyticsDebugPanel />
     </main>
+  );
+}
+
+function DualScorePanel({ dualScore }) {
+  return (
+    <section className="dual-score-panel" aria-labelledby="dual-score-title">
+      <div className="dual-score-heading">
+        <div>
+          <p className="eyebrow">Decision Lens</p>
+          <h3 id="dual-score-title">NearSight / ForeSight</h3>
+        </div>
+        <span className="shadow-score-label">Shadow scores</span>
+      </div>
+      <div className="dual-score-grid">
+        <DualScoreCard
+          title="NearSight"
+          subtitle="Immediate load economics"
+          score={dualScore.nearSight.score}
+          status={dualScore.nearSight.status}
+          label={dualScore.nearSight.label}
+          factors={dualScore.nearSight.explanation}
+        />
+        <DualScoreCard
+          title="ForeSight"
+          subtitle="Destination/reload positioning"
+          score={dualScore.foreSight.score}
+          status={dualScore.foreSight.status}
+          label={dualScore.foreSight.label}
+          factors={dualScore.foreSight.explanation}
+        />
+      </div>
+      <p className="tradeoff-summary">{dualScore.tradeoff}</p>
+      <small className="dual-score-note">These explain the tradeoff beside the main LoadScore. Curated market scores are starter estimates, not live freight data.</small>
+    </section>
+  );
+}
+
+function DualScoreCard({ title, subtitle, score, status, label, factors }) {
+  const factorList = [
+    ...(factors.positives || []),
+    ...(factors.warnings || []),
+    ...(factors.neutral || []),
+  ].slice(0, 3);
+
+  return (
+    <article className={`dual-score-card ${status}`}>
+      <div className="dual-score-card-top">
+        <div>
+          <strong>{title}</strong>
+          <span>{subtitle}</span>
+        </div>
+        <b>{score === null ? "—" : score}</b>
+      </div>
+      <p>{label}</p>
+      <ul>
+        {factorList.map((factor) => (
+          <li key={`${title}-${factor.title}`}>{factor.title}</li>
+        ))}
+      </ul>
+    </article>
   );
 }
 
