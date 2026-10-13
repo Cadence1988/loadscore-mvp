@@ -18,6 +18,8 @@ import { countActiveMatches, DEFAULT_NOTIFICATION_SETTINGS } from "./notificatio
 import { assessEvaluationTrust } from "./evaluationTrust.js";
 import { installInputReplacement } from "./inputUx.js";
 import { validateNumericFields } from "./inputValidation.js";
+import { canonicalizePlaceValue, searchPlaces } from "./geographyCore.js";
+import { loadExtensionPlaces } from "./geographyData.js";
 
 const fieldIds = [
   "origin", "destination", "loadRate", "loadedMiles", "deadheadMiles",
@@ -48,6 +50,37 @@ let lastTrackedCalculation = "";
 let lastTrackedMinimumRate = null;
 let operatingConfiguration = migrateOperatingModes();
 const modeFieldIds = ["targetAllInRpm", "targetProfit", "minimumLoadScore", "maximumDeadhead", "minimumReloadScore"];
+let geographyPromise;
+
+function geographyDataset() {
+  if (!geographyPromise) geographyPromise = loadExtensionPlaces().catch(() => null);
+  return geographyPromise;
+}
+
+function setupGeographyAutocomplete() {
+  for (const id of ["origin", "destination"]) {
+    const input = document.getElementById(id);
+    const list = document.createElement("datalist");
+    list.id = `${id}-national-places`;
+    input.setAttribute("list", list.id);
+    input.insertAdjacentElement("afterend", list);
+    const update = async () => {
+      const dataset = await geographyDataset();
+      if (!dataset || !input.value.trim()) { list.replaceChildren(); return; }
+      list.replaceChildren(...searchPlaces(dataset, input.value, [], 10).map((place) => {
+        const option = document.createElement("option");
+        option.value = place.displayName;
+        return option;
+      }));
+    };
+    input.addEventListener("focus", update);
+    input.addEventListener("input", update);
+    input.addEventListener("change", async () => {
+      const dataset = await geographyDataset();
+      if (dataset) input.value = canonicalizePlaceValue(dataset, input.value);
+    });
+  }
+}
 
 function updateModeConfigurationFromForm() {
   const form = getForm();
@@ -328,6 +361,11 @@ document.getElementById("parse-selection").addEventListener("click", async () =>
       return;
     }
     const parsed = parseHighlightedLoad(selectedText);
+    const geography = await geographyDataset();
+    if (geography) {
+      parsed.origin = canonicalizePlaceValue(geography, parsed.origin);
+      parsed.destination = canonicalizePlaceValue(geography, parsed.destination);
+    }
     if (!parsed.deadheadMiles) document.getElementById("deadheadMiles").value = "";
     const filled = Object.entries(parsed).filter(([, value]) => value !== "");
     filled.forEach(([id, value]) => { document.getElementById(id).value = value; });
@@ -489,6 +527,7 @@ document.getElementById("saved-loads").addEventListener("click", async (event) =
   }
 });
 
+setupGeographyAutocomplete();
 const stored = await chrome.storage.local.get([
   "loadScoreDefaults",
   "loadScoreDraft",

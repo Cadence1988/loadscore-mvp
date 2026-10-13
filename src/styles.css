@@ -1563,6 +1563,17 @@ textarea {
   color: #ff8c1a;
 }
 
+.autocomplete-status {
+  display: block;
+  margin-top: 6px;
+  color: #607086;
+  font-size: 0.75rem;
+}
+
+.autocomplete-status.error {
+  color: #9a3412;
+}
+
 .analytics-preference {
   max-width: 1100px;
   margin: 24px auto 0;

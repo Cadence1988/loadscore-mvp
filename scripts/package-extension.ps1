@@ -14,6 +14,7 @@ $requiredFiles = @(
   "operatingModes.js",
   "evaluationTrust.js",
   "inputUx.js", "inputValidation.js",
+  "geographyCore.js", "geographyData.js", "data\geography\places-2026.json",
   "icons\icon-16.png", "icons\icon-32.png", "icons\icon-48.png", "icons\icon-128.png"
 )
 

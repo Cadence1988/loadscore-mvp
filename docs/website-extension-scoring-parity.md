@@ -1,6 +1,10 @@
 # Website / Extension Scoring Parity
 
-Status: audit only. FREE-2 does not change the extension, whose version remains `0.6.1`.
+Status: FREE-3 shares national geography data and normalization through one generated pipeline. Extension version is `0.6.2`.
+
+## FREE-3 geography parity
+
+The website and extension receive byte-identical `places-2026.json` artifacts from the Census geography builder. The canonical `src/logic/geographyCore.js` is copied into the extension by that same build, and automated tests require exact source and artifact parity. The extension uses its packaged local copy for capped native suggestions and unambiguous parser canonicalization. It adds no permissions and makes no runtime network request.
 
 ## Current duplication
 
@@ -8,7 +12,7 @@ Status: audit only. FREE-2 does not change the extension, whose version remains 
 - Minimum-rate logic exists in both `src/logic/calculateMinimumRate.js` and `extension/loadScore.js`.
 - Freight-text parsing exists in both `src/logic/loadNormalizer.js` and `extension/loadScore.js`.
 - Validation, evaluation-trust, lifecycle, operating-mode, alert, analytics, and share-result helpers also have website and extension copies.
-- NearSight, ForeSight, the explicit FREE-2 states, and calibration currently exist only on the website.
+- NearSight, ForeSight, the explicit FREE-2 states, and calibration still exist only on the website.
 
 ## Risk
 
@@ -23,4 +27,4 @@ Independent copies can drift in thresholds, defaults, parser behavior, privacy a
 5. Version the scoring contract and data snapshots in diagnostics so mismatches can be identified without collecting freight details.
 6. Only then add Decision Lens to the extension and advance its version.
 
-Until that work is complete, every scoring or parsing change requires an explicit parity audit. Never silently copy FREE-2 into extension `0.6.1`.
+Every future scoring or parsing change still requires an explicit parity audit. Never silently copy website-only behavior into extension `0.6.2`.

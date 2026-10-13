@@ -1,3 +1,5 @@
+import { normalizePlaceText } from "../logic/geographyCore.js";
+
 export const marketScores = {
   "Allentown, PA": 68,
   "Dallas, TX": 85,
@@ -47,14 +49,10 @@ export const marketScores = {
 
 export const DEFAULT_RELOAD_SCORE = 50;
 
-function normalizeCity(value) {
-  return String(value).trim().replace(/\s+/g, " ").toLowerCase();
-}
-
 const normalizedMarketScores = new Map(
-  Object.entries(marketScores).map(([city, score]) => [normalizeCity(city), score]),
+  Object.entries(marketScores).map(([city, score]) => [normalizePlaceText(city), score]),
 );
 
 export function getCuratedMarketScore(city) {
-  return normalizedMarketScores.get(normalizeCity(city)) ?? null;
+  return normalizedMarketScores.get(normalizePlaceText(city)) ?? null;
 }

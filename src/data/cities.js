@@ -1,4 +1,6 @@
-export const cities = [
+// Legacy freight-relevant places retained only as an autocomplete ranking signal.
+// The authoritative geography universe is generated from the Census Gazetteer.
+export const priorityFreightCities = [
   "Akron, OH",
   "Albany, NY",
   "Albuquerque, NM",
@@ -142,3 +144,5 @@ export const cities = [
   "Worcester, MA",
   "Youngstown, OH",
 ];
+
+export const cities = priorityFreightCities;

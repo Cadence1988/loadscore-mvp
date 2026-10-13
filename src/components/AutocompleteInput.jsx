@@ -1,9 +1,15 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import { cities } from "../data/cities";
+import { priorityFreightCities } from "../data/cities";
+import { loadNationalPlaces } from "../data/geographyData";
+import { normalizePlaceText, searchPlaces } from "../logic/geographyCore";
+
+const priorityNames = new Set(priorityFreightCities.map((city) => normalizePlaceText(city)));
 
 export default function AutocompleteInput({ value, onChange, placeholder }) {
   const [open, setOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [dataset, setDataset] = useState(null);
+  const [dataStatus, setDataStatus] = useState("idle");
   const wrapperRef = useRef(null);
   const listId = useId();
 
@@ -11,16 +17,16 @@ export default function AutocompleteInput({ value, onChange, placeholder }) {
     const query = value.trim().toLowerCase();
     if (!query) return [];
 
-    return cities
-      .filter((city) => city.toLowerCase().includes(query))
-      .sort((a, b) => {
-        const aStarts = a.toLowerCase().startsWith(query);
-        const bStarts = b.toLowerCase().startsWith(query);
-        if (aStarts !== bStarts) return aStarts ? -1 : 1;
-        return a.localeCompare(b);
-      })
-      .slice(0, 10);
-  }, [value]);
+    return dataset ? searchPlaces(dataset, query, priorityNames, 10) : [];
+  }, [dataset, value]);
+
+  function ensureDataset() {
+    if (dataset || dataStatus === "loading") return;
+    setDataStatus("loading");
+    loadNationalPlaces()
+      .then((loaded) => { setDataset(loaded); setDataStatus("ready"); })
+      .catch(() => setDataStatus("error"));
+  }
 
   useEffect(() => {
     function handleOutside(e) {
@@ -34,12 +40,13 @@ export default function AutocompleteInput({ value, onChange, placeholder }) {
 
   function handleChange(e) {
     onChange(e.target.value);
+    ensureDataset();
     setOpen(true);
     setHighlightedIndex(-1);
   }
 
-  function handleSelect(city) {
-    onChange(city);
+  function handleSelect(place) {
+    onChange(place.displayName);
     setOpen(false);
     setHighlightedIndex(-1);
   }
@@ -75,7 +82,7 @@ export default function AutocompleteInput({ value, onChange, placeholder }) {
         value={value}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        onFocus={() => value.length > 0 && setOpen(true)}
+        onFocus={() => { ensureDataset(); if (value.length > 0) setOpen(true); }}
         placeholder={placeholder}
         role="combobox"
         aria-autocomplete="list"
@@ -87,21 +94,23 @@ export default function AutocompleteInput({ value, onChange, placeholder }) {
       />
       {open && suggestions.length > 0 && (
         <ul className="autocomplete-dropdown" id={listId} role="listbox">
-          {suggestions.map((city, index) => (
+          {suggestions.map((place, index) => (
             <li
-              key={city}
+              key={place.id}
               id={`${listId}-${index}`}
               className={`autocomplete-item ${index === highlightedIndex ? "highlighted" : ""}`}
-              onMouseDown={() => handleSelect(city)}
+              onMouseDown={() => handleSelect(place)}
               onMouseEnter={() => setHighlightedIndex(index)}
               role="option"
               aria-selected={index === highlightedIndex}
             >
-              {city}
+              {place.displayName}
             </li>
           ))}
         </ul>
       )}
+      {open && dataStatus === "loading" && <small className="autocomplete-status" role="status">Loading national places…</small>}
+      {open && dataStatus === "error" && <small className="autocomplete-status error" role="status">Place suggestions are temporarily unavailable. Your entry is preserved.</small>}
     </div>
   );
 }

@@ -78,7 +78,7 @@ Complete these screens in order. Do not share the database password or any secre
 - Browser storage compromise can expose a browser session, so XSS prevention, dependency review, short/revocable sessions, and sign-out remain important.
 - There is no explicit Content Security Policy in the current deployment. Once the real project URL is known, a future reviewed CSP should add only that exact `https://PROJECT_REF.supabase.co` origin to `connect-src`; do not add `*.supabase.co` or loosen extension permissions.
 - No application database tables are created in PRO-1. Supabase's managed Auth data is the only cloud account data introduced by activation.
-- Chrome extension version `0.6.1` is unchanged and has no account UI, token storage, identity permission, or Supabase host access.
+- Chrome extension version `0.6.2` has national local geography parity but still has no account UI, token storage, identity permission, or Supabase host access.
 
 ## Exit boundary
 

@@ -71,7 +71,7 @@ export async function trackEvent(eventName, properties = {}) {
     event: eventName,
     occurred_at: new Date().toISOString(),
     anonymous_id: id,
-    properties: sanitize({ ...properties, extension_version: "0.6.1", environment: "production" }),
+    properties: sanitize({ ...properties, extension_version: "0.6.2", environment: "production" }),
   };
   await chrome.storage.local.set({
     [ID_KEY]: id,
