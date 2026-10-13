@@ -1,3 +1,5 @@
+import { withResolvedMileage } from "./mileageSource.js";
+
 export const REQUIRED_EVALUATION_FIELDS = ["origin", "destination", "loadRate", "loadedMiles", "deadheadMiles"];
 
 export function hasKnownDeadhead(load = {}) {
@@ -6,6 +8,7 @@ export function hasKnownDeadhead(load = {}) {
 }
 
 export function assessEvaluationTrust(load = {}, { importedReview = false } = {}) {
+  load = withResolvedMileage(load);
   const missing = [];
   if (!String(load.origin || "").trim()) missing.push("origin");
   if (!String(load.destination || "").trim()) missing.push("destination");

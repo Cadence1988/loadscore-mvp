@@ -24,7 +24,9 @@ import AccountEntry from "./components/AccountEntry";
 import DualScoreFeedback from "./components/DualScoreFeedback";
 import { activeModeEvaluation, migrateOperatingModes, profileForMode } from "./logic/operatingModes";
 import { assessEvaluationTrust } from "./logic/evaluationTrust";
-import { validateNumericFields } from "./logic/inputValidation";
+import { validateNumericField, validateNumericFields } from "./logic/inputValidation";
+import { mileageLabel, resolveLoadedMiles, ROUTING_STATES } from "./logic/mileageSource";
+import { useAutomaticRouteMileage } from "./routing/useAutomaticRouteMileage";
 import { handleInputFocusCapture, handleInputPointerDownCapture, handleInputPointerUpCapture } from "./logic/inputUx";
 import {
   EQUIPMENT_TYPES,
@@ -108,6 +110,22 @@ export default function App() {
   const [profiles, setProfiles] = useState(() =>
     loadStored("loadscore-profiles", []),
   );
+  const routing = useAutomaticRouteMileage(form.origin, form.destination);
+  const resolvedMileage = useMemo(() => resolveLoadedMiles({
+    manualMiles: form.loadedMiles,
+    estimatedMiles: routing.estimate?.distanceMiles,
+  }), [form.loadedMiles, routing.estimate]);
+  const effectiveForm = useMemo(() => ({
+    ...form,
+    loadedMiles: resolvedMileage.value ?? "",
+    manualLoadedMiles: form.loadedMiles === "" ? null : form.loadedMiles,
+    estimatedRouteMiles: routing.estimate?.distanceMiles ?? null,
+    mileageSource: resolvedMileage.source,
+    mileageEstimated: resolvedMileage.estimated,
+    routeProvider: routing.estimate?.provider ?? null,
+    routeProfile: routing.estimate?.profile ?? null,
+    routeTimestamp: routing.estimate?.retrievedAt ?? null,
+  }), [form, resolvedMileage, routing.estimate]);
 
   useEffect(() => {
     localStorage.setItem("loadscore-targets", JSON.stringify(targets));
@@ -131,9 +149,15 @@ export default function App() {
 
   const detectedReloadScore = getCuratedMarketScore(form.destination);
 
-  const formValidation = useMemo(() => validateNumericFields(form, ["loadRate", "loadedMiles", "deadheadMiles", "mpg", "fuelPrice", "fixedCostPerMile", "manualReloadScore"]), [form]);
+  const formValidation = useMemo(() => {
+    const validation = validateNumericFields(form, ["loadRate", "deadheadMiles", "mpg", "fuelPrice", "fixedCostPerMile", "manualReloadScore"]);
+    const mileageError = form.loadedMiles === ""
+      ? resolvedMileage.value === null ? "Loaded miles are required." : ""
+      : validateNumericField("loadedMiles", form.loadedMiles);
+    return mileageError ? { ...validation, loadedMiles: mileageError } : validation;
+  }, [form, resolvedMileage.value]);
   const calculationBlocked = Object.keys(formValidation).length > 0;
-  const safeForm = useMemo(() => Object.fromEntries(Object.entries(form).map(([field, value]) => [field, formValidation[field] ? "" : value])), [form, formValidation]);
+  const safeForm = useMemo(() => Object.fromEntries(Object.entries(effectiveForm).map(([field, value]) => [field, formValidation[field] ? "" : value])), [effectiveForm, formValidation]);
 
   const reloadScore =
     safeForm.manualReloadScore !== ""
@@ -172,7 +196,7 @@ export default function App() {
   const evaluationTrust = useMemo(() => calculationBlocked ? {
     status: "needs_review", label: "Needs Review", missing: Object.keys(formValidation), canRank: false, canMatch: false,
     message: "Correct the highlighted numeric fields before using this calculation.",
-  } : assessEvaluationTrust(form), [calculationBlocked, form, formValidation]);
+  } : assessEvaluationTrust(effectiveForm), [calculationBlocked, effectiveForm, formValidation]);
 
   const currentAlertMatch = useMemo(
     () =>
@@ -192,7 +216,7 @@ export default function App() {
     [detectedReloadScore, safeForm, modeConfiguration, result],
   );
 
-  const evaluationFingerprint = createLocalEvaluationFingerprint(form, currentAlertMatch.status);
+  const evaluationFingerprint = createLocalEvaluationFingerprint(effectiveForm, currentAlertMatch.status);
 
   useEffect(() => {
     if (!hasInteracted) return undefined;
@@ -200,7 +224,7 @@ export default function App() {
       String(form.origin).trim()
       && String(form.destination).trim()
       && Number(form.loadRate) > 0
-      && Number(form.loadedMiles) > 0,
+      && Number(effectiveForm.loadedMiles) > 0,
     );
 
     const timer = window.setTimeout(() => {
@@ -265,6 +289,7 @@ export default function App() {
     currentAlertMatch.status,
     evaluationFingerprint,
     form,
+    effectiveForm.loadedMiles,
     hasInteracted,
     reloadScoreSourceKey,
     result.score,
@@ -315,7 +340,7 @@ export default function App() {
     if (comparisonLoads.length >= 7 || lifecycleValidation.errors.length > 0 || !evaluationTrust.canRank) return;
     setHasInteracted(true);
     const nextLoad = normalizeLoadLifecycle({
-      ...form,
+      ...effectiveForm,
       id: crypto.randomUUID(),
       result,
       reloadScoreSource: reloadScoreSourceKey,
@@ -418,9 +443,11 @@ export default function App() {
                 min="0"
                 value={form.loadedMiles}
                 onChange={(e) => updateField("loadedMiles", e.target.value)}
+                placeholder={routing.estimate ? String(Math.round(routing.estimate.distanceMiles)) : "Enter miles or select a route"}
                 aria-invalid={Boolean(formValidation.loadedMiles)}
               />
               {formValidation.loadedMiles && <small className="input-error">{formValidation.loadedMiles}</small>}
+              <MileageStatus routing={routing} resolvedMileage={resolvedMileage} hasManual={form.loadedMiles !== ""} />
             </label>
           </div>
 
@@ -644,7 +671,7 @@ export default function App() {
           </section>
 
           <MinimumRateGuide
-            form={form}
+            form={effectiveForm}
             targets={targets}
             onTargetChange={updateTarget}
             meaningfulEvaluation={hasInteracted && evaluationTrust.status === "complete"}
@@ -652,7 +679,7 @@ export default function App() {
           />
 
           <ShareResult
-            form={form}
+            form={effectiveForm}
             result={result}
             targets={targets}
             reloadScoreSource={reloadScoreSourceKey}
@@ -672,7 +699,7 @@ export default function App() {
 
       <OperatingModes configuration={modeConfiguration} onModeSelect={selectOperatingMode} onRuleChange={updateTarget} />
 
-      <BulkImport truckDefaults={form} modeConfiguration={modeConfiguration} onSaveTop={saveBulkTop} />
+      <BulkImport truckDefaults={effectiveForm} modeConfiguration={modeConfiguration} onSaveTop={saveBulkTop} />
 
       <ComparisonBoard
         loads={comparisonLoads}
@@ -818,6 +845,16 @@ function DualScoreCard({ title, subtitle, score, status, label, factors }) {
       </ul>
     </article>
   );
+}
+
+function MileageStatus({ routing, resolvedMileage, hasManual }) {
+  if (hasManual) {
+    return <small className="mileage-source manual"><strong>{mileageLabel(resolvedMileage.source)}</strong>{routing.estimate ? ` · Estimated route: ${Math.round(routing.estimate.distanceMiles).toLocaleString()} mi` : ""}</small>;
+  }
+  if (routing.status === ROUTING_STATES.LOADING) return <small className="mileage-source">Estimating road-route miles…</small>;
+  if (routing.status === ROUTING_STATES.READY) return <small className="mileage-source estimated"><strong>Estimated route: {Math.round(routing.estimate.distanceMiles).toLocaleString()} mi</strong> · Based on city representative points · Powered by Google, ©2026 Google</small>;
+  if (routing.status === ROUTING_STATES.ERROR || routing.status === ROUTING_STATES.UNAVAILABLE) return <small className="mileage-source unavailable">Route estimate unavailable — enter loaded miles manually.</small>;
+  return <small className="mileage-source">Waiting for valid origin and destination places.</small>;
 }
 
 function FactorList({ title, emptyText, factors, tone }) {

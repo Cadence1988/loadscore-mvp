@@ -1,4 +1,7 @@
+import { withResolvedMileage } from "./mileageSource.js";
+
 export function calculateLoadScore(input) {
+  input = withResolvedMileage(input);
   const loadRate = Number(input.loadRate) || 0;
   const loadedMiles = Number(input.loadedMiles) || 0;
   const deadheadMiles = Number(input.deadheadMiles) || 0;

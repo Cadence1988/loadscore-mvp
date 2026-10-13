@@ -1,10 +1,16 @@
 # LoadScore Privacy Policy — Beta Draft
 
-Last updated: August 31, 2026
+Last updated: October 12, 2026
 
 LoadScore helps drivers evaluate freight opportunities. This policy describes the current web and Chrome extension beta.
 
 LoadScore labels evaluations with missing material information, including unknown deadhead, as provisional or needing review. This is a product-safety behavior and does not transmit the missing information.
+
+## Automatic route-mile estimates
+
+When the server-side routing integration is configured and both entries resolve to canonical Census places, the website sends only the two representative-point coordinates and internal place identifiers to the LoadScore routing endpoint. The endpoint validates the request and sends only coordinates to Google Routes to obtain a standard road-route distance. The Google credential is server-only. The estimate is not exact dispatch mileage or a guarantee of a truck-legal route. Manual mileage stays authoritative, and failure leaves manual entry available.
+
+Exact route coordinates, place identifiers, route pairs, and exact route mileage are excluded from product analytics. The Chrome extension does not call the routing endpoint in FREE-7.
 
 ## Local notifications
 

@@ -1,4 +1,5 @@
 import { validateLoadTiming } from "./loadLifecycle.js";
+import { MILEAGE_SOURCES, resolveLoadedMiles } from "./mileageSource.js";
 
 export const IMPORT_ROW_LIMIT = 250;
 export const STANDARD_FIELDS = ["origin", "destination", "loadRate", "loadedMiles", "deadheadMiles", "pickupDate", "pickupTime", "deliveryDate", "deliveryTime", "equipment", "weight", "stops", "brokerReference", "loadIdentifier", "expirationDate", "expirationTime"];
@@ -61,9 +62,19 @@ function confidenceFor(value, required = false) {
 }
 
 export function normalizeLoad(raw = {}, source = "manual") {
+  const parsedSource = ["csv", "pasted_text", "highlighted_text"].includes(source) || raw.mileageSource === MILEAGE_SOURCES.PARSED;
+  const estimatedSource = raw.mileageSource === MILEAGE_SOURCES.ESTIMATED_ROUTE;
+  const rawLoadedMiles = cleanNumber(raw.loadedMiles);
+  const manualLoadedMiles = cleanNumber(raw.manualLoadedMiles) ?? (!parsedSource && !estimatedSource ? rawLoadedMiles : null);
+  const parsedLoadedMiles = cleanNumber(raw.parsedLoadedMiles) ?? (parsedSource ? rawLoadedMiles : null);
+  const estimatedRouteMiles = cleanNumber(raw.estimatedRouteMiles) ?? (estimatedSource ? rawLoadedMiles : null);
+  const resolvedMileage = resolveLoadedMiles({ manualMiles: manualLoadedMiles, parsedMiles: parsedLoadedMiles, estimatedMiles: estimatedRouteMiles });
   const normalized = {
     origin: String(raw.origin || "").trim(), destination: String(raw.destination || "").trim(),
-    loadRate: cleanNumber(raw.loadRate), loadedMiles: cleanNumber(raw.loadedMiles), deadheadMiles: cleanNumber(raw.deadheadMiles),
+    loadRate: cleanNumber(raw.loadRate), loadedMiles: resolvedMileage.value, deadheadMiles: cleanNumber(raw.deadheadMiles),
+    manualLoadedMiles, parsedLoadedMiles, estimatedRouteMiles,
+    mileageSource: resolvedMileage.source, mileageEstimated: resolvedMileage.estimated,
+    routeProvider: raw.routeProvider || null, routeProfile: raw.routeProfile || null, routeTimestamp: raw.routeTimestamp || null,
     deadheadConfirmed: raw.deadheadConfirmed === true || cleanNumber(raw.deadheadMiles) !== null,
     pickupDate: String(raw.pickupDate || "").trim(), pickupTime: String(raw.pickupTime || "").trim(),
     deliveryDate: String(raw.deliveryDate || "").trim(), deliveryTime: String(raw.deliveryTime || "").trim(),

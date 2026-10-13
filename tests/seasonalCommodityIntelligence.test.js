@@ -123,7 +123,7 @@ test("FREE-5 does not change production scores, analytics, versions, UI delivery
   assert.equal(calculateLoadScore({ ...input, reloadScore: 88 }).score, 100);
   assert.equal(calculateNearSightScore(input).score, 100);
   assert.equal(calculateForeSightScore({ destination: "Atlanta, GA", curatedReloadScore: 88 }).score, 88);
-  assert.equal(WEB_BUILD_VERSION, "2026.10.12-beta.11");
+  assert.equal(WEB_BUILD_VERSION, "2026.10.12-beta.12");
   assert.equal(EXTENSION_BUILD_VERSION, "0.6.2");
   for (const forbidden of ["market", "commodity", "season", "shipment", "harvest", "origin", "destination"]) assert.equal(SAFE_PROPERTY_KEYS.has(forbidden), false, forbidden);
   const manifest = JSON.parse(await readFile(new URL("../extension/manifest.json", import.meta.url), "utf8"));

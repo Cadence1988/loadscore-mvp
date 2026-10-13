@@ -4,6 +4,7 @@ import { trackEvent } from "../analytics/analytics";
 import { isActiveLoad, LOAD_STATUS_LABELS, LOAD_STATUSES, normalizeLoadLifecycle } from "../logic/loadLifecycle";
 import { calculateStoredLoadDualScore } from "../logic/calculateDualScore";
 import { getCuratedMarketScore } from "../data/marketScores";
+import { mileageForSavedLoad, mileageLabel } from "../logic/mileageSource";
 
 function money(value) {
   return value.toLocaleString(undefined, {
@@ -23,8 +24,10 @@ export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChan
   );
   const evaluatedLoads = rankedLoads.map((original) => {
     const load = normalizeLoadLifecycle(original);
+    const mileage = mileageForSavedLoad(load);
     return {
       ...load,
+      mileage,
       alertMatch: activeModeEvaluation(load, modeConfiguration),
       decisionLens: calculateStoredLoadDualScore(load, getCuratedMarketScore),
     };
@@ -97,6 +100,7 @@ export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChan
                   <td>
                     <strong>{load.origin} → {load.destination}</strong>
                     <span>{money(Number(load.loadRate) || 0)} offer</span>
+                    <small>{Number(load.mileage.value || 0).toLocaleString()} loaded mi · {mileageLabel(load.mileage.source)}</small>
                   </td>
                   <td>
                     <strong>{load.result.score}</strong>

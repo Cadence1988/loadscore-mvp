@@ -1,3 +1,5 @@
+import { mileageLabel } from "../logic/mileageSource.js";
+
 export const LOADSCORE_LIVE_URL = "https://loadscore-mvp.vercel.app";
 
 function money(value) {
@@ -29,6 +31,7 @@ export function buildShareText({ form, result, reloadScoreSource, minimumRate, m
     ...(evaluationTrust?.status && evaluationTrust.status !== "complete" ? [`Status: ${evaluationTrust.label} — ${evaluationTrust.message}`] : []),
     ...(modeLabel ? [`Operating Mode: ${modeLabel}`] : []),
     `Offer: ${money(form.loadRate)}`,
+    `Loaded miles: ${Number(form.loadedMiles || 0).toLocaleString()} mi — ${mileageLabel(form.mileageSource)}`,
     `All-in RPM: $${Number(result.allInRpm || 0).toFixed(2)}`,
     `Estimated Profit: ${money(result.estimatedProfit)}`,
     `Deadhead: ${form.deadheadMiles === "" || form.deadheadMiles === null || form.deadheadMiles === undefined ? "Unknown" : `${Number(form.deadheadMiles).toLocaleString()} mi`}`,

@@ -62,7 +62,7 @@ export default function BulkImport({ truckDefaults, modeConfiguration, onSaveTop
 
   function updateRow(index, field, value) {
     const next = rows.map((row, rowIndex) => rowIndex === index
-      ? { ...normalizeLoad({ ...row.load, [field]: value }, row.load.source), rowNumber: row.rowNumber }
+      ? { ...normalizeLoad({ ...row.load, [field]: value, ...(field === "loadedMiles" ? { manualLoadedMiles: value } : {}) }, row.load.source), rowNumber: row.rowNumber }
       : row);
     setRows(flagDuplicates(next)); setScored([]);
     trackEvent("import_review_corrected", { surface: "web", import_source: rows[index]?.load.source || tab });

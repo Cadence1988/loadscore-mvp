@@ -1721,6 +1721,10 @@ input[aria-invalid="true"] { border-color: #d92d20; box-shadow: 0 0 0 2px rgba(2
 .analytics-debug pre { overflow: auto; max-height: 420px; white-space: pre-wrap; font-size: 11px; }
 @media (max-width: 700px) { .extension-feature-grid { grid-template-columns: 1fr; } .extension-install { padding: 18px; } }
 .confirm-zero { margin-top: 5px; padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 7px; background: white; color: #334155; font-size: 11px; cursor: pointer; }
+.mileage-source { display: block; margin-top: 6px; color: #607086; font-size: 11px; line-height: 1.4; }
+.mileage-source.manual { color: #166534; }
+.mileage-source.estimated { color: #075985; }
+.mileage-source.unavailable { color: #9a3412; }
 .trust-indicator { margin-bottom: 14px; padding: 11px 13px; border-radius: 11px; }
 .trust-indicator strong, .trust-indicator span { display: block; }
 .trust-indicator span { margin-top: 4px; font-size: 12px; line-height: 1.45; }

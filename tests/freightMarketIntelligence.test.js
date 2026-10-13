@@ -92,7 +92,7 @@ test("production scoring, privacy, versions, and extension permissions remain un
   assert.equal(calculateLoadScore({ loadRate: 2600, loadedMiles: 780, deadheadMiles: 35, mpg: 6.5, fuelPrice: 4, fixedCostPerMile: 0.65, reloadScore: 88 }).score, 100);
   assert.equal(calculateLoadScore({ loadRate: 1000, loadedMiles: 500, deadheadMiles: 50, mpg: 6.5, fuelPrice: 4, fixedCostPerMile: 0.65, reloadScore: undefined }).reloadScore, 50);
   for (const forbidden of ["origin", "destination", "market", "faf_region", "commodity", "tons", "value", "lane"]) assert.equal(SAFE_PROPERTY_KEYS.has(forbidden), false, forbidden);
-  assert.equal(WEB_BUILD_VERSION, "2026.10.12-beta.11");
+  assert.equal(WEB_BUILD_VERSION, "2026.10.12-beta.12");
   assert.equal(EXTENSION_BUILD_VERSION, "0.6.2");
   const manifest = JSON.parse(await readFile(new URL("../extension/manifest.json", import.meta.url), "utf8"));
   assert.equal(manifest.version, "0.6.2");

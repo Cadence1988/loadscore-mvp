@@ -86,7 +86,7 @@ test("production scoring, UI delivery, analytics, versions, and extension remain
   assert.equal(calculateLoadScore({ ...input, reloadScore: 88 }).score, 100);
   assert.equal(calculateNearSightScore(input).score, 100);
   assert.equal(calculateForeSightScore({ destination: "Atlanta, GA", curatedReloadScore: 88 }).score, 88);
-  assert.equal(WEB_BUILD_VERSION, "2026.10.12-beta.11");
+  assert.equal(WEB_BUILD_VERSION, "2026.10.12-beta.12");
   assert.equal(EXTENSION_BUILD_VERSION, "0.6.2");
   for (const forbidden of ["shadow_score", "destination", "seasonal_adjustment", "market_confidence", "commodity"]) assert.equal(SAFE_PROPERTY_KEYS.has(forbidden), false);
   const sourceFiles = await readdir(new URL("../src/", import.meta.url), { recursive: true });

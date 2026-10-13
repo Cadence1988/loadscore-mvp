@@ -1,3 +1,5 @@
+import { withResolvedMileage } from "./mileageSource.js";
+
 function number(value, fallback = 0) {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -49,6 +51,7 @@ function addFactor(collection, title, detail, impact = 0) {
 }
 
 export function calculateNearSightScore(input = {}) {
+  input = withResolvedMileage(input);
   const loadRate = number(input.loadRate);
   const loadedMiles = number(input.loadedMiles);
   const deadheadKnown = hasKnownDeadhead(input);
@@ -227,9 +230,10 @@ export function calculateDualScore(input = {}) {
 }
 
 export function calculateStoredLoadDualScore(load = {}, curatedMarketLookup = () => null) {
-  const destination = String(load.destination || "").trim();
+  const resolvedLoad = withResolvedMileage(load);
+  const destination = String(resolvedLoad.destination || "").trim();
   return calculateDualScore({
-    ...load,
+    ...resolvedLoad,
     destination,
     curatedReloadScore: destination ? curatedMarketLookup(destination) : null,
   });
