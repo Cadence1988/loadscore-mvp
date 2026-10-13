@@ -21,6 +21,7 @@ import ShareResult from "./components/ShareResult";
 import AnalyticsPreference from "./components/AnalyticsPreference";
 import AnalyticsDebugPanel from "./components/AnalyticsDebugPanel";
 import AccountEntry from "./components/AccountEntry";
+import DualScoreFeedback from "./components/DualScoreFeedback";
 import { activeModeEvaluation, migrateOperatingModes, profileForMode } from "./logic/operatingModes";
 import { assessEvaluationTrust } from "./logic/evaluationTrust";
 import { validateNumericFields } from "./logic/inputValidation";
@@ -780,6 +781,7 @@ function DualScorePanel({ dualScore }) {
         />
       </div>
       <p className="tradeoff-summary">{dualScore.tradeoff}</p>
+      <DualScoreFeedback dualScore={dualScore} />
       <small className="dual-score-note">These explain the tradeoff beside the main LoadScore. Curated market scores are starter estimates, not live freight data.</small>
     </section>
   );
@@ -791,6 +793,13 @@ function DualScoreCard({ title, subtitle, score, status, label, factors }) {
     ...(factors.warnings || []),
     ...(factors.neutral || []),
   ].slice(0, 3);
+  const displayValue = status === "preliminary"
+    ? `Preliminary ${score}`
+    : status === "limited_data"
+      ? "Limited data"
+      : status === "incomplete"
+        ? "Waiting"
+        : score;
 
   return (
     <article className={`dual-score-card ${status}`}>
@@ -799,7 +808,7 @@ function DualScoreCard({ title, subtitle, score, status, label, factors }) {
           <strong>{title}</strong>
           <span>{subtitle}</span>
         </div>
-        <b>{score === null ? "—" : score}</b>
+        <b>{displayValue}</b>
       </div>
       <p>{label}</p>
       <ul>

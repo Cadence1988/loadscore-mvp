@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createPostHogPayload, sendApprovedEvent, setCentralAnalyticsConsent, validatedProviderConfig } from "../src/analytics/productionAdapter.js";
+import { CENTRAL_EVENT_NAMES, createPostHogPayload, sendApprovedEvent, setCentralAnalyticsConsent, validatedProviderConfig } from "../src/analytics/productionAdapter.js";
 import { hasCentralAnalyticsConsent } from "../src/analytics/productionAdapter.js";
 import { sanitizeEventProperties, supportedEvents } from "../src/analytics/analytics.js";
 import { createLocalEvaluationFingerprint, createLocalEventDeduper } from "../src/analytics/evaluationEvents.js";
@@ -33,6 +33,7 @@ test("local evaluation dedupe suppresses unchanged rerenders but allows changed 
 
 test("known central events pass while unknown names are blocked", async () => {
   assert.equal(supportedEvents.has("load_calculated"), true);
+  assert.equal(CENTRAL_EVENT_NAMES.has("dual_score_feedback_submitted"), true);
   const storage = memoryStorage(); setCentralAnalyticsConsent(true, storage);
   assert.deepEqual(await sendApprovedEvent({ ...event, event: "invented_event" }, { storage, config, fetchImpl: () => { throw new Error("must not send"); } }), { sent: false, reason: "event_not_allowlisted" });
 });

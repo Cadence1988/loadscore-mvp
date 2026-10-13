@@ -94,6 +94,7 @@ export const supportedEvents = new Set([
   "auth_signed_out",
   "dual_score_viewed",
   "nearsight_foresight_tradeoff_viewed",
+  "dual_score_feedback_submitted",
 ]);
 
 function safeStorage() {

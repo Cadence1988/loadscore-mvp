@@ -12,6 +12,7 @@ export const CENTRAL_EVENT_NAMES = new Set([
   "paste_import_opened", "paste_import_completed", "csv_import_opened", "csv_import_completed", "csv_import_failed", "import_rows_detected", "import_rows_valid", "import_rows_review", "import_rows_duplicate", "bulk_scoring_completed", "bulk_top7_viewed",
   "onboarding_started", "onboarding_completed", "onboarding_skipped", "sample_load_used", "provisional_evaluation_shown", "missing_deadhead_prompted", "deadhead_confirmed_zero", "deadhead_added",
   "extension_install_cta_viewed", "extension_install_cta_clicked", "extension_page_viewed", "open_full_loadscore_clicked", "feedback_form_submitted", "willing_to_pay_indicated", "beta_source_recorded", "parser_feedback_submitted",
+  "dual_score_viewed", "nearsight_foresight_tradeoff_viewed", "dual_score_feedback_submitted",
 ]);
 
 function safeStorage() { try { return localStorage; } catch { return null; } }

@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import { activeModeEvaluation } from "../logic/operatingModes";
 import { trackEvent } from "../analytics/analytics";
 import { isActiveLoad, LOAD_STATUS_LABELS, LOAD_STATUSES, normalizeLoadLifecycle } from "../logic/loadLifecycle";
+import { calculateStoredLoadDualScore } from "../logic/calculateDualScore";
+import { getCuratedMarketScore } from "../data/marketScores";
 
 function money(value) {
   return value.toLocaleString(undefined, {
@@ -21,7 +23,11 @@ export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChan
   );
   const evaluatedLoads = rankedLoads.map((original) => {
     const load = normalizeLoadLifecycle(original);
-    return { ...load, alertMatch: activeModeEvaluation(load, modeConfiguration) };
+    return {
+      ...load,
+      alertMatch: activeModeEvaluation(load, modeConfiguration),
+      decisionLens: calculateStoredLoadDualScore(load, getCuratedMarketScore),
+    };
   });
   const matchedCount = evaluatedLoads.filter((load) => load.alertMatch.matches && isActiveLoad(load)).length;
 
@@ -72,6 +78,7 @@ export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChan
                 <th>Rank</th>
                 <th>Load</th>
                 <th>Score</th>
+                <th>Decision Lens</th>
                 <th>All-In RPM</th>
                 <th>Est. Profit</th>
                 <th>Reload</th>
@@ -94,6 +101,11 @@ export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChan
                   <td>
                     <strong>{load.result.score}</strong>
                     <span>{load.result.label}</span>
+                  </td>
+                  <td className="comparison-decision-lens">
+                    <span><strong>NearSight</strong> {compactDualScore(load.decisionLens.nearSight)}</span>
+                    <span><strong>ForeSight</strong> {compactDualScore(load.decisionLens.foreSight)}</span>
+                    <small>{load.decisionLens.tradeoff}</small>
                   </td>
                   <td>${load.result.allInRpm.toFixed(2)}</td>
                   <td>{money(load.result.estimatedProfit)}</td>
@@ -132,4 +144,11 @@ export default function ComparisonBoard({ loads, onRemove, onClear, onStatusChan
       )}
     </section>
   );
+}
+
+function compactDualScore(scoreResult) {
+  if (scoreResult.status === "limited_data") return "Limited data";
+  if (scoreResult.status === "incomplete") return "Unavailable";
+  if (scoreResult.status === "preliminary") return `Preliminary ${scoreResult.score}`;
+  return String(scoreResult.score);
 }

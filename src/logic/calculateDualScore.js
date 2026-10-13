@@ -3,6 +3,13 @@ function number(value, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+export const DUAL_SCORE_STATES = Object.freeze({
+  INCOMPLETE: "incomplete",
+  PRELIMINARY: "preliminary",
+  COMPLETE: "complete",
+  LIMITED_DATA: "limited_data",
+});
+
 function clampScore(value) {
   return Math.max(0, Math.min(100, Math.round(value)));
 }
@@ -21,7 +28,7 @@ function bandForScore(score) {
 }
 
 function labelForNearSight(score, status) {
-  if (status === "incomplete") return "Waiting for economics";
+  if (status === DUAL_SCORE_STATES.INCOMPLETE) return "Waiting for load economics";
   if (score >= 80) return "Strong immediate economics";
   if (score >= 60) return "Solid immediate economics";
   if (score >= 40) return "Mixed immediate economics";
@@ -29,8 +36,8 @@ function labelForNearSight(score, status) {
 }
 
 function labelForForeSight(score, status) {
-  if (status === "incomplete") return "Waiting for destination";
-  if (status === "limited_data") return "Limited market data";
+  if (status === DUAL_SCORE_STATES.INCOMPLETE) return "Waiting for destination";
+  if (status === DUAL_SCORE_STATES.LIMITED_DATA) return "Limited market data";
   if (score >= 75) return "Strong reload positioning";
   if (score >= 60) return "Solid reload positioning";
   if (score >= 40) return "Mixed reload positioning";
@@ -47,11 +54,16 @@ export function calculateNearSightScore(input = {}) {
   const deadheadKnown = hasKnownDeadhead(input);
 
   if (!(loadRate > 0) || !(loadedMiles > 0)) {
+    const waitingFor = !(loadRate > 0) && !(loadedMiles > 0)
+      ? "Waiting for load economics"
+      : !(loadRate > 0)
+        ? "Waiting for rate"
+        : "Waiting for mileage";
     return {
       score: null,
-      status: "incomplete",
+      status: DUAL_SCORE_STATES.INCOMPLETE,
       band: "limited",
-      label: "Waiting for economics",
+      label: waitingFor,
       summary: "Add rate and loaded miles to start NearSight.",
       explanation: {
         positives: [],
@@ -115,15 +127,15 @@ export function calculateNearSightScore(input = {}) {
   }
 
   const score = clampScore(((impactTotal + 40) / 80) * 100);
-  const status = deadheadKnown ? "complete" : "preliminary";
+  const status = deadheadKnown ? DUAL_SCORE_STATES.COMPLETE : DUAL_SCORE_STATES.PRELIMINARY;
 
   return {
     score,
     status,
     band: bandForScore(score),
     label: labelForNearSight(score, status),
-    summary: status === "preliminary"
-      ? `${labelForNearSight(score, status)}. Confirm deadhead before treating it as complete.`
+    summary: status === DUAL_SCORE_STATES.PRELIMINARY
+      ? `Preliminary economics. Add deadhead for a more complete view.`
       : labelForNearSight(score, status),
     source: "Existing LoadScore immediate-economics thresholds normalized from -40 to +40 impact.",
     metrics: { totalMiles, allInRpm, fuelCost, fixedCost, estimatedProfit, profitPerMile },
@@ -135,7 +147,7 @@ export function calculateForeSightScore({ destination = "", curatedReloadScore =
   if (!String(destination || "").trim()) {
     return {
       score: null,
-      status: "incomplete",
+      status: DUAL_SCORE_STATES.INCOMPLETE,
       band: "limited",
       label: "Waiting for destination",
       summary: "Add a destination to check existing curated reload data.",
@@ -150,10 +162,10 @@ export function calculateForeSightScore({ destination = "", curatedReloadScore =
   if (curatedReloadScore === null || curatedReloadScore === undefined || curatedReloadScore === "" || !Number.isFinite(Number(curatedReloadScore))) {
     return {
       score: null,
-      status: "limited_data",
+      status: DUAL_SCORE_STATES.LIMITED_DATA,
       band: "limited",
       label: "Limited market data",
-      summary: "No curated destination Reload Score is available yet.",
+      summary: "We don’t have enough curated market data for this destination yet.",
       explanation: {
         positives: [],
         warnings: [],
@@ -177,10 +189,10 @@ export function calculateForeSightScore({ destination = "", curatedReloadScore =
 
   return {
     score,
-    status: "complete",
+    status: DUAL_SCORE_STATES.COMPLETE,
     band: bandForScore(score),
-    label: labelForForeSight(score, "complete"),
-    summary: labelForForeSight(score, "complete"),
+    label: labelForForeSight(score, DUAL_SCORE_STATES.COMPLETE),
+    summary: "Destination outlook available.",
     source: "Existing curated destination Reload Score. Not live market data.",
     explanation: { positives, warnings, neutral },
   };
@@ -190,8 +202,9 @@ export function tradeoffSummary(nearSight, foreSight) {
   const nearBand = nearSight.band;
   const foreBand = foreSight.band;
 
-  if (foreSight.status === "incomplete") return "NearSight can update before destination positioning is available.";
-  if (foreSight.status === "limited_data") return "Immediate economics are visible, but destination positioning has limited curated data.";
+  if (nearSight.status === DUAL_SCORE_STATES.INCOMPLETE) return "Add load economics before comparing the immediate and next-position views.";
+  if (foreSight.status === DUAL_SCORE_STATES.INCOMPLETE) return "NearSight can update before destination positioning is available.";
+  if (foreSight.status === DUAL_SCORE_STATES.LIMITED_DATA) return "Immediate economics are visible, but destination positioning has limited curated data.";
   if (nearBand === "high" && ["weak", "caution"].includes(foreBand)) return "Pays well now. Weaker next-position outlook.";
   if (["weak", "caution"].includes(nearBand) && foreBand === "high") return "Moderate immediate economics. Stronger next-position outlook.";
   if (nearBand === "high" && foreBand === "high") return "Strong immediate economics and positioning.";
@@ -211,5 +224,14 @@ export function calculateDualScore(input = {}) {
     foreSight,
     tradeoff: tradeoffSummary(nearSight, foreSight),
   };
+}
+
+export function calculateStoredLoadDualScore(load = {}, curatedMarketLookup = () => null) {
+  const destination = String(load.destination || "").trim();
+  return calculateDualScore({
+    ...load,
+    destination,
+    curatedReloadScore: destination ? curatedMarketLookup(destination) : null,
+  });
 }
 

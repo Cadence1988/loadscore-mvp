@@ -1,7 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { supportedEvents, sanitizeEventProperties } from "../src/analytics/analytics.js";
-import { calculateDualScore, calculateForeSightScore, calculateNearSightScore } from "../src/logic/calculateDualScore.js";
+import {
+  calculateDualScore,
+  calculateForeSightScore,
+  calculateNearSightScore,
+  calculateStoredLoadDualScore,
+  DUAL_SCORE_STATES,
+} from "../src/logic/calculateDualScore.js";
+import { buildDualScoreFeedbackProperties } from "../src/logic/dualScoreFeedback.js";
+import { getCuratedMarketScore } from "../src/data/marketScores.js";
 import { calculateLoadScore } from "../src/logic/calculateLoadScore.js";
 import { calculateMinimumRate } from "../src/logic/calculateMinimumRate.js";
 import { evaluateAlertMatch } from "../src/logic/evaluateAlertMatch.js";
@@ -62,7 +70,7 @@ test("unknown market produces limited_data instead of an invented score", () => 
   const foreSight = calculateForeSightScore({ destination: "Unscored, ZZ", curatedReloadScore: null });
   assert.equal(foreSight.status, "limited_data");
   assert.equal(foreSight.score, null);
-  assert.match(foreSight.summary, /No curated/i);
+  assert.match(foreSight.summary, /curated market data/i);
 });
 
 test("ForeSight avoids real-time freight claims", () => {
@@ -103,9 +111,18 @@ test("minimum-rate logic remains independent from dual scoring", () => {
 });
 
 test("incomplete fields produce incomplete or preliminary states", () => {
+  assert.deepEqual(DUAL_SCORE_STATES, {
+    INCOMPLETE: "incomplete",
+    PRELIMINARY: "preliminary",
+    COMPLETE: "complete",
+    LIMITED_DATA: "limited_data",
+  });
   assert.equal(calculateNearSightScore({ loadRate: "", loadedMiles: "" }).status, "incomplete");
+  assert.equal(calculateNearSightScore({ loadRate: "", loadedMiles: 780 }).label, "Waiting for rate");
+  assert.equal(calculateNearSightScore({ loadRate: 2600, loadedMiles: "" }).label, "Waiting for mileage");
   const preliminary = calculateNearSightScore({ ...strongEconomics, deadheadMiles: "", deadheadConfirmed: false });
   assert.equal(preliminary.status, "preliminary");
+  assert.match(preliminary.summary, /Add deadhead/i);
 });
 
 test("destination added causes ForeSight to move from waiting to visible score", () => {
@@ -119,6 +136,7 @@ test("destination added causes ForeSight to move from waiting to visible score",
 test("dual-score analytics events are supported without freight-field leakage", () => {
   assert.equal(supportedEvents.has("dual_score_viewed"), true);
   assert.equal(supportedEvents.has("nearsight_foresight_tradeoff_viewed"), true);
+  assert.equal(supportedEvents.has("dual_score_feedback_submitted"), true);
   assert.deepEqual(
     sanitizeEventProperties({
       surface: "web",
@@ -138,5 +156,79 @@ test("dual-score analytics events are supported without freight-field leakage", 
       tradeoff_type: "limited_data",
     },
   );
+});
+
+test("driver calibration emits only coarse, allowlisted properties", () => {
+  const dualScore = calculateDualScore({ ...strongEconomics, curatedReloadScore: 88 });
+  assert.deepEqual(buildDualScoreFeedbackProperties("yes", "costs", dualScore), {
+    surface: "web",
+    response: "yes",
+    reason_category: "none",
+    nearsight_band: "high",
+    foresight_band: "high",
+  });
+  assert.deepEqual(buildDualScoreFeedbackProperties("mostly", "deadhead", dualScore), {
+    surface: "web",
+    response: "mostly",
+    reason_category: "deadhead",
+    nearsight_band: "high",
+    foresight_band: "high",
+  });
+  assert.equal(buildDualScoreFeedbackProperties("invalid", "other", dualScore), null);
+  const limited = buildDualScoreFeedbackProperties(
+    "no",
+    "reload_outlook",
+    calculateDualScore({ ...strongEconomics, destination: "Unscored, ZZ", curatedReloadScore: null }),
+  );
+  assert.equal(limited.foresight_band, "limited_data");
+  assert.deepEqual(
+    sanitizeEventProperties({
+      ...limited,
+      nearsight_score: 100,
+      foresight_score: 88,
+      origin: "Dallas, TX",
+      destination: "Atlanta, GA",
+      loadRate: 2600,
+      loadedMiles: 780,
+      loadIdentifier: "private",
+    }),
+    limited,
+  );
+});
+
+test("saved loads recompute Decision Lens from raw fields without changing stored results", () => {
+  const stored = {
+    ...strongEconomics,
+    result: { score: 73, estimatedProfit: 700, allInRpm: 2.4, label: "Good Load", reloadScore: 88 },
+  };
+  const before = structuredClone(stored);
+  const decisionLens = calculateStoredLoadDualScore(stored, getCuratedMarketScore);
+  assert.equal(decisionLens.nearSight.status, "complete");
+  assert.equal(decisionLens.foreSight.score, 88);
+  assert.deepEqual(stored, before);
+
+  const legacy = calculateStoredLoadDualScore(
+    { destination: "Unscored, ZZ", loadRate: 1800, loadedMiles: 700 },
+    getCuratedMarketScore,
+  );
+  assert.equal(legacy.nearSight.status, "preliminary");
+  assert.equal(legacy.foreSight.status, "limited_data");
+});
+
+test("FREE-2 UI and storage compatibility remain explicit", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const app = await readFile(new URL("../src/App.jsx", import.meta.url), "utf8");
+  const comparison = await readFile(new URL("../src/components/ComparisonBoard.jsx", import.meta.url), "utf8");
+  const feedback = await readFile(new URL("../src/components/DualScoreFeedback.jsx", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
+  assert.match(app, /loadscore-comparisons/);
+  assert.match(comparison, /Decision Lens/);
+  assert.match(comparison, /calculateStoredLoadDualScore/);
+  assert.match(feedback, /Yes/);
+  assert.match(feedback, /Mostly/);
+  assert.match(feedback, />No</);
+  assert.match(feedback, /no lane, rate, mileage, or exact score/i);
+  assert.match(styles, /\.dual-score-feedback/);
+  assert.match(styles, /@media/);
 });
 
