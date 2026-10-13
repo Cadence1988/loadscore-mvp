@@ -1,0 +1,4956 @@
+{
+  "metadata": {
+    "modelVersion": "free6-v1",
+    "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+    "researchOnly": true,
+    "productionRuntimeDependency": false,
+    "analyticsAllowed": false,
+    "evaluationDate": "2026-10-12",
+    "generatedAt": "2026-10-12T00:00:00.000Z",
+    "inputHashes": {
+      "free4": "55dff8d08cf67e306fcc72e58edd28357f4ea636b460d24f6cd3c35fcd1affd7",
+      "free5": "8411ac14252ca7773824008535ecbae5c54f5f7cb433b0982aeb24f4bb329d04"
+    }
+  },
+  "model": {
+    "selectedCandidate": "outbound_led",
+    "structuralCandidates": {
+      "outbound_led": {
+        "outboundFreightPercentile": 0.4,
+        "totalTruckFreightPercentile": 0.3,
+        "outboundBalancePercentile": 0.2,
+        "commodityDiversityPercentile": 0.1
+      },
+      "balanced_flow": {
+        "outboundFreightPercentile": 0.3,
+        "totalTruckFreightPercentile": 0.3,
+        "outboundBalancePercentile": 0.25,
+        "commodityDiversityPercentile": 0.15
+      },
+      "resilient_mix": {
+        "outboundFreightPercentile": 0.3,
+        "totalTruckFreightPercentile": 0.25,
+        "outboundBalancePercentile": 0.2,
+        "commodityDiversityPercentile": 0.25
+      }
+    },
+    "seasonalCap": 8,
+    "seasonalFormula": "volume-tempered weighted mean of (quarter average ratio - 1) × cap, after equipment/freshness/confidence gates",
+    "equipmentRules": {
+      "REEFER": "eligible",
+      "DRY_VAN": "withheld",
+      "FLATBED": "withheld",
+      "UNKNOWN": "structural only"
+    },
+    "confidenceGates": {
+      "HIGH_HIGH_HIGH": 1,
+      "ANY_MEDIUM_NO_LOW": 0.5,
+      "ANY_LOW": 0,
+      "severeGeographyMismatch": 0
+    },
+    "freshness": {
+      "structural": "FAF6 base year 2022 => AGING at evaluation",
+      "seasonal": "complete 2019-2025 => CURRENT_ENOUGH",
+      "currentYearDataUsed": false
+    }
+  },
+  "backtest": {
+    "curated": [
+      {
+        "market": "Allentown, PA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 26,
+        "structuralScore": 26.1,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 68,
+        "deltaFromCurated": -42,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Atlanta, GA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 76,
+        "structuralScore": 75.8,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "WITHHELD",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 10,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "Seasonal adjustment withheld because applicable confidence-gated evidence is insufficient.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": 88,
+        "deltaFromCurated": -12,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Baltimore, MD",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 48,
+        "structuralScore": 48.2,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 67,
+        "deltaFromCurated": -19,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Birmingham, AL",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 50,
+        "structuralScore": 50.2,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 72,
+        "deltaFromCurated": -22,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Buffalo, NY",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 42,
+        "structuralScore": 42.3,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 58,
+        "deltaFromCurated": -16,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Charlotte, NC",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 42,
+        "structuralScore": 41.7,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 70,
+        "deltaFromCurated": -28,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Chattanooga, TN",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 70,
+        "structuralScore": 69.5,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 78,
+        "deltaFromCurated": -8,
+        "reviewStatus": "GENERALLY_SUPPORTED",
+        "disagreementBand": "MODERATE_DISAGREEMENT"
+      },
+      {
+        "market": "Chicago, IL",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 84,
+        "structuralScore": 84.2,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 82,
+        "deltaFromCurated": 2,
+        "reviewStatus": "STRONGLY_SUPPORTED",
+        "disagreementBand": "CLOSE_AGREEMENT"
+      },
+      {
+        "market": "Cincinnati, OH",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 32,
+        "structuralScore": 31.6,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 73,
+        "deltaFromCurated": -41,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Cleveland, OH",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 70,
+        "structuralScore": 69.7,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 69,
+        "deltaFromCurated": 1,
+        "reviewStatus": "STRONGLY_SUPPORTED",
+        "disagreementBand": "CLOSE_AGREEMENT"
+      },
+      {
+        "market": "Columbia, SC",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 67,
+        "structuralScore": 66.6,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 68,
+        "deltaFromCurated": -1,
+        "reviewStatus": "STRONGLY_SUPPORTED",
+        "disagreementBand": "CLOSE_AGREEMENT"
+      },
+      {
+        "market": "Columbus, OH",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 50,
+        "structuralScore": 50.1,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 74,
+        "deltaFromCurated": -24,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Dallas, TX",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 83,
+        "structuralScore": 82.5,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 85,
+        "deltaFromCurated": -2,
+        "reviewStatus": "STRONGLY_SUPPORTED",
+        "disagreementBand": "CLOSE_AGREEMENT"
+      },
+      {
+        "market": "Denver, CO",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 58,
+        "structuralScore": 57.8,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a stronger outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 40,
+        "deltaFromCurated": 18,
+        "reviewStatus": "EVIDENCE_STRONGER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Houston, TX",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 79,
+        "structuralScore": 79.1,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 78,
+        "deltaFromCurated": 1,
+        "reviewStatus": "STRONGLY_SUPPORTED",
+        "disagreementBand": "CLOSE_AGREEMENT"
+      },
+      {
+        "market": "Indianapolis, IN",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 55,
+        "structuralScore": 54.9,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 76,
+        "deltaFromCurated": -21,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Jacksonville, FL",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 55,
+        "structuralScore": 55.2,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 62,
+        "deltaFromCurated": -7,
+        "reviewStatus": "GENERALLY_SUPPORTED",
+        "disagreementBand": "MODERATE_DISAGREEMENT"
+      },
+      {
+        "market": "Kansas City, MO",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 28,
+        "structuralScore": 28.3,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 72,
+        "deltaFromCurated": -44,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Laredo, TX",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 37,
+        "structuralScore": 36.9,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 13,
+          "withheld": 0,
+          "contributions": [
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:apples",
+              "commodityGroup": "apples",
+              "deviation": -2.04,
+              "weight": 219.22194963096192,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:berries",
+              "commodityGroup": "berries",
+              "deviation": 0.679,
+              "weight": 586.0464786175239,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:broccoli_cauliflower",
+              "commodityGroup": "broccoli_cauliflower",
+              "deviation": 0.638,
+              "weight": 517.5174144895996,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:citrus",
+              "commodityGroup": "citrus",
+              "deviation": 2.408,
+              "weight": 255.69833691285518,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:grapes",
+              "commodityGroup": "grapes",
+              "deviation": -4,
+              "weight": 143.549441308561,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:leafy_greens",
+              "commodityGroup": "leafy_greens",
+              "deviation": -0.174,
+              "weight": 80.97976722614112,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:lettuce",
+              "commodityGroup": "lettuce",
+              "deviation": 0.588,
+              "weight": 494.9739985090126,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:melons",
+              "commodityGroup": "melons",
+              "deviation": -0.066,
+              "weight": 487.2101960139997,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:onions",
+              "commodityGroup": "onions",
+              "deviation": -3.19,
+              "weight": 431.4146136838668,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:peppers",
+              "commodityGroup": "peppers",
+              "deviation": 0.173,
+              "weight": 691.5934068511642,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:sweet_corn",
+              "commodityGroup": "sweet_corn",
+              "deviation": -0.41,
+              "weight": 131.01341572526076,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:tomatoes",
+              "commodityGroup": "tomatoes",
+              "deviation": 0.481,
+              "weight": 999.4396918273758,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4841464:ams:mexico-texas:tree_fruit",
+              "commodityGroup": "tree_fruit",
+              "deviation": 0.65,
+              "weight": 95.56694302948065,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            }
+          ]
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "Seasonal reefer movement is near this market's structural quarterly baseline.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": 74,
+        "deltaFromCurated": -37,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Los Angeles, CA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 92,
+        "structuralScore": 91.9,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a stronger outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 70,
+        "deltaFromCurated": 22,
+        "reviewStatus": "EVIDENCE_STRONGER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Louisville, KY",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 32,
+        "structuralScore": 31.9,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 75,
+        "deltaFromCurated": -43,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Memphis, TN",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 31,
+        "structuralScore": 30.7,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 80,
+        "deltaFromCurated": -49,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Miami, FL",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 66,
+        "structuralScore": 67.4,
+        "seasonalAdjustment": -1.8,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 10,
+          "withheld": 0,
+          "contributions": [
+            {
+              "evidenceId": "market:1245000:ams:florida:berries",
+              "commodityGroup": "berries",
+              "deviation": -1.61,
+              "weight": 369.78471682858935,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:1245000:ams:florida:broccoli_cauliflower",
+              "commodityGroup": "broccoli_cauliflower",
+              "deviation": -3.594,
+              "weight": 85.92211705957902,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:1245000:ams:florida:citrus",
+              "commodityGroup": "citrus",
+              "deviation": 1.038,
+              "weight": 367.55007400352946,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:1245000:ams:florida:leafy_greens",
+              "commodityGroup": "leafy_greens",
+              "deviation": -1.746,
+              "weight": 16.066381048636934,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:1245000:ams:florida:lettuce",
+              "commodityGroup": "lettuce",
+              "deviation": -2.07,
+              "weight": 142.26272561707793,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:1245000:ams:florida:melons",
+              "commodityGroup": "melons",
+              "deviation": -4,
+              "weight": 687.8619291689286,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:1245000:ams:florida:peppers",
+              "commodityGroup": "peppers",
+              "deviation": -0.569,
+              "weight": 318.23004273638276,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:1245000:ams:florida:potatoes",
+              "commodityGroup": "potatoes",
+              "deviation": -4,
+              "weight": 343.87719406788233,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:1245000:ams:florida:sweet_corn",
+              "commodityGroup": "sweet_corn",
+              "deviation": -2.384,
+              "weight": 419.2960887010514,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:1245000:ams:florida:tomatoes",
+              "commodityGroup": "tomatoes",
+              "deviation": 0.256,
+              "weight": 657.4359077507099,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            }
+          ]
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "Seasonal reefer movement is below this market's structural quarterly baseline.",
+          "Structural evidence supports a stronger outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": 35,
+        "deltaFromCurated": 31,
+        "reviewStatus": "EVIDENCE_STRONGER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Milwaukee, WI",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 47,
+        "structuralScore": 46.8,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 68,
+        "deltaFromCurated": -21,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Minneapolis, MN",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 64,
+        "structuralScore": 64,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 67,
+        "deltaFromCurated": -3,
+        "reviewStatus": "STRONGLY_SUPPORTED",
+        "disagreementBand": "CLOSE_AGREEMENT"
+      },
+      {
+        "market": "Nashville, TN",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 57,
+        "structuralScore": 56.8,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 73,
+        "deltaFromCurated": -16,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "New Orleans, LA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 52,
+        "structuralScore": 51.5,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 52,
+        "deltaFromCurated": 0,
+        "reviewStatus": "STRONGLY_SUPPORTED",
+        "disagreementBand": "CLOSE_AGREEMENT"
+      },
+      {
+        "market": "New York, NY",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 68,
+        "structuralScore": 68.1,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a stronger outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 45,
+        "deltaFromCurated": 23,
+        "reviewStatus": "EVIDENCE_STRONGER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Oklahoma City, OK",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 15,
+        "structuralScore": 15.3,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 65,
+        "deltaFromCurated": -50,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Omaha, NE",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 42,
+        "structuralScore": 42.3,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 62,
+        "deltaFromCurated": -20,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Ontario, CA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 92,
+        "structuralScore": 91.9,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a stronger outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 72,
+        "deltaFromCurated": 20,
+        "reviewStatus": "EVIDENCE_STRONGER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Orlando, FL",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 58,
+        "structuralScore": 59.4,
+        "seasonalAdjustment": -1.8,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 10,
+          "withheld": 0,
+          "contributions": [
+            {
+              "evidenceId": "market:1253000:ams:florida:berries",
+              "commodityGroup": "berries",
+              "deviation": -1.61,
+              "weight": 369.78471682858935,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:1253000:ams:florida:broccoli_cauliflower",
+              "commodityGroup": "broccoli_cauliflower",
+              "deviation": -3.594,
+              "weight": 85.92211705957902,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:1253000:ams:florida:citrus",
+              "commodityGroup": "citrus",
+              "deviation": 1.038,
+              "weight": 367.55007400352946,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:1253000:ams:florida:leafy_greens",
+              "commodityGroup": "leafy_greens",
+              "deviation": -1.746,
+              "weight": 16.066381048636934,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:1253000:ams:florida:lettuce",
+              "commodityGroup": "lettuce",
+              "deviation": -2.07,
+              "weight": 142.26272561707793,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:1253000:ams:florida:melons",
+              "commodityGroup": "melons",
+              "deviation": -4,
+              "weight": 687.8619291689286,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:1253000:ams:florida:peppers",
+              "commodityGroup": "peppers",
+              "deviation": -0.569,
+              "weight": 318.23004273638276,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:1253000:ams:florida:potatoes",
+              "commodityGroup": "potatoes",
+              "deviation": -4,
+              "weight": 343.87719406788233,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:1253000:ams:florida:sweet_corn",
+              "commodityGroup": "sweet_corn",
+              "deviation": -2.384,
+              "weight": 419.2960887010514,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:1253000:ams:florida:tomatoes",
+              "commodityGroup": "tomatoes",
+              "deviation": 0.256,
+              "weight": 657.4359077507099,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            }
+          ]
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; commodity diversity is the weakest.",
+          "Seasonal reefer movement is below this market's structural quarterly baseline."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": 48,
+        "deltaFromCurated": 10,
+        "reviewStatus": "GENERALLY_SUPPORTED",
+        "disagreementBand": "MODERATE_DISAGREEMENT"
+      },
+      {
+        "market": "Philadelphia, PA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 52,
+        "structuralScore": 52,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 66,
+        "deltaFromCurated": -14,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Phoenix, AZ",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 77,
+        "structuralScore": 77.4,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a stronger outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 65,
+        "deltaFromCurated": 12,
+        "reviewStatus": "EVIDENCE_STRONGER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Pittsburgh, PA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 57,
+        "structuralScore": 56.6,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 60,
+        "deltaFromCurated": -3,
+        "reviewStatus": "STRONGLY_SUPPORTED",
+        "disagreementBand": "CLOSE_AGREEMENT"
+      },
+      {
+        "market": "Portland, OR",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 59,
+        "structuralScore": 59,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 50,
+        "deltaFromCurated": 9,
+        "reviewStatus": "GENERALLY_SUPPORTED",
+        "disagreementBand": "MODERATE_DISAGREEMENT"
+      },
+      {
+        "market": "Raleigh, NC",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 54,
+        "structuralScore": 53.9,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 66,
+        "deltaFromCurated": -12,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Richmond, VA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 42,
+        "structuralScore": 41.9,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 65,
+        "deltaFromCurated": -23,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Salt Lake City, UT",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 52,
+        "structuralScore": 52.1,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a stronger outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 38,
+        "deltaFromCurated": 14,
+        "reviewStatus": "EVIDENCE_STRONGER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Savannah, GA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 55,
+        "structuralScore": 54.8,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 64,
+        "deltaFromCurated": -9,
+        "reviewStatus": "GENERALLY_SUPPORTED",
+        "disagreementBand": "MODERATE_DISAGREEMENT"
+      },
+      {
+        "market": "Seattle, WA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 61,
+        "structuralScore": 60.5,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 52,
+        "deltaFromCurated": 9,
+        "reviewStatus": "GENERALLY_SUPPORTED",
+        "disagreementBand": "MODERATE_DISAGREEMENT"
+      },
+      {
+        "market": "St. Louis, MO",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 39,
+        "structuralScore": 39.2,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 71,
+        "deltaFromCurated": -32,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      },
+      {
+        "market": "Tampa, FL",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 43,
+        "structuralScore": 43.4,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 50,
+        "deltaFromCurated": -7,
+        "reviewStatus": "GENERALLY_SUPPORTED",
+        "disagreementBand": "MODERATE_DISAGREEMENT"
+      },
+      {
+        "market": "Toledo, OH",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 42,
+        "structuralScore": 41.7,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market.",
+          "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": 66,
+        "deltaFromCurated": -24,
+        "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+        "disagreementBand": "MATERIAL_DISAGREEMENT"
+      }
+    ],
+    "priorityUnscored": [
+      {
+        "market": "Bowling Green, KY",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 71,
+        "structuralScore": 70.6,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Brownsville, TX",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 88,
+        "structuralScore": 88.1,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Carlisle, PA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 87,
+        "structuralScore": 87.2,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "El Paso, TX",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 18,
+        "structuralScore": 17.6,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound truck-freight strength is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "Elizabeth, NJ",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 86,
+        "structuralScore": 85.9,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "Fresno, CA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 43,
+        "structuralScore": 44,
+        "seasonalAdjustment": -1,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 14,
+          "withheld": 0,
+          "contributions": [
+            {
+              "evidenceId": "market:0627000:ams:california:apples",
+              "commodityGroup": "apples",
+              "deviation": 2.362,
+              "weight": 106.66840488167057,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:berries",
+              "commodityGroup": "berries",
+              "deviation": -1.771,
+              "weight": 994.6283578804698,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:broccoli_cauliflower",
+              "commodityGroup": "broccoli_cauliflower",
+              "deviation": -0.645,
+              "weight": 648.4657066491643,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:citrus",
+              "commodityGroup": "citrus",
+              "deviation": -1.172,
+              "weight": 1772.8655792529787,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:grapes",
+              "commodityGroup": "grapes",
+              "deviation": 3.125,
+              "weight": 839.6810914269774,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:leafy_greens",
+              "commodityGroup": "leafy_greens",
+              "deviation": -0.473,
+              "weight": 213.251031650494,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:lettuce",
+              "commodityGroup": "lettuce",
+              "deviation": -1.014,
+              "weight": 1213.4210356261342,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:melons",
+              "commodityGroup": "melons",
+              "deviation": -2.756,
+              "weight": 812.1739656009665,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:onions",
+              "commodityGroup": "onions",
+              "deviation": -3.228,
+              "weight": 473.18057927180405,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:peppers",
+              "commodityGroup": "peppers",
+              "deviation": 0.504,
+              "weight": 355.1885255747995,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:potatoes",
+              "commodityGroup": "potatoes",
+              "deviation": -0.959,
+              "weight": 491.5417173546921,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:sweet_corn",
+              "commodityGroup": "sweet_corn",
+              "deviation": -2.407,
+              "weight": 293.9751649374484,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:tomatoes",
+              "commodityGroup": "tomatoes",
+              "deviation": -0.936,
+              "weight": 386.63612854982915,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:0627000:ams:california:tree_fruit",
+              "commodityGroup": "tree_fruit",
+              "deviation": -3.028,
+              "weight": 551.9165373496251,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            }
+          ]
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "Seasonal reefer movement is below this market's structural quarterly baseline."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "Gary, IN",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 55,
+        "structuralScore": 55,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "Grand Island, NE",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 69,
+        "structuralScore": 68.7,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Greenville, SC",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 29,
+        "structuralScore": 28.7,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "Harrisburg, PA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 87,
+        "structuralScore": 87.2,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Idaho Falls, ID",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 72,
+        "structuralScore": 72.1,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "WITHHELD",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 5,
+          "contributions": []
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "Seasonal adjustment withheld because applicable confidence-gated evidence is insufficient."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Joliet, IL",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 84,
+        "structuralScore": 84.2,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "Long Beach, CA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 92,
+        "structuralScore": 91.9,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "McAllen, TX",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 88,
+        "structuralScore": 88.1,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 13,
+          "withheld": 0,
+          "contributions": [
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:apples",
+              "commodityGroup": "apples",
+              "deviation": -2.04,
+              "weight": 219.22194963096192,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:berries",
+              "commodityGroup": "berries",
+              "deviation": 0.679,
+              "weight": 586.0464786175239,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:broccoli_cauliflower",
+              "commodityGroup": "broccoli_cauliflower",
+              "deviation": 0.638,
+              "weight": 517.5174144895996,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:citrus",
+              "commodityGroup": "citrus",
+              "deviation": 2.408,
+              "weight": 255.69833691285518,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:grapes",
+              "commodityGroup": "grapes",
+              "deviation": -4,
+              "weight": 143.549441308561,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:leafy_greens",
+              "commodityGroup": "leafy_greens",
+              "deviation": -0.174,
+              "weight": 80.97976722614112,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:lettuce",
+              "commodityGroup": "lettuce",
+              "deviation": 0.588,
+              "weight": 494.9739985090126,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:melons",
+              "commodityGroup": "melons",
+              "deviation": -0.066,
+              "weight": 487.2101960139997,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:onions",
+              "commodityGroup": "onions",
+              "deviation": -3.19,
+              "weight": 431.4146136838668,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:peppers",
+              "commodityGroup": "peppers",
+              "deviation": 0.173,
+              "weight": 691.5934068511642,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:sweet_corn",
+              "commodityGroup": "sweet_corn",
+              "deviation": -0.41,
+              "weight": 131.01341572526076,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:tomatoes",
+              "commodityGroup": "tomatoes",
+              "deviation": 0.481,
+              "weight": 999.4396918273758,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4845384:ams:mexico-texas:tree_fruit",
+              "commodityGroup": "tree_fruit",
+              "deviation": 0.65,
+              "weight": 95.56694302948065,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            }
+          ]
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; outbound balance is the weakest.",
+          "Seasonal reefer movement is near this market's structural quarterly baseline."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Newark, NJ",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 86,
+        "structuralScore": 85.9,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "Nogales, AZ",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 28,
+        "structuralScore": 30.1,
+        "seasonalAdjustment": -2.6,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 12,
+          "withheld": 1,
+          "contributions": [
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:berries",
+              "commodityGroup": "berries",
+              "deviation": -6.79,
+              "weight": 92.71405934376943,
+              "confidenceFactor": 1,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:broccoli_cauliflower",
+              "commodityGroup": "broccoli_cauliflower",
+              "deviation": -1.401,
+              "weight": 155.3238217402598,
+              "confidenceFactor": 1,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:citrus",
+              "commodityGroup": "citrus",
+              "deviation": -0.024,
+              "weight": 220.22182316927632,
+              "confidenceFactor": 1,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:grapes",
+              "commodityGroup": "grapes",
+              "deviation": -7.994,
+              "weight": 430.34303805220316,
+              "confidenceFactor": 1,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:leafy_greens",
+              "commodityGroup": "leafy_greens",
+              "deviation": -0.204,
+              "weight": 130.8521898937882,
+              "confidenceFactor": 1,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:lettuce",
+              "commodityGroup": "lettuce",
+              "deviation": -0.258,
+              "weight": 224.40539454300114,
+              "confidenceFactor": 1,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:melons",
+              "commodityGroup": "melons",
+              "deviation": 0.386,
+              "weight": 787.7607574003671,
+              "confidenceFactor": 1,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:onions",
+              "commodityGroup": "onions",
+              "deviation": -2.833,
+              "weight": 150.61929258896419,
+              "confidenceFactor": 1,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:peppers",
+              "commodityGroup": "peppers",
+              "deviation": -2.688,
+              "weight": 656.3643372396157,
+              "confidenceFactor": 1,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:sweet_corn",
+              "commodityGroup": "sweet_corn",
+              "deviation": -1.715,
+              "weight": 247.23613712400538,
+              "confidenceFactor": 1,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:tomatoes",
+              "commodityGroup": "tomatoes",
+              "deviation": -4.383,
+              "weight": 745.8395091438908,
+              "confidenceFactor": 1,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0449640:ams:mexico-arizona:tree_fruit",
+              "commodityGroup": "tree_fruit",
+              "deviation": -8,
+              "weight": 20.092501088714666,
+              "confidenceFactor": 1,
+              "classification": "off"
+            }
+          ]
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Outbound balance is the strongest structural signal; total truck-freight intensity is the weakest.",
+          "Seasonal reefer movement is below this market's structural quarterly baseline."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "Pharr, TX",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 88,
+        "structuralScore": 88.1,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 13,
+          "withheld": 0,
+          "contributions": [
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:apples",
+              "commodityGroup": "apples",
+              "deviation": -2.04,
+              "weight": 219.22194963096192,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:berries",
+              "commodityGroup": "berries",
+              "deviation": 0.679,
+              "weight": 586.0464786175239,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:broccoli_cauliflower",
+              "commodityGroup": "broccoli_cauliflower",
+              "deviation": 0.638,
+              "weight": 517.5174144895996,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:citrus",
+              "commodityGroup": "citrus",
+              "deviation": 2.408,
+              "weight": 255.69833691285518,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:grapes",
+              "commodityGroup": "grapes",
+              "deviation": -4,
+              "weight": 143.549441308561,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:leafy_greens",
+              "commodityGroup": "leafy_greens",
+              "deviation": -0.174,
+              "weight": 80.97976722614112,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:lettuce",
+              "commodityGroup": "lettuce",
+              "deviation": 0.588,
+              "weight": 494.9739985090126,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:melons",
+              "commodityGroup": "melons",
+              "deviation": -0.066,
+              "weight": 487.2101960139997,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:onions",
+              "commodityGroup": "onions",
+              "deviation": -3.19,
+              "weight": 431.4146136838668,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:peppers",
+              "commodityGroup": "peppers",
+              "deviation": 0.173,
+              "weight": 691.5934068511642,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:sweet_corn",
+              "commodityGroup": "sweet_corn",
+              "deviation": -0.41,
+              "weight": 131.01341572526076,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:tomatoes",
+              "commodityGroup": "tomatoes",
+              "deviation": 0.481,
+              "weight": 999.4396918273758,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:4857200:ams:mexico-texas:tree_fruit",
+              "commodityGroup": "tree_fruit",
+              "deviation": 0.65,
+              "weight": 95.56694302948065,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            }
+          ]
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; outbound balance is the weakest.",
+          "Seasonal reefer movement is near this market's structural quarterly baseline."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Salinas, CA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 76,
+        "structuralScore": 76.5,
+        "seasonalAdjustment": -1,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 14,
+          "withheld": 0,
+          "contributions": [
+            {
+              "evidenceId": "market:0664224:ams:california:apples",
+              "commodityGroup": "apples",
+              "deviation": 2.362,
+              "weight": 106.66840488167057,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:berries",
+              "commodityGroup": "berries",
+              "deviation": -1.771,
+              "weight": 994.6283578804698,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:broccoli_cauliflower",
+              "commodityGroup": "broccoli_cauliflower",
+              "deviation": -0.645,
+              "weight": 648.4657066491643,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:citrus",
+              "commodityGroup": "citrus",
+              "deviation": -1.172,
+              "weight": 1772.8655792529787,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:grapes",
+              "commodityGroup": "grapes",
+              "deviation": 3.125,
+              "weight": 839.6810914269774,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:leafy_greens",
+              "commodityGroup": "leafy_greens",
+              "deviation": -0.473,
+              "weight": 213.251031650494,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:lettuce",
+              "commodityGroup": "lettuce",
+              "deviation": -1.014,
+              "weight": 1213.4210356261342,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:melons",
+              "commodityGroup": "melons",
+              "deviation": -2.756,
+              "weight": 812.1739656009665,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:onions",
+              "commodityGroup": "onions",
+              "deviation": -3.228,
+              "weight": 473.18057927180405,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:peppers",
+              "commodityGroup": "peppers",
+              "deviation": 0.504,
+              "weight": 355.1885255747995,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:potatoes",
+              "commodityGroup": "potatoes",
+              "deviation": -0.959,
+              "weight": 491.5417173546921,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:sweet_corn",
+              "commodityGroup": "sweet_corn",
+              "deviation": -2.407,
+              "weight": 293.9751649374484,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:tomatoes",
+              "commodityGroup": "tomatoes",
+              "deviation": -0.936,
+              "weight": 386.63612854982915,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:0664224:ams:california:tree_fruit",
+              "commodityGroup": "tree_fruit",
+              "deviation": -3.028,
+              "weight": 551.9165373496251,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            }
+          ]
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; outbound balance is the weakest.",
+          "Seasonal reefer movement is below this market's structural quarterly baseline."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Sioux City, IA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 77,
+        "structuralScore": 77.2,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Spartanburg, SC",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 29,
+        "structuralScore": 28.7,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "NOT_APPLICABLE",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 0,
+          "contributions": []
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "No FREE-5 seasonal evidence exists for this market."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "Stockton, CA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 77,
+        "structuralScore": 77.9,
+        "seasonalAdjustment": -1,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 14,
+          "withheld": 0,
+          "contributions": [
+            {
+              "evidenceId": "market:0675000:ams:california:apples",
+              "commodityGroup": "apples",
+              "deviation": 2.362,
+              "weight": 106.66840488167057,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:berries",
+              "commodityGroup": "berries",
+              "deviation": -1.771,
+              "weight": 994.6283578804698,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:broccoli_cauliflower",
+              "commodityGroup": "broccoli_cauliflower",
+              "deviation": -0.645,
+              "weight": 648.4657066491643,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:citrus",
+              "commodityGroup": "citrus",
+              "deviation": -1.172,
+              "weight": 1772.8655792529787,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:grapes",
+              "commodityGroup": "grapes",
+              "deviation": 3.125,
+              "weight": 839.6810914269774,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:leafy_greens",
+              "commodityGroup": "leafy_greens",
+              "deviation": -0.473,
+              "weight": 213.251031650494,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:lettuce",
+              "commodityGroup": "lettuce",
+              "deviation": -1.014,
+              "weight": 1213.4210356261342,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:melons",
+              "commodityGroup": "melons",
+              "deviation": -2.756,
+              "weight": 812.1739656009665,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:onions",
+              "commodityGroup": "onions",
+              "deviation": -3.228,
+              "weight": 473.18057927180405,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:peppers",
+              "commodityGroup": "peppers",
+              "deviation": 0.504,
+              "weight": 355.1885255747995,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:potatoes",
+              "commodityGroup": "potatoes",
+              "deviation": -0.959,
+              "weight": 491.5417173546921,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:sweet_corn",
+              "commodityGroup": "sweet_corn",
+              "deviation": -2.407,
+              "weight": 293.9751649374484,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:tomatoes",
+              "commodityGroup": "tomatoes",
+              "deviation": -0.936,
+              "weight": 386.63612854982915,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:0675000:ams:california:tree_fruit",
+              "commodityGroup": "tree_fruit",
+              "deviation": -3.028,
+              "weight": 551.9165373496251,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            }
+          ]
+        },
+        "confidence": "HIGH",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+          "Seasonal reefer movement is below this market's structural quarterly baseline."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "FOUNDER_REVIEW_CANDIDATE",
+        "evidenceStrength": "HIGH"
+      },
+      {
+        "market": "Twin Falls, ID",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 72,
+        "structuralScore": 72.1,
+        "seasonalAdjustment": 0,
+        "seasonalStatus": "WITHHELD",
+        "seasonalEvidence": {
+          "eligible": 0,
+          "withheld": 5,
+          "contributions": []
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+          "Seasonal adjustment withheld because applicable confidence-gated evidence is insufficient."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Yakima, WA",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 58,
+        "structuralScore": 57.8,
+        "seasonalAdjustment": 0.3,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 5,
+          "withheld": 0,
+          "contributions": [
+            {
+              "evidenceId": "market:5380010:ams:pnw:apples",
+              "commodityGroup": "apples",
+              "deviation": 0.164,
+              "weight": 1412.842821972777,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:5380010:ams:pnw:berries",
+              "commodityGroup": "berries",
+              "deviation": -3.66,
+              "weight": 187.95061026769773,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:5380010:ams:pnw:onions",
+              "commodityGroup": "onions",
+              "deviation": 1.494,
+              "weight": 1077.4603419151908,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:5380010:ams:pnw:potatoes",
+              "commodityGroup": "potatoes",
+              "deviation": 0.117,
+              "weight": 1375.3221091438907,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            },
+            {
+              "evidenceId": "market:5380010:ams:pnw:tree_fruit",
+              "commodityGroup": "tree_fruit",
+              "deviation": 0.376,
+              "weight": 705.139789616215,
+              "confidenceFactor": 0.5,
+              "classification": "peak"
+            }
+          ]
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "Seasonal reefer movement is above this market's structural quarterly baseline."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Yuma, AZ",
+        "equipment": "REEFER",
+        "status": "SHADOW_ONLY",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": 10,
+        "structuralScore": 10,
+        "seasonalAdjustment": -0.1,
+        "seasonalStatus": "APPLIED_SHADOW_ONLY",
+        "seasonalEvidence": {
+          "eligible": 7,
+          "withheld": 0,
+          "contributions": [
+            {
+              "evidenceId": "market:0485540:ams:arizona:broccoli_cauliflower",
+              "commodityGroup": "broccoli_cauliflower",
+              "deviation": 0.533,
+              "weight": 310.19017247488677,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:0485540:ams:arizona:citrus",
+              "commodityGroup": "citrus",
+              "deviation": -4,
+              "weight": 21.56778384535602,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0485540:ams:arizona:leafy_greens",
+              "commodityGroup": "leafy_greens",
+              "deviation": 0.832,
+              "weight": 196.32758568270532,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:0485540:ams:arizona:lettuce",
+              "commodityGroup": "lettuce",
+              "deviation": 0.966,
+              "weight": 986.2636736694706,
+              "confidenceFactor": 0.5,
+              "classification": "shoulder"
+            },
+            {
+              "evidenceId": "market:0485540:ams:arizona:melons",
+              "commodityGroup": "melons",
+              "deviation": -1.079,
+              "weight": 505.6048899091068,
+              "confidenceFactor": 0.5,
+              "classification": "normal"
+            },
+            {
+              "evidenceId": "market:0485540:ams:arizona:onions",
+              "commodityGroup": "onions",
+              "deviation": -4,
+              "weight": 96.86749403179583,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            },
+            {
+              "evidenceId": "market:0485540:ams:arizona:potatoes",
+              "commodityGroup": "potatoes",
+              "deviation": -4,
+              "weight": 114.76600411271623,
+              "confidenceFactor": 0.5,
+              "classification": "off"
+            }
+          ]
+        },
+        "confidence": "MEDIUM",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": "2019-2025",
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "CURRENT_ENOUGH"
+        },
+        "reasons": [
+          "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+          "Seasonal reefer movement is below this market's structural quarterly baseline."
+        ],
+        "provenance": [
+          "FREE-4 FAF6.0 structural indicators",
+          "FREE-5 USDA AMS 2019-2025 seasonal profiles"
+        ],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "disagreementBand": null,
+        "candidateForCuration": "MORE_EVIDENCE_REQUIRED",
+        "evidenceStrength": "MEDIUM"
+      },
+      {
+        "market": "Eagle Pass, TX",
+        "equipment": "REEFER",
+        "status": "INSUFFICIENT_EVIDENCE",
+        "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+        "shadowScore": null,
+        "structuralScore": null,
+        "seasonalAdjustment": 0,
+        "confidence": "LOW",
+        "freshness": {
+          "structuralVintage": 2022,
+          "seasonalProfileVintage": null,
+          "currentYearDataUsed": false,
+          "structural": "AGING",
+          "seasonal": "NOT_APPLICABLE"
+        },
+        "reasons": [
+          "No mapped FREE-4 structural market evidence is available; no score was invented."
+        ],
+        "provenance": [],
+        "currentCuratedScore": null,
+        "deltaFromCurated": null,
+        "reviewStatus": "INSUFFICIENT_EVIDENCE",
+        "seasonalStatus": "NOT_APPLICABLE",
+        "candidateForCuration": "INSUFFICIENT_EVIDENCE",
+        "evidenceStrength": "LOW",
+        "disagreementBand": null
+      }
+    ]
+  },
+  "summary": {
+    "closeAgreement": 8,
+    "moderateDisagreement": 7,
+    "materialDisagreement": 29
+  },
+  "sensitivity": {
+    "dimensionsTested": [
+      "outbound weight",
+      "balance weight",
+      "diversity weight",
+      "seasonal cap (6/8/10)",
+      "MEDIUM-confidence reduction (0.35/0.5/0.65)"
+    ],
+    "markets": [
+      {
+        "market": "Allentown, PA",
+        "candidateScores": {
+          "outbound_led": 26.1,
+          "balanced_flow": 28.5,
+          "resilient_mix": 30.1
+        },
+        "candidateRanks": {
+          "outbound_led": 65,
+          "balanced_flow": 64,
+          "resilient_mix": 65
+        },
+        "scoreRange": 4,
+        "rankRange": 1,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Atlanta, GA",
+        "candidateScores": {
+          "outbound_led": 75.8,
+          "balanced_flow": 72.4,
+          "resilient_mix": 75.3
+        },
+        "candidateRanks": {
+          "outbound_led": 19,
+          "balanced_flow": 17,
+          "resilient_mix": 16
+        },
+        "scoreRange": 3.4,
+        "rankRange": 3,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Baltimore, MD",
+        "candidateScores": {
+          "outbound_led": 48.2,
+          "balanced_flow": 46.4,
+          "resilient_mix": 48.7
+        },
+        "candidateRanks": {
+          "outbound_led": 47,
+          "balanced_flow": 49,
+          "resilient_mix": 44
+        },
+        "scoreRange": 2.3,
+        "rankRange": 5,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Birmingham, AL",
+        "candidateScores": {
+          "outbound_led": 50.2,
+          "balanced_flow": 52.8,
+          "resilient_mix": 53.6
+        },
+        "candidateRanks": {
+          "outbound_led": 45,
+          "balanced_flow": 39,
+          "resilient_mix": 41
+        },
+        "scoreRange": 3.4,
+        "rankRange": 6,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Bowling Green, KY",
+        "candidateScores": {
+          "outbound_led": 70.6,
+          "balanced_flow": 70.5,
+          "resilient_mix": 73.5
+        },
+        "candidateRanks": {
+          "outbound_led": 22,
+          "balanced_flow": 21,
+          "resilient_mix": 19
+        },
+        "scoreRange": 3,
+        "rankRange": 3,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Brownsville, TX",
+        "candidateScores": {
+          "outbound_led": 88.1,
+          "balanced_flow": 85.6,
+          "resilient_mix": 87.1
+        },
+        "candidateRanks": {
+          "outbound_led": 4,
+          "balanced_flow": 4,
+          "resilient_mix": 1
+        },
+        "scoreRange": 2.5,
+        "rankRange": 3,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Buffalo, NY",
+        "candidateScores": {
+          "outbound_led": 42.3,
+          "balanced_flow": 39.7,
+          "resilient_mix": 36.2
+        },
+        "candidateRanks": {
+          "outbound_led": 51,
+          "balanced_flow": 56,
+          "resilient_mix": 61
+        },
+        "scoreRange": 6.1,
+        "rankRange": 10,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Carlisle, PA",
+        "candidateScores": {
+          "outbound_led": 87.2,
+          "balanced_flow": 84.7,
+          "resilient_mix": 80.6
+        },
+        "candidateRanks": {
+          "outbound_led": 7,
+          "balanced_flow": 7,
+          "resilient_mix": 11
+        },
+        "scoreRange": 6.6,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Charlotte, NC",
+        "candidateScores": {
+          "outbound_led": 41.7,
+          "balanced_flow": 42.5,
+          "resilient_mix": 48
+        },
+        "candidateRanks": {
+          "outbound_led": 54,
+          "balanced_flow": 54,
+          "resilient_mix": 47
+        },
+        "scoreRange": 6.3,
+        "rankRange": 7,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Chattanooga, TN",
+        "candidateScores": {
+          "outbound_led": 69.5,
+          "balanced_flow": 70.4,
+          "resilient_mix": 69.6
+        },
+        "candidateRanks": {
+          "outbound_led": 24,
+          "balanced_flow": 22,
+          "resilient_mix": 20
+        },
+        "scoreRange": 0.9,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Chicago, IL",
+        "candidateScores": {
+          "outbound_led": 84.2,
+          "balanced_flow": 80.9,
+          "resilient_mix": 83.6
+        },
+        "candidateRanks": {
+          "outbound_led": 11,
+          "balanced_flow": 11,
+          "resilient_mix": 7
+        },
+        "scoreRange": 3.3,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Cincinnati, OH",
+        "candidateScores": {
+          "outbound_led": 31.6,
+          "balanced_flow": 30.2,
+          "resilient_mix": 30.8
+        },
+        "candidateRanks": {
+          "outbound_led": 59,
+          "balanced_flow": 63,
+          "resilient_mix": 63
+        },
+        "scoreRange": 1.4,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Cleveland, OH",
+        "candidateScores": {
+          "outbound_led": 69.7,
+          "balanced_flow": 71.1,
+          "resilient_mix": 74.6
+        },
+        "candidateRanks": {
+          "outbound_led": 23,
+          "balanced_flow": 18,
+          "resilient_mix": 17
+        },
+        "scoreRange": 4.9,
+        "rankRange": 6,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Columbia, SC",
+        "candidateScores": {
+          "outbound_led": 66.6,
+          "balanced_flow": 66.8,
+          "resilient_mix": 65.6
+        },
+        "candidateRanks": {
+          "outbound_led": 28,
+          "balanced_flow": 25,
+          "resilient_mix": 23
+        },
+        "scoreRange": 1.2,
+        "rankRange": 5,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Columbus, OH",
+        "candidateScores": {
+          "outbound_led": 50.1,
+          "balanced_flow": 47.8,
+          "resilient_mix": 46.6
+        },
+        "candidateRanks": {
+          "outbound_led": 46,
+          "balanced_flow": 46,
+          "resilient_mix": 51
+        },
+        "scoreRange": 3.5,
+        "rankRange": 5,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Dallas, TX",
+        "candidateScores": {
+          "outbound_led": 82.5,
+          "balanced_flow": 76.9,
+          "resilient_mix": 73.8
+        },
+        "candidateRanks": {
+          "outbound_led": 13,
+          "balanced_flow": 13,
+          "resilient_mix": 18
+        },
+        "scoreRange": 8.7,
+        "rankRange": 5,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Denver, CO",
+        "candidateScores": {
+          "outbound_led": 57.8,
+          "balanced_flow": 57.2,
+          "resilient_mix": 59.3
+        },
+        "candidateRanks": {
+          "outbound_led": 33,
+          "balanced_flow": 35,
+          "resilient_mix": 33
+        },
+        "scoreRange": 2.1,
+        "rankRange": 2,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "El Paso, TX",
+        "candidateScores": {
+          "outbound_led": 17.6,
+          "balanced_flow": 20.1,
+          "resilient_mix": 22.9
+        },
+        "candidateRanks": {
+          "outbound_led": 66,
+          "balanced_flow": 66,
+          "resilient_mix": 67
+        },
+        "scoreRange": 5.3,
+        "rankRange": 1,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Elizabeth, NJ",
+        "candidateScores": {
+          "outbound_led": 85.9,
+          "balanced_flow": 82.8,
+          "resilient_mix": 80.9
+        },
+        "candidateRanks": {
+          "outbound_led": 9,
+          "balanced_flow": 9,
+          "resilient_mix": 9
+        },
+        "scoreRange": 5,
+        "rankRange": 0,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Fresno, CA",
+        "candidateScores": {
+          "outbound_led": 44,
+          "balanced_flow": 47.9,
+          "resilient_mix": 47.7
+        },
+        "candidateRanks": {
+          "outbound_led": 49,
+          "balanced_flow": 45,
+          "resilient_mix": 48
+        },
+        "scoreRange": 3.9,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 2,
+        "unstable": false
+      },
+      {
+        "market": "Gary, IN",
+        "candidateScores": {
+          "outbound_led": 55,
+          "balanced_flow": 57.1,
+          "resilient_mix": 54.5
+        },
+        "candidateRanks": {
+          "outbound_led": 38,
+          "balanced_flow": 36,
+          "resilient_mix": 38
+        },
+        "scoreRange": 2.6,
+        "rankRange": 2,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Grand Island, NE",
+        "candidateScores": {
+          "outbound_led": 68.7,
+          "balanced_flow": 63.5,
+          "resilient_mix": 57.1
+        },
+        "candidateRanks": {
+          "outbound_led": 25,
+          "balanced_flow": 26,
+          "resilient_mix": 35
+        },
+        "scoreRange": 11.6,
+        "rankRange": 10,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Greenville, SC",
+        "candidateScores": {
+          "outbound_led": 28.7,
+          "balanced_flow": 31.5,
+          "resilient_mix": 39.2
+        },
+        "candidateRanks": {
+          "outbound_led": 62,
+          "balanced_flow": 61,
+          "resilient_mix": 58
+        },
+        "scoreRange": 10.5,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Harrisburg, PA",
+        "candidateScores": {
+          "outbound_led": 87.2,
+          "balanced_flow": 84.7,
+          "resilient_mix": 80.6
+        },
+        "candidateRanks": {
+          "outbound_led": 8,
+          "balanced_flow": 8,
+          "resilient_mix": 12
+        },
+        "scoreRange": 6.6,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Houston, TX",
+        "candidateScores": {
+          "outbound_led": 79.1,
+          "balanced_flow": 75.2,
+          "resilient_mix": 78
+        },
+        "candidateRanks": {
+          "outbound_led": 14,
+          "balanced_flow": 15,
+          "resilient_mix": 13
+        },
+        "scoreRange": 3.9,
+        "rankRange": 2,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Idaho Falls, ID",
+        "candidateScores": {
+          "outbound_led": 72.1,
+          "balanced_flow": 70.9,
+          "resilient_mix": 68.7
+        },
+        "candidateRanks": {
+          "outbound_led": 20,
+          "balanced_flow": 19,
+          "resilient_mix": 21
+        },
+        "scoreRange": 3.4,
+        "rankRange": 2,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Indianapolis, IN",
+        "candidateScores": {
+          "outbound_led": 54.9,
+          "balanced_flow": 51.1,
+          "resilient_mix": 48.3
+        },
+        "candidateRanks": {
+          "outbound_led": 39,
+          "balanced_flow": 42,
+          "resilient_mix": 46
+        },
+        "scoreRange": 6.6,
+        "rankRange": 7,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Jacksonville, FL",
+        "candidateScores": {
+          "outbound_led": 55.2,
+          "balanced_flow": 58.9,
+          "resilient_mix": 60.2
+        },
+        "candidateRanks": {
+          "outbound_led": 37,
+          "balanced_flow": 32,
+          "resilient_mix": 31
+        },
+        "scoreRange": 5,
+        "rankRange": 6,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Joliet, IL",
+        "candidateScores": {
+          "outbound_led": 84.2,
+          "balanced_flow": 80.9,
+          "resilient_mix": 83.6
+        },
+        "candidateRanks": {
+          "outbound_led": 12,
+          "balanced_flow": 12,
+          "resilient_mix": 8
+        },
+        "scoreRange": 3.3,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Kansas City, MO",
+        "candidateScores": {
+          "outbound_led": 28.3,
+          "balanced_flow": 28.4,
+          "resilient_mix": 30.3
+        },
+        "candidateRanks": {
+          "outbound_led": 64,
+          "balanced_flow": 65,
+          "resilient_mix": 64
+        },
+        "scoreRange": 2,
+        "rankRange": 1,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Laredo, TX",
+        "candidateScores": {
+          "outbound_led": 36.9,
+          "balanced_flow": 42.9,
+          "resilient_mix": 47.3
+        },
+        "candidateRanks": {
+          "outbound_led": 57,
+          "balanced_flow": 53,
+          "resilient_mix": 49
+        },
+        "scoreRange": 10.4,
+        "rankRange": 8,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Long Beach, CA",
+        "candidateScores": {
+          "outbound_led": 91.9,
+          "balanced_flow": 89,
+          "resilient_mix": 86.3
+        },
+        "candidateRanks": {
+          "outbound_led": 1,
+          "balanced_flow": 1,
+          "resilient_mix": 4
+        },
+        "scoreRange": 5.6,
+        "rankRange": 3,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Los Angeles, CA",
+        "candidateScores": {
+          "outbound_led": 91.9,
+          "balanced_flow": 89,
+          "resilient_mix": 86.3
+        },
+        "candidateRanks": {
+          "outbound_led": 2,
+          "balanced_flow": 2,
+          "resilient_mix": 5
+        },
+        "scoreRange": 5.6,
+        "rankRange": 3,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Louisville, KY",
+        "candidateScores": {
+          "outbound_led": 31.9,
+          "balanced_flow": 36.3,
+          "resilient_mix": 43.2
+        },
+        "candidateRanks": {
+          "outbound_led": 58,
+          "balanced_flow": 59,
+          "resilient_mix": 54
+        },
+        "scoreRange": 11.3,
+        "rankRange": 5,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "McAllen, TX",
+        "candidateScores": {
+          "outbound_led": 88.1,
+          "balanced_flow": 85.6,
+          "resilient_mix": 87.1
+        },
+        "candidateRanks": {
+          "outbound_led": 5,
+          "balanced_flow": 5,
+          "resilient_mix": 2
+        },
+        "scoreRange": 2.5,
+        "rankRange": 3,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Memphis, TN",
+        "candidateScores": {
+          "outbound_led": 30.7,
+          "balanced_flow": 37.3,
+          "resilient_mix": 43.5
+        },
+        "candidateRanks": {
+          "outbound_led": 60,
+          "balanced_flow": 57,
+          "resilient_mix": 53
+        },
+        "scoreRange": 12.8,
+        "rankRange": 7,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Miami, FL",
+        "candidateScores": {
+          "outbound_led": 67.4,
+          "balanced_flow": 62.1,
+          "resilient_mix": 59.4
+        },
+        "candidateRanks": {
+          "outbound_led": 27,
+          "balanced_flow": 28,
+          "resilient_mix": 32
+        },
+        "scoreRange": 8,
+        "rankRange": 5,
+        "seasonalSensitivityRange": 2,
+        "unstable": true
+      },
+      {
+        "market": "Milwaukee, WI",
+        "candidateScores": {
+          "outbound_led": 46.8,
+          "balanced_flow": 47.7,
+          "resilient_mix": 53.7
+        },
+        "candidateRanks": {
+          "outbound_led": 48,
+          "balanced_flow": 47,
+          "resilient_mix": 40
+        },
+        "scoreRange": 6.9,
+        "rankRange": 8,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Minneapolis, MN",
+        "candidateScores": {
+          "outbound_led": 64,
+          "balanced_flow": 61.7,
+          "resilient_mix": 63.6
+        },
+        "candidateRanks": {
+          "outbound_led": 29,
+          "balanced_flow": 29,
+          "resilient_mix": 27
+        },
+        "scoreRange": 2.3,
+        "rankRange": 2,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Nashville, TN",
+        "candidateScores": {
+          "outbound_led": 56.8,
+          "balanced_flow": 54.5,
+          "resilient_mix": 53.8
+        },
+        "candidateRanks": {
+          "outbound_led": 35,
+          "balanced_flow": 37,
+          "resilient_mix": 39
+        },
+        "scoreRange": 3,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "New Orleans, LA",
+        "candidateScores": {
+          "outbound_led": 51.5,
+          "balanced_flow": 50.1,
+          "resilient_mix": 54.9
+        },
+        "candidateRanks": {
+          "outbound_led": 44,
+          "balanced_flow": 44,
+          "resilient_mix": 36
+        },
+        "scoreRange": 4.8,
+        "rankRange": 8,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "New York, NY",
+        "candidateScores": {
+          "outbound_led": 68.1,
+          "balanced_flow": 63.4,
+          "resilient_mix": 63.8
+        },
+        "candidateRanks": {
+          "outbound_led": 26,
+          "balanced_flow": 27,
+          "resilient_mix": 26
+        },
+        "scoreRange": 4.7,
+        "rankRange": 1,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Newark, NJ",
+        "candidateScores": {
+          "outbound_led": 85.9,
+          "balanced_flow": 82.8,
+          "resilient_mix": 80.9
+        },
+        "candidateRanks": {
+          "outbound_led": 10,
+          "balanced_flow": 10,
+          "resilient_mix": 10
+        },
+        "scoreRange": 5,
+        "rankRange": 0,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Nogales, AZ",
+        "candidateScores": {
+          "outbound_led": 30.1,
+          "balanced_flow": 34.9,
+          "resilient_mix": 33.9
+        },
+        "candidateRanks": {
+          "outbound_led": 61,
+          "balanced_flow": 60,
+          "resilient_mix": 62
+        },
+        "scoreRange": 4.8,
+        "rankRange": 2,
+        "seasonalSensitivityRange": 1,
+        "unstable": false
+      },
+      {
+        "market": "Oklahoma City, OK",
+        "candidateScores": {
+          "outbound_led": 15.3,
+          "balanced_flow": 17.8,
+          "resilient_mix": 23.2
+        },
+        "candidateRanks": {
+          "outbound_led": 67,
+          "balanced_flow": 67,
+          "resilient_mix": 66
+        },
+        "scoreRange": 7.9,
+        "rankRange": 1,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Omaha, NE",
+        "candidateScores": {
+          "outbound_led": 42.3,
+          "balanced_flow": 45,
+          "resilient_mix": 41.6
+        },
+        "candidateRanks": {
+          "outbound_led": 52,
+          "balanced_flow": 50,
+          "resilient_mix": 56
+        },
+        "scoreRange": 3.4,
+        "rankRange": 6,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Ontario, CA",
+        "candidateScores": {
+          "outbound_led": 91.9,
+          "balanced_flow": 89,
+          "resilient_mix": 86.3
+        },
+        "candidateRanks": {
+          "outbound_led": 3,
+          "balanced_flow": 3,
+          "resilient_mix": 6
+        },
+        "scoreRange": 5.6,
+        "rankRange": 3,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Orlando, FL",
+        "candidateScores": {
+          "outbound_led": 59.4,
+          "balanced_flow": 54.5,
+          "resilient_mix": 51.9
+        },
+        "candidateRanks": {
+          "outbound_led": 31,
+          "balanced_flow": 38,
+          "resilient_mix": 42
+        },
+        "scoreRange": 7.5,
+        "rankRange": 11,
+        "seasonalSensitivityRange": 2,
+        "unstable": true
+      },
+      {
+        "market": "Pharr, TX",
+        "candidateScores": {
+          "outbound_led": 88.1,
+          "balanced_flow": 85.6,
+          "resilient_mix": 87.1
+        },
+        "candidateRanks": {
+          "outbound_led": 6,
+          "balanced_flow": 6,
+          "resilient_mix": 3
+        },
+        "scoreRange": 2.5,
+        "rankRange": 3,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Philadelphia, PA",
+        "candidateScores": {
+          "outbound_led": 52,
+          "balanced_flow": 50.7,
+          "resilient_mix": 54.8
+        },
+        "candidateRanks": {
+          "outbound_led": 43,
+          "balanced_flow": 43,
+          "resilient_mix": 37
+        },
+        "scoreRange": 4.1,
+        "rankRange": 6,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Phoenix, AZ",
+        "candidateScores": {
+          "outbound_led": 77.4,
+          "balanced_flow": 69.8,
+          "resilient_mix": 62.8
+        },
+        "candidateRanks": {
+          "outbound_led": 16,
+          "balanced_flow": 24,
+          "resilient_mix": 28
+        },
+        "scoreRange": 14.6,
+        "rankRange": 12,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Pittsburgh, PA",
+        "candidateScores": {
+          "outbound_led": 56.6,
+          "balanced_flow": 51.4,
+          "resilient_mix": 48.5
+        },
+        "candidateRanks": {
+          "outbound_led": 36,
+          "balanced_flow": 41,
+          "resilient_mix": 45
+        },
+        "scoreRange": 8.1,
+        "rankRange": 9,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Portland, OR",
+        "candidateScores": {
+          "outbound_led": 59,
+          "balanced_flow": 61.4,
+          "resilient_mix": 65.4
+        },
+        "candidateRanks": {
+          "outbound_led": 32,
+          "balanced_flow": 30,
+          "resilient_mix": 24
+        },
+        "scoreRange": 6.4,
+        "rankRange": 8,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Raleigh, NC",
+        "candidateScores": {
+          "outbound_led": 53.9,
+          "balanced_flow": 52.1,
+          "resilient_mix": 46.4
+        },
+        "candidateRanks": {
+          "outbound_led": 41,
+          "balanced_flow": 40,
+          "resilient_mix": 52
+        },
+        "scoreRange": 7.5,
+        "rankRange": 12,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Richmond, VA",
+        "candidateScores": {
+          "outbound_led": 41.9,
+          "balanced_flow": 43.6,
+          "resilient_mix": 40.8
+        },
+        "candidateRanks": {
+          "outbound_led": 53,
+          "balanced_flow": 52,
+          "resilient_mix": 57
+        },
+        "scoreRange": 2.8,
+        "rankRange": 5,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Salinas, CA",
+        "candidateScores": {
+          "outbound_led": 76.5,
+          "balanced_flow": 75.8,
+          "resilient_mix": 76
+        },
+        "candidateRanks": {
+          "outbound_led": 18,
+          "balanced_flow": 14,
+          "resilient_mix": 14
+        },
+        "scoreRange": 0.7,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 1,
+        "unstable": false
+      },
+      {
+        "market": "Salt Lake City, UT",
+        "candidateScores": {
+          "outbound_led": 52.1,
+          "balanced_flow": 47.6,
+          "resilient_mix": 47.1
+        },
+        "candidateRanks": {
+          "outbound_led": 42,
+          "balanced_flow": 48,
+          "resilient_mix": 50
+        },
+        "scoreRange": 5,
+        "rankRange": 8,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Savannah, GA",
+        "candidateScores": {
+          "outbound_led": 54.8,
+          "balanced_flow": 59.8,
+          "resilient_mix": 62.6
+        },
+        "candidateRanks": {
+          "outbound_led": 40,
+          "balanced_flow": 31,
+          "resilient_mix": 29
+        },
+        "scoreRange": 7.8,
+        "rankRange": 11,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Seattle, WA",
+        "candidateScores": {
+          "outbound_led": 60.5,
+          "balanced_flow": 58.6,
+          "resilient_mix": 61.4
+        },
+        "candidateRanks": {
+          "outbound_led": 30,
+          "balanced_flow": 33,
+          "resilient_mix": 30
+        },
+        "scoreRange": 2.8,
+        "rankRange": 3,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Sioux City, IA",
+        "candidateScores": {
+          "outbound_led": 77.2,
+          "balanced_flow": 70.4,
+          "resilient_mix": 64.5
+        },
+        "candidateRanks": {
+          "outbound_led": 17,
+          "balanced_flow": 23,
+          "resilient_mix": 25
+        },
+        "scoreRange": 12.7,
+        "rankRange": 8,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Spartanburg, SC",
+        "candidateScores": {
+          "outbound_led": 28.7,
+          "balanced_flow": 31.5,
+          "resilient_mix": 39.2
+        },
+        "candidateRanks": {
+          "outbound_led": 63,
+          "balanced_flow": 62,
+          "resilient_mix": 59
+        },
+        "scoreRange": 10.5,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "St. Louis, MO",
+        "candidateScores": {
+          "outbound_led": 39.2,
+          "balanced_flow": 36.6,
+          "resilient_mix": 36.3
+        },
+        "candidateRanks": {
+          "outbound_led": 56,
+          "balanced_flow": 58,
+          "resilient_mix": 60
+        },
+        "scoreRange": 2.9,
+        "rankRange": 4,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Stockton, CA",
+        "candidateScores": {
+          "outbound_led": 77.9,
+          "balanced_flow": 74,
+          "resilient_mix": 75.7
+        },
+        "candidateRanks": {
+          "outbound_led": 15,
+          "balanced_flow": 16,
+          "resilient_mix": 15
+        },
+        "scoreRange": 3.9,
+        "rankRange": 1,
+        "seasonalSensitivityRange": 1,
+        "unstable": false
+      },
+      {
+        "market": "Tampa, FL",
+        "candidateScores": {
+          "outbound_led": 43.4,
+          "balanced_flow": 40.8,
+          "resilient_mix": 41.7
+        },
+        "candidateRanks": {
+          "outbound_led": 50,
+          "balanced_flow": 55,
+          "resilient_mix": 55
+        },
+        "scoreRange": 2.6,
+        "rankRange": 5,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Toledo, OH",
+        "candidateScores": {
+          "outbound_led": 41.7,
+          "balanced_flow": 44,
+          "resilient_mix": 49.3
+        },
+        "candidateRanks": {
+          "outbound_led": 55,
+          "balanced_flow": 51,
+          "resilient_mix": 43
+        },
+        "scoreRange": 7.6,
+        "rankRange": 12,
+        "seasonalSensitivityRange": 0,
+        "unstable": true
+      },
+      {
+        "market": "Twin Falls, ID",
+        "candidateScores": {
+          "outbound_led": 72.1,
+          "balanced_flow": 70.9,
+          "resilient_mix": 68.7
+        },
+        "candidateRanks": {
+          "outbound_led": 21,
+          "balanced_flow": 20,
+          "resilient_mix": 22
+        },
+        "scoreRange": 3.4,
+        "rankRange": 2,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Yakima, WA",
+        "candidateScores": {
+          "outbound_led": 57.8,
+          "balanced_flow": 57.7,
+          "resilient_mix": 59
+        },
+        "candidateRanks": {
+          "outbound_led": 34,
+          "balanced_flow": 34,
+          "resilient_mix": 34
+        },
+        "scoreRange": 1.3,
+        "rankRange": 0,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      },
+      {
+        "market": "Yuma, AZ",
+        "candidateScores": {
+          "outbound_led": 10,
+          "balanced_flow": 10.4,
+          "resilient_mix": 11.7
+        },
+        "candidateRanks": {
+          "outbound_led": 68,
+          "balanced_flow": 68,
+          "resilient_mix": 68
+        },
+        "scoreRange": 1.7,
+        "rankRange": 0,
+        "seasonalSensitivityRange": 0,
+        "unstable": false
+      }
+    ],
+    "unstableMarkets": [
+      "Dallas, TX",
+      "Grand Island, NE",
+      "Greenville, SC",
+      "Laredo, TX",
+      "Louisville, KY",
+      "Memphis, TN",
+      "Miami, FL",
+      "Orlando, FL",
+      "Phoenix, AZ",
+      "Pittsburgh, PA",
+      "Raleigh, NC",
+      "Savannah, GA",
+      "Sioux City, IA",
+      "Spartanburg, SC",
+      "Toledo, OH"
+    ]
+  },
+  "reviewMarkets": [
+    {
+      "market": "Allentown, PA",
+      "equipment": "REEFER",
+      "status": "SHADOW_ONLY",
+      "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+      "shadowScore": 26,
+      "structuralScore": 26.1,
+      "seasonalAdjustment": 0,
+      "seasonalStatus": "NOT_APPLICABLE",
+      "seasonalEvidence": {
+        "eligible": 0,
+        "withheld": 0,
+        "contributions": []
+      },
+      "confidence": "HIGH",
+      "freshness": {
+        "structuralVintage": 2022,
+        "seasonalProfileVintage": null,
+        "currentYearDataUsed": false,
+        "structural": "AGING",
+        "seasonal": "NOT_APPLICABLE"
+      },
+      "reasons": [
+        "Commodity diversity is the strongest structural signal; total truck-freight intensity is the weakest.",
+        "No FREE-5 seasonal evidence exists for this market.",
+        "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+      ],
+      "provenance": [
+        "FREE-4 FAF6.0 structural indicators"
+      ],
+      "currentCuratedScore": 68,
+      "deltaFromCurated": -42,
+      "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+      "disagreementBand": "MATERIAL_DISAGREEMENT"
+    },
+    {
+      "market": "Cincinnati, OH",
+      "equipment": "REEFER",
+      "status": "SHADOW_ONLY",
+      "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+      "shadowScore": 32,
+      "structuralScore": 31.6,
+      "seasonalAdjustment": 0,
+      "seasonalStatus": "NOT_APPLICABLE",
+      "seasonalEvidence": {
+        "eligible": 0,
+        "withheld": 0,
+        "contributions": []
+      },
+      "confidence": "HIGH",
+      "freshness": {
+        "structuralVintage": 2022,
+        "seasonalProfileVintage": null,
+        "currentYearDataUsed": false,
+        "structural": "AGING",
+        "seasonal": "NOT_APPLICABLE"
+      },
+      "reasons": [
+        "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+        "No FREE-5 seasonal evidence exists for this market.",
+        "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+      ],
+      "provenance": [
+        "FREE-4 FAF6.0 structural indicators"
+      ],
+      "currentCuratedScore": 73,
+      "deltaFromCurated": -41,
+      "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+      "disagreementBand": "MATERIAL_DISAGREEMENT"
+    },
+    {
+      "market": "Columbus, OH",
+      "equipment": "REEFER",
+      "status": "SHADOW_ONLY",
+      "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+      "shadowScore": 50,
+      "structuralScore": 50.1,
+      "seasonalAdjustment": 0,
+      "seasonalStatus": "NOT_APPLICABLE",
+      "seasonalEvidence": {
+        "eligible": 0,
+        "withheld": 0,
+        "contributions": []
+      },
+      "confidence": "HIGH",
+      "freshness": {
+        "structuralVintage": 2022,
+        "seasonalProfileVintage": null,
+        "currentYearDataUsed": false,
+        "structural": "AGING",
+        "seasonal": "NOT_APPLICABLE"
+      },
+      "reasons": [
+        "Outbound truck-freight strength is the strongest structural signal; commodity diversity is the weakest.",
+        "No FREE-5 seasonal evidence exists for this market.",
+        "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+      ],
+      "provenance": [
+        "FREE-4 FAF6.0 structural indicators"
+      ],
+      "currentCuratedScore": 74,
+      "deltaFromCurated": -24,
+      "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+      "disagreementBand": "MATERIAL_DISAGREEMENT"
+    },
+    {
+      "market": "Indianapolis, IN",
+      "equipment": "REEFER",
+      "status": "SHADOW_ONLY",
+      "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+      "shadowScore": 55,
+      "structuralScore": 54.9,
+      "seasonalAdjustment": 0,
+      "seasonalStatus": "NOT_APPLICABLE",
+      "seasonalEvidence": {
+        "eligible": 0,
+        "withheld": 0,
+        "contributions": []
+      },
+      "confidence": "HIGH",
+      "freshness": {
+        "structuralVintage": 2022,
+        "seasonalProfileVintage": null,
+        "currentYearDataUsed": false,
+        "structural": "AGING",
+        "seasonal": "NOT_APPLICABLE"
+      },
+      "reasons": [
+        "Total truck-freight intensity is the strongest structural signal; commodity diversity is the weakest.",
+        "No FREE-5 seasonal evidence exists for this market.",
+        "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+      ],
+      "provenance": [
+        "FREE-4 FAF6.0 structural indicators"
+      ],
+      "currentCuratedScore": 76,
+      "deltaFromCurated": -21,
+      "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+      "disagreementBand": "MATERIAL_DISAGREEMENT"
+    },
+    {
+      "market": "Kansas City, MO",
+      "equipment": "REEFER",
+      "status": "SHADOW_ONLY",
+      "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+      "shadowScore": 28,
+      "structuralScore": 28.3,
+      "seasonalAdjustment": 0,
+      "seasonalStatus": "NOT_APPLICABLE",
+      "seasonalEvidence": {
+        "eligible": 0,
+        "withheld": 0,
+        "contributions": []
+      },
+      "confidence": "HIGH",
+      "freshness": {
+        "structuralVintage": 2022,
+        "seasonalProfileVintage": null,
+        "currentYearDataUsed": false,
+        "structural": "AGING",
+        "seasonal": "NOT_APPLICABLE"
+      },
+      "reasons": [
+        "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+        "No FREE-5 seasonal evidence exists for this market.",
+        "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+      ],
+      "provenance": [
+        "FREE-4 FAF6.0 structural indicators"
+      ],
+      "currentCuratedScore": 72,
+      "deltaFromCurated": -44,
+      "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+      "disagreementBand": "MATERIAL_DISAGREEMENT"
+    },
+    {
+      "market": "Oklahoma City, OK",
+      "equipment": "REEFER",
+      "status": "SHADOW_ONLY",
+      "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+      "shadowScore": 15,
+      "structuralScore": 15.3,
+      "seasonalAdjustment": 0,
+      "seasonalStatus": "NOT_APPLICABLE",
+      "seasonalEvidence": {
+        "eligible": 0,
+        "withheld": 0,
+        "contributions": []
+      },
+      "confidence": "HIGH",
+      "freshness": {
+        "structuralVintage": 2022,
+        "seasonalProfileVintage": null,
+        "currentYearDataUsed": false,
+        "structural": "AGING",
+        "seasonal": "NOT_APPLICABLE"
+      },
+      "reasons": [
+        "Commodity diversity is the strongest structural signal; outbound balance is the weakest.",
+        "No FREE-5 seasonal evidence exists for this market.",
+        "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+      ],
+      "provenance": [
+        "FREE-4 FAF6.0 structural indicators"
+      ],
+      "currentCuratedScore": 65,
+      "deltaFromCurated": -50,
+      "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+      "disagreementBand": "MATERIAL_DISAGREEMENT"
+    },
+    {
+      "market": "St. Louis, MO",
+      "equipment": "REEFER",
+      "status": "SHADOW_ONLY",
+      "approvalState": "NOT_APPROVED_FOR_PRODUCTION",
+      "shadowScore": 39,
+      "structuralScore": 39.2,
+      "seasonalAdjustment": 0,
+      "seasonalStatus": "NOT_APPLICABLE",
+      "seasonalEvidence": {
+        "eligible": 0,
+        "withheld": 0,
+        "contributions": []
+      },
+      "confidence": "HIGH",
+      "freshness": {
+        "structuralVintage": 2022,
+        "seasonalProfileVintage": null,
+        "currentYearDataUsed": false,
+        "structural": "AGING",
+        "seasonal": "NOT_APPLICABLE"
+      },
+      "reasons": [
+        "Total truck-freight intensity is the strongest structural signal; outbound balance is the weakest.",
+        "No FREE-5 seasonal evidence exists for this market.",
+        "Structural evidence supports a weaker outlook than the current curated score; founder review is required."
+      ],
+      "provenance": [
+        "FREE-4 FAF6.0 structural indicators"
+      ],
+      "currentCuratedScore": 71,
+      "deltaFromCurated": -32,
+      "reviewStatus": "EVIDENCE_WEAKER_THAN_CURRENT_SCORE",
+      "disagreementBand": "MATERIAL_DISAGREEMENT"
+    }
+  ],
+  "productionActivationRequirements": [
+    "founder review",
+    "model selection",
+    "acceptable confidence coverage",
+    "calibration approval",
+    "rollout plan",
+    "fallback behavior",
+    "extension parity plan"
+  ],
+  "limitations": [
+    "FAF6 is regional annual evidence, not a live city-level market.",
+    "FREE-5 seasonal evidence covers 14 mapped markets and only directly supports REEFER.",
+    "A shadow disagreement is a research queue, not proof that a curated score is wrong.",
+    "No routing, mileage, rates, private freight, scraping, or live truck availability is present."
+  ]
+}
