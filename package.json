@@ -10,6 +10,7 @@
     "test": "node --test",
     "build:geography": "node scripts/data/build-census-geography.mjs",
     "build:market-intelligence": "node scripts/data/build-freight-market-intelligence.mjs",
+    "build:seasonal-intelligence": "node scripts/data/build-seasonal-commodity-intelligence.mjs",
     "package:extension": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-extension.ps1",
     "preview": "vite preview"
   },
